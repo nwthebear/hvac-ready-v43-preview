@@ -402,9 +402,13 @@
       ["coils", es ? "Serpentines" : "Coils"],
       ["furnace", es ? "Horno (corte)" : "Furnace cutaway"]
     ];
+    const labelsOn = A.modelLabels !== false;
     return `<main class="page">${head(es ? "Modelos 3D" : "3D Models")}
-    <div class="seg scroll">${tabs.map(([id, lab]) => `<button data-m="${id}" class="${which === id ? "sel" : ""}">${lab}</button>`).join("")}</div>
-    <div class="m3d-well"><div class="m3d" id="m3d"><div class="m3d-loading">${A.saying("loading")}</div></div></div><p class="sm muted center">${es ? "Arrastra para girar · pellizca para acercar · toca una etiqueta" : "Drag to rotate · pinch to zoom · tap a label"}</p><div id="m3dInfo" class="part-info"></div></main>`; };
+    <div class="m3d-tabs" role="tablist" aria-label="${es ? "Modelos" : "Models"}">${tabs.map(([id, lab]) => `<button type="button" role="tab" aria-selected="${which === id}" data-m="${id}" class="${which === id ? "sel" : ""}">${lab}</button>`).join("")}</div>
+    <div class="m3d-well"><div class="m3d${labelsOn ? "" : " labels-off"}" id="m3d"><div class="m3d-loading">${A.saying("loading")}</div></div></div>
+    <div class="m3d-tools"><p class="sm muted hint">${es ? "Arrastra para girar · pellizca para acercar · toca una etiqueta" : "Drag to rotate · pinch to zoom · tap a label"}</p>
+    <button type="button" class="btn sm" id="m3dLabels" aria-pressed="${labelsOn}">${labelsOn ? (es ? "Ocultar etiquetas" : "Hide labels") : (es ? "Mostrar etiquetas" : "Show labels")}</button></div>
+    <div id="m3dInfo" class="part-info"></div></main>`; };
   const M3D_INFO = {
     condenser: ["Condenser coil — rejects heat outdoors", "Serpentín condensador: rechaza calor afuera"], compressor: ["Compressor — the pump of the system", "Compresor: la bomba del sistema"], contactor: ["Control panel — contactor + capacitor live here", "Panel de control: aquí van el contactor y el capacitor"],
     evaporator: ["Evaporator A-coil — absorbs indoor heat", "Serpentín evaporador en A: absorbe calor interior"], txv: ["TXV — meters refrigerant into the coil", "TXV: dosifica refrigerante al serpentín"], blower: ["Blower — moves air across the coil", "Soplador: mueve aire por el serpentín"], filter: ["Filter — protects coil and blower", "Filtro: protege serpentín y soplador"],
@@ -418,6 +422,8 @@
   };
   A.bind.models = () => {
     document.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { A.model3d = b.dataset.m; A.render(); });
+    const labBtn = document.getElementById("m3dLabels");
+    if (labBtn) labBtn.onclick = () => { A.modelLabels = A.modelLabels === false; const on = A.modelLabels !== false; const el = document.getElementById("m3d"); if (el) el.classList.toggle("labels-off", !on); labBtn.setAttribute("aria-pressed", on); labBtn.textContent = on ? (S.lang === "es" ? "Ocultar etiquetas" : "Hide labels") : (S.lang === "es" ? "Mostrar etiquetas" : "Show labels"); if (A.dispose3d && A.dispose3d.setLabelsVisible) A.dispose3d.setLabelsVisible(on); };
     const el = $("#m3d"), which = A.model3d || "split", i = S.lang === "es" ? 1 : 0;
     const labels = {}; Object.entries(M3D_INFO).forEach(([k, v]) => labels[k] = v[i].split(/ [—:(]/)[0].replace(/ (coil|A-coil)$/, ""));
     const pick = id => { Sound.sfx("tap"); $("#m3dInfo").innerHTML = `${ico("info", 16)} ${esc(M3D_INFO[id][i])}`; };

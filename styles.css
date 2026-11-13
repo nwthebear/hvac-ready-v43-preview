@@ -1478,3 +1478,18 @@ a.card:active, .tile:active, .list-card:active, .kit-chip:active, .tool-card:act
 .greet-av { text-decoration: none; color: inherit; display: block; min-width: 44px; min-height: 44px; }
 a.greet-av:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 12px; }
 .seg { flex-wrap: wrap; }
+
+
+/* v46 model tabs + leaders */
+.m3d-tabs { display: flex; flex-wrap: wrap; gap: 8px; overflow: visible; padding: 0 0 12px; margin: 0; max-width: 100%; }
+.m3d-tabs button { flex: none; min-height: 44px; min-width: 44px; padding: 0 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); border-radius: 999px; font: 600 var(--fs-sm) var(--font); cursor: pointer; white-space: nowrap; touch-action: manipulation; }
+.m3d-tabs button.sel { background: var(--text); color: var(--bg); border-color: transparent; box-shadow: var(--sh-1); }
+.m3d-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0 10px; }
+.m3d-tools .hint { margin: 0; flex: 1; }
+.m3d-tools #m3dLabels { flex: none; min-height: 44px; padding: 0 14px; }
+.m3d-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.m3d-leader { fill: none; stroke: rgba(233, 225, 207, .78); stroke-width: 1.25; }
+.m3d-anchor { fill: #e9e1cf; stroke: rgba(15,16,17,.9); stroke-width: 1.25; }
+.m3d-tag { z-index: 3; font: 700 12px/1.2 var(--font); padding: 6px 10px; background: rgba(14,27,44,.9); border: 1px solid rgba(233,225,207,.45); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.m3d.labels-off .m3d-labels, .m3d.labels-off .m3d-leaders { display: none !important; }
+.m3d { background: radial-gradient(circle at 50% 28%, #2a4a6a, #12161c 72%); }
