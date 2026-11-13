@@ -1,21 +1,22 @@
 # Splash intro sounds
 
-The whoosh, impact-driver rattle, drill-bite impact, and trailer riser used in the HVAC Ready splash intro were **synthesized for this app** (Python / NumPy offline render for the one-shot files, Web Audio for the live riser; one-shots then ffmpeg `loudnorm` to about −16 LUFS, encoded as mono mp3 + m4a).
+The HVAC Ready trailer one-shots in this folder are mixes of **Mixkit** recordings (free Mixkit License, same family as the UI click). They were trimmed, layered, lightly equalized, peak-limited, and loudnormed for a trailer-style mix, then encoded as stereo mp3 + m4a. The in-app intro video stays muted; these files play on cue via `Sound.playSplash` after the iOS “Tap to start” unlock.
 
-Freesound and Pixabay both blocked automated downloads from this environment (HTTP 403; Pixabay presented a Cloudflare challenge), so no third-party recordings were copied. The files in this folder are original:
+Cue times (v44, 8.80 s trailer):
 
-| File | Role | How it was made | License |
-|---|---|---|---|
-| `splash-whoosh.mp3` / `.m4a` | Torch / flame sweep at ~0.8 s | Filtered noise with a falling band (airy high end into a warm low flame rumble) and a short 0.58 s envelope | Original, made for HVAC Ready |
-| `splash-rattle.mp3` / `.m4a` | Impact-driver burst under the spark sweep (~0.8 s) | Rising motor body plus a run of sharp metallic ratchet hits (~0.58 s) | Original, made for HVAC Ready |
-| `splash-impact.mp3` / `.m4a` | Drill bite / metal hit on the tagline drop at 1.4 s | Short chuck chatter, a grind as the bit catches, then a hard transient and decaying steel-like modal partials (~0.62 s) | Original, made for HVAC Ready |
+| File | Cue | Role | Mix sources (Mixkit) | Target |
+|---|---|---|---|---|
+| `splash-whoosh.mp3` / `.m4a` | 0.85 s | Torch ignite / fire whoosh | 1345 Short fire whoosh, 1342 Ignition metal fire, 1328 Fire swoosh burning, 1492 Cinematic whoosh fast transition | ≈ −14 LUFS, TP ≈ −1.6 dB |
+| `splash-rattle.mp3` / `.m4a` | 1.25 s | Welding sparks / crackle | 824 Welding and sparks, with a light 833 Metal hammer tick | ≈ −16 LUFS, TP ≈ −1.8 dB |
+| `splash-impact.mp3` / `.m4a` | 2.20 s | Stamp slam, low-end thump, metallic ring tail | 2980 Factory metal hard hit, 2908 Movie trailer epic impact, 2900 Movie logo intro impact, 2609 Whoosh resonating metallic hit, 833 Metal hammer hit, plus a short synthesized sub kick | ≈ −14 LUFS |
 
-The **riser** (low drone that climbs and lands on C, the root of the menu / “chill” theme) is synthesized live in the Web Audio API at playback time so it can resolve into the main song. It is not a third-party recording.
+License: [Mixkit License](https://mixkit.co/license/#sfxFree) (free to use in this app).
 
-Each encoded one-shot is well under 60 KB. Playback goes through the app's mixer (master + a sensible bus) and stays silent if Sound is muted or the AudioContext is not running.
+The optional **riser** in `preview-intro.html` (not the live launch trailer) is still synthesized in the Web Audio API. It is not used on the shipped intro.
 
-Research notes (not used): CC0 candidates on Freesound included “Basic Fire whoosh” (LookIMadeAThing, 260554), “Flamethrower” (SamsterBirdies, 490166), and “Metal Impact” (RyanKingArt, 620077, explicitly Creative Commons 0). Pages were reviewed; the files themselves could not be downloaded.
+# Music beds and stings (v44 loudness pass)
 
+Menu / quiz / arcade / study / sim / exam loops were two-pass `loudnorm`’d to ≈ −16 LUFS (true peak under −1.5 dB) so the menu song stays clearly audible but sits under the intro and game SFX. `ending` and `fanfare-pass` stings were lifted from ≈ −19 LUFS to ≈ −16 LUFS. `ui-click` was left at its designed subtle level (true peak ≈ −16 dBFS).
 
 # UI click
 
