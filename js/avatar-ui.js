@@ -57,8 +57,8 @@
     };
     bindPanel();
     root.querySelectorAll("[data-avetab]").forEach(b => b.onclick = () => { A.aveTab = b.dataset.avetab; root.querySelectorAll("[data-avetab]").forEach(x => x.classList.toggle("sel", x === b)); $("#avePanel").innerHTML = panel(A.aveTab); bindPanel(); });
-    root.querySelectorAll("[data-preset]").forEach(b => b.onclick = () => { S.avatar = Object.assign({}, D.PRESETS.find(p => p.id === b.dataset.preset).cfg); Sound.sfx("hop"); refresh(true); });
-    $("#aveRnd").onclick = () => { S.avatar = randomAvatar(); Sound.sfx("hop"); refresh(true); };
+    root.querySelectorAll("[data-preset]").forEach(b => b.onclick = () => { S.avatar = Object.assign({}, D.PRESETS.find(p => p.id === b.dataset.preset).cfg); Sound.sfx("click"); refresh(true); });
+    $("#aveRnd").onclick = () => { S.avatar = randomAvatar(); Sound.sfx("click"); refresh(true); };
   };
   window.V = window.V || {};
   A.views.avatar = () => `<main class="page">${A.head(L("Your character", "Tu personaje"), "#/settings")}${A.avatarEditor()}<a class="btn primary big full mt" href="#/settings">${L("Done", "Listo")}</a></main>`;

@@ -321,7 +321,7 @@
   }
   function clickSfx(kind) {
     const U = SFX_PARAMS.ui, t = ctx.currentTime + 0.002;
-    if (kind === "click" || kind === "btn" || kind === "tap") { playUiClick(kind === "click" ? 0.55 : 0.42); return; }
+    if (kind === "click" || kind === "btn" || kind === "tap" || kind === "toggle") { playUiClick(kind === "click" ? 0.55 : 0.42); return; }
     if (kind === "toggle") { const G = U.toggle; G.f.forEach((r, i) => { tone(rnd(...r), t + i * G.gap, G.dur, "triangle", G.gain); noise(t + i * G.gap, 0.004, G.gain * 0.4, ["highpass", 4000]); }); }
     if (kind === "page") { const P = U.page, d = rnd(...P.dur), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), v = ctx.createGain(), fl = ctx.createOscillator(), fg = ctx.createGain();
       s.buffer = noiseBuf; f.type = "bandpass"; f.Q.value = P.q; f.frequency.setValueAtTime(rnd(...P.bp[0]), t); f.frequency.exponentialRampToValueAtTime(rnd(...P.bp[1]), t + d * 0.8);

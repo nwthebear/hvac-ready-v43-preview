@@ -2,13 +2,13 @@
 
 The HVAC Ready trailer one-shots in this folder are mixes of **Mixkit** recordings (free Mixkit License, same family as the UI click). They were trimmed, layered, lightly equalized, peak-limited, and loudnormed for a trailer-style mix, then encoded as stereo mp3 + m4a. The in-app intro video stays muted; these files play on cue via `Sound.playSplash` after the iOS “Tap to start” unlock.
 
-Cue times (v44, 8.80 s trailer):
+Cue times (v45, 8.80 s trailer; tighter mix, no overlap):
 
 | File | Cue | Role | Mix sources (Mixkit) | Target |
 |---|---|---|---|---|
-| `splash-whoosh.mp3` / `.m4a` | 0.85 s | Torch ignite / fire whoosh | 1345 Short fire whoosh, 1342 Ignition metal fire, 1328 Fire swoosh burning, 1492 Cinematic whoosh fast transition | ≈ −14 LUFS, TP ≈ −1.6 dB |
-| `splash-rattle.mp3` / `.m4a` | 1.25 s | Welding sparks / crackle | 824 Welding and sparks, with a light 833 Metal hammer tick | ≈ −16 LUFS, TP ≈ −1.8 dB |
-| `splash-impact.mp3` / `.m4a` | 2.20 s | Stamp slam, low-end thump, metallic ring tail | 2980 Factory metal hard hit, 2908 Movie trailer epic impact, 2900 Movie logo intro impact, 2609 Whoosh resonating metallic hit, 833 Metal hammer hit, plus a short synthesized sub kick | ≈ −14 LUFS |
+| `splash-whoosh.mp3` / `.m4a` | 1.00 s (0.24 s clip, ends before 1.25) | Tight torch whoosh on the flare | 1345 Short fire whoosh, 1342 Ignition metal fire, 1492 Cinematic whoosh fast transition (high-passed, no long burning tail) | peak ≈ −2.2 dBTP |
+| `splash-rattle.mp3` / `.m4a` | 1.25 s (0.82 s clip, faded out by ≈ 2.07) | Welding sparks / crackle locked to the spark burst | 824 Welding and sparks, with a light 833 Metal hammer tick (high-passed so it does not muddy the slam) | peak ≈ −2.7 dBTP |
+| `splash-impact.mp3` / `.m4a` | 2.20 s (attack at 0.06 s in the clip; 1.85 s polished ring tail) | Stamp slam on the impact frame, richer sub, clean trailer tail | 2980 Factory metal hard hit, 2908 Movie trailer epic impact (leaner mid), 2900 Movie logo intro impact, 2609 Whoosh resonating metallic hit, 833 Metal hammer hit, plus a deeper 34–68 Hz kick | peak −1.1 dBTP |
 
 License: [Mixkit License](https://mixkit.co/license/#sfxFree) (free to use in this app).
 

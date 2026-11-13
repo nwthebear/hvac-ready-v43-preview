@@ -47,7 +47,11 @@ window.MATCH_QUESTIONS = [
     { value: "osha_30_construction", icon: "⛑️", label: T("OSHA 30", "OSHA 30") },
     { value: "first_aid_cpr", icon: "⛑", label: T("First aid / CPR", "Primeros auxilios / RCP") },
     { value: "nate_ready_to_work", icon: "🎓", label: T("NATE Ready-to-Work", "NATE Ready-to-Work") },
-    { value: "nate_support_technician", icon: "📜", label: T("NATE Support Tech", "NATE Support Tech") },
+    { value: "nate_support_technician", icon: "📜", label: T("NATE HVAC Support Technician", "NATE Técnico de Apoyo en HVAC") },
+    { value: "nate_chp5", icon: "5️⃣", label: T("NATE CHP-5 (Certified HVAC Professional)", "NATE CHP-5 (Profesional HVAC Certificado)") },
+    { value: "nate_core_installation", icon: "🛠️", label: T("NATE Core + Installation specialty", "NATE Core + especialidad de Instalación") },
+    { value: "nate_core_service", icon: "🔧", label: T("NATE Core + Service specialty", "NATE Core + especialidad de Servicio") },
+    { value: "nate_senior", icon: "🏅", label: T("NATE Senior Level / HVAC Efficiency Analyst", "NATE Nivel Senior / Analista de Eficiencia HVAC") },
     { value: "none", icon: "➖", exclusive: true, label: T("None yet", "Ninguna todavía") } ] },
   { key: "equipment", q: T("What equipment have you actually seen, helped on, or run — not just walked past?", "¿En qué equipos has estado de verdad, ayudado o operado, no solo visto de pasada?"), hint: T("Pick all that apply", "Elige todas las que apliquen"), type: "multi", options: [
     { value: "gas_furnace", icon: "🔥", label: T("Gas furnace", "Calefactor de gas") },

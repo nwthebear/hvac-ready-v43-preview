@@ -4,6 +4,62 @@
    with a smooth fade-in to SOFT. No tagline. */
 (function () {
   const SRC = "video/intro.mp4", POSTER = "video/intro-poster.jpg", SOFT = 0.65;
+
+  function markStandalone() {
+    try {
+      const st = window.navigator.standalone === true ||
+        window.matchMedia("(display-mode: standalone)").matches;
+      if (st) document.documentElement.classList.add("is-standalone");
+    } catch (e) {}
+  }
+  markStandalone();
+
+  function cssPx(name) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    const n = parseFloat(v);
+    return isFinite(n) ? n : 0;
+  }
+  function applyVisibleFrame(el) {
+    if (!el) return;
+    const vv = window.visualViewport;
+    const sat = cssPx("--sat"), sab = cssPx("--sab"), sal = cssPx("--sal"), sar = cssPx("--sar");
+    const top = (vv ? vv.offsetTop : 0) + sat;
+    const left = (vv ? vv.offsetLeft : 0) + sal;
+    const w = (vv ? vv.width : window.innerWidth) - sal - sar;
+    const h = (vv ? vv.height : window.innerHeight) - sat - sab;
+    el.style.position = "fixed";
+    el.style.top = top + "px";
+    el.style.left = left + "px";
+    el.style.width = Math.max(0, w) + "px";
+    el.style.height = Math.max(0, h) + "px";
+    el.style.right = "auto";
+    el.style.bottom = "auto";
+    el.style.margin = "0";
+    el.style.boxSizing = "border-box";
+  }
+  function frameIntro() {
+    applyVisibleFrame(document.getElementById("intro-ov"));
+    applyVisibleFrame(document.getElementById("splash"));
+  }
+  function hookFrame() {
+    frameIntro();
+    const vv = window.visualViewport;
+    if (hookFrame.on) return; hookFrame.on = true;
+    window.addEventListener("resize", frameIntro);
+    if (vv) {
+      vv.addEventListener("resize", frameIntro);
+      vv.addEventListener("scroll", frameIntro);
+    }
+  }
+  function unhookFrame() {
+    window.removeEventListener("resize", frameIntro);
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.removeEventListener("resize", frameIntro);
+      vv.removeEventListener("scroll", frameIntro);
+    }
+  }
+
   try { if (window.Sound && Sound.deferMusic) Sound.deferMusic(true); } catch (e) {}
 
   const es = () => { try { return JSON.parse(localStorage.getItem("hvac.state.v1") || "{}").lang === "es"; } catch (e) { return false; } };
@@ -12,9 +68,18 @@
     if (finish.done) return; finish.done = true;
     const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid");
     try { if (vid) { vid.pause(); vid.removeAttribute("src"); vid.load(); } } catch (e) {}
-    if (ov) { ov.classList.add("out"); setTimeout(() => ov.remove(), 420); }
+    if (ov) {
+      ov.classList.add("out");
+      ov.style.pointerEvents = "none";
+      ov.setAttribute("aria-hidden", "true");
+      setTimeout(() => { try { ov.style.display = "none"; ov.remove(); } catch (e) {} unhookFrame(); }, 420);
+    }
     const sp = document.getElementById("splash");
-    if (sp) { sp.classList.add("out"); setTimeout(() => { try { sp.remove(); } catch (e) {} }, 200); }
+    if (sp) {
+      sp.classList.add("out");
+      sp.style.pointerEvents = "none";
+      setTimeout(() => { try { sp.style.display = "none"; sp.remove(); } catch (e) {} }, 200);
+    }
     try {
       Sound.unlock && Sound.unlock();
       Sound.setMusicScale && Sound.setMusicScale(SOFT);
@@ -30,7 +95,7 @@
   }
 
   function cueIntroSfx(vid) {
-    const cues = [[0.85, "splash-whoosh", 0.8], [1.25, "splash-rattle", 0.85], [2.20, "splash-impact", 0.95]];
+    const cues = [[1.00, "splash-whoosh", 0.82], [1.25, "splash-rattle", 0.88], [2.20, "splash-impact", 1.0]];
     const fired = new Set();
     const tick = () => {
       if (finish.done || !vid) return;
@@ -85,6 +150,7 @@
     document.body.appendChild(ov);
     const splash = document.getElementById("splash");
     if (splash) splash.style.visibility = "hidden";
+    hookFrame();
 
     const vid = ov.querySelector("#intro-vid");
     if (vid) vid.muted = true;

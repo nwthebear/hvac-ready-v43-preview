@@ -115,6 +115,8 @@
     end_of_matching_module: { en: "After the matching module", es: "Al terminar el módulo correspondiente" },
     about_1_year_per_faq_or_2_years_per_handbook: { en: "About 1–2 years of experience", es: "Aprox. 1–2 años de experiencia" },
     about_2_years: { en: "About 2 years of experience", es: "Aprox. 2 años de experiencia" },
+    after_fundamentals_and_field_time_alternate_to_traditional_core_plus_specialty: { en: "After fundamentals and field time (alternate official path to Core + specialty)", es: "Después de fundamentos y tiempo de campo (vía oficial alterna a Core + especialidad)" },
+    about_5_years: { en: "About 5 years of experience", es: "Aprox. 5 años de experiencia" },
     months_3_12_for_installers_and_useful_for_service_verification: { en: "Months 3–12", es: "Meses 3–12" },
     after_consistent_maintenance_or_service_call_typically_months_3_12: { en: "After you run consistent calls (months 3–12)", es: "Cuando hagas llamadas consistentes (meses 3–12)" },
     follow_jurisdiction: { en: "Per your state/local rules", es: "Según tus reglas estatales/locales" }
@@ -133,9 +135,33 @@
         case "epa_608_universal": show = !pathId.startsWith("residential") || p.goal === "unsure" || f.eq.size >= 5 || f.uni; if (f.uni) status = "have"; break;
         case "nate_ready_to_work": if (f.certs.has("nate_ready_to_work")) status = "have"; break;
         case "nate_support_technician": if (f.certs.has("nate_support_technician")) status = "have"; break;
-        case "nate_core_installation": show = inst; break;
-        case "nate_core_service": show = svc; break;
-        case "nate_senior": case "app_internal_certificates": show = false; break;
+        case "nate_chp5": {
+          const natePro = hasAny(f.certs, ["nate_chp5", "nate_core_installation", "nate_core_service", "nate_senior"]);
+          if (f.certs.has("nate_chp5") || (natePro && !f.certs.has("nate_chp5") && hasAny(f.certs, ["nate_core_installation", "nate_core_service", "nate_senior"]))) {
+            status = f.certs.has("nate_chp5") ? "have" : "have";
+            if (!f.certs.has("nate_chp5")) { status = "have"; note = { en: "Already NATE certified on the traditional Core + specialty path — CHP-5 is the other official route.", es: "Ya estás certificado NATE por la ruta tradicional Core + especialidad. CHP-5 es la otra vía oficial." }; }
+          }
+          break;
+        }
+        case "nate_core_installation":
+          show = inst || f.certs.has("nate_core_installation") || f.certs.has("nate_chp5");
+          if (f.certs.has("nate_core_installation") || f.certs.has("nate_chp5")) {
+            status = "have";
+            if (!f.certs.has("nate_core_installation") && f.certs.has("nate_chp5")) note = { en: "CHP-5 already makes you NATE certified (equivalent professional credential).", es: "Con CHP-5 ya eres NATE certificado (credencial profesional equivalente)." };
+          }
+          break;
+        case "nate_core_service":
+          show = svc || f.certs.has("nate_core_service") || f.certs.has("nate_chp5");
+          if (f.certs.has("nate_core_service") || f.certs.has("nate_chp5")) {
+            status = "have";
+            if (!f.certs.has("nate_core_service") && f.certs.has("nate_chp5")) note = { en: "CHP-5 already makes you NATE certified (equivalent professional credential).", es: "Con CHP-5 ya eres NATE certificado (credencial profesional equivalente)." };
+          }
+          break;
+        case "nate_senior":
+          show = f.certs.has("nate_senior") || f.certs.has("nate_chp5") || f.certs.has("nate_core_installation") || f.certs.has("nate_core_service") || p.experience === "journey_2plus";
+          if (f.certs.has("nate_senior")) status = "have";
+          break;
+        case "app_internal_certificates": show = false; break;
         case "acca_qi": show = inst; break;
         case "acca_tacct": show = p.sales === "yes"; break;
       }

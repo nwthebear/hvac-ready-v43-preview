@@ -51,6 +51,10 @@
         "first_aid_cpr",
         "nate_ready_to_work",
         "nate_support_technician",
+        "nate_chp5",
+        "nate_core_installation",
+        "nate_core_service",
+        "nate_senior",
         "nate_core_specialty",
         "hvac_excellence_employment_ready",
         "state_license"
@@ -416,6 +420,18 @@
       "sources": [
         "https://natex.org/technician/take-an-exam/nate-certificates-and-certification-exams",
         "https://natex.org/wp-content/uploads/2022/05/RE-DESIGNED_Technician-Handbook.pdf"
+      ]
+    },
+    {
+      "id": "nate_chp5",
+      "title": "NATE CHP-5 (Certified HVAC Professional)",
+      "when": "after_fundamentals_and_field_time_alternate_to_traditional_core_plus_specialty",
+      "required_or_recommended": "recommended_professional_path",
+      "notes": "CHP-5 is NATE's Certified HVAC Professional pathway: five exams (HVAC Fundamentals, Electrical and Controls, Comfort and Airflow, Installation, and Service). It is a complete official route to professional NATE certification, alongside the traditional Core + specialty Installation/Service path. In this app, the user's 'Chp-5' / 'Chapter 5' maps to CHP-5 — not a textbook chapter. The existing Chapter 5 / CHP-5 study guide (guide id ch5, js/chp5-view.js) is the in-app fundamentals prep for this ladder. Passing all five CHP-5 exams makes the technician NATE certified (equivalent standing to Core + a specialty).",
+      "sources": [
+        "https://natex.org/technician/take-an-exam/nate-certificates-and-certification-exams",
+        "https://natex.org/technician/take-an-exam/traditional-pathway",
+        "https://natex.org/about-us/frequently-asked-questions"
       ]
     },
     {

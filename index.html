@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="games.css">
 </head>
 <body><div id="splash" role="status" aria-label="HVAC Ready"><b>HVAC Ready</b></div>
-<script>(function(){try{var st=JSON.parse(localStorage.getItem("hvac.state.v1")||"{}"),ap=(st.settings||{}).appearance,lt=ap==="light"||(ap==="auto"&&matchMedia("(prefers-color-scheme: light)").matches);if(lt)document.documentElement.dataset.theme="light";}catch(e){}})();</script><div id="scene" aria-hidden="true"></div>
+<script>(function(){try{var st=JSON.parse(localStorage.getItem("hvac.state.v1")||"{}"),ap=(st.settings||{}).appearance,lt=ap==="light"||(ap==="auto"&&matchMedia("(prefers-color-scheme: light)").matches);if(lt)document.documentElement.dataset.theme="light";if(navigator.standalone||matchMedia("(display-mode: standalone)").matches)document.documentElement.classList.add("is-standalone");}catch(e){}})();</script><div id="scene" aria-hidden="true"></div>
 <div id="app"><div id="view" aria-live="polite"></div></div>
 <button id="snd" class="iconbtn sound-fab" aria-label="Sound"></button>
 <nav id="nav" aria-label="Main"></nav>

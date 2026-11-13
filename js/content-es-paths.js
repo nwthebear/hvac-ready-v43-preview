@@ -87,6 +87,7 @@
     a2l_low_gwp_safety: "Capacitación de seguridad con refrigerantes A2L / de bajo GWP",
     nate_ready_to_work: "Certificado NATE Ready-to-Work (listo para trabajar)",
     nate_support_technician: "Certificado NATE de Técnico de Apoyo en HVAC",
+    nate_chp5: "NATE CHP-5 (Profesional HVAC Certificado, cinco exámenes)",
     hvac_excellence_employment_ready: "Exámenes Employment Ready de HVAC Excellence / ESCO",
     nate_core_installation: "NATE Core + especialidad de Instalación",
     nate_core_service: "NATE Core + especialidad de Servicio",
