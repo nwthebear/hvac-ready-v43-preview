@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1011">
+<meta name="robots" content="noindex">
+<title>HVAC Ready — Intro preview</title>
+<link rel="icon" href="img/icon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<style>
+  :root { --bg:#0f1011; --text:#ECE6DA; --text-2:#B9AE98; --orange:#FF7A1A; --surface:#1a1b1d; --line:#34322e; --mist:#26272a; --ok:#8DB255;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; background:#0f1011; color:var(--text); font-family:var(--font); -webkit-font-smoothing:antialiased; }
+  #gate[hidden], #intro[hidden] { display:none !important; }
+  #gate, #intro { position:fixed; inset:0; z-index:20; display:grid; place-content:center; justify-items:center; text-align:center; padding:24px;
+    background:radial-gradient(ellipse at 50% 40%, #24221e, #0f1011 70%); }
+  #gate { z-index:30; cursor:pointer; }
+  #gate img, #intro img { width:108px; height:108px; border-radius:26px; box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  #gate b, #intro b.brand { display:block; margin-top:14px; font-size:26px; letter-spacing:.04em; font-weight:800; }
+  #gate .hint { margin:18px 0 0; max-width:280px; font-size:15px; color:var(--text-2); line-height:1.4; }
+  #gate .tap { margin-top:22px; display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 22px;
+    border-radius:999px; background:var(--orange); color:#141210; font-weight:800; font-size:16px; }
+  #gate .sub { margin-top:10px; font-size:12px; color:var(--text-2); opacity:.85; }
+  #intro { overflow:hidden; }
+  #intro img, #intro b.brand { opacity:0; transform:scale(.86); }
+  #intro #tag { max-width:320px; margin:14px 0 0; font-weight:800; font-size:16px; letter-spacing:-.01em; line-height:1.25; opacity:0; }
+  #intro .si-fx { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; }
+  #intro.skip-motion img, #intro.skip-motion b.brand, #intro.skip-motion #tag { opacity:1; transform:none; }
+  #mock { display:none; min-height:100%; padding:max(12px, env(safe-area-inset-top)) 16px 32px; max-width:430px; margin:0 auto; }
+  #mock.show { display:block; }
+  .mock-top { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .mock-top h1 { flex:1; margin:0; font-size:17px; text-align:center; font-weight:800; }
+  .ghost { width:36px; height:36px; }
+  .prog { height:6px; background:var(--mist); border-radius:3px; overflow:hidden; margin-bottom:10px; }
+  .prog span { display:block; height:100%; width:12.5%; background:linear-gradient(90deg,#FF7A1A,#FF9442); border-radius:3px; }
+  .qmeta { text-align:center; font-size:13px; color:var(--text-2); margin:0 0 8px; }
+  .av { font-size:42px; text-align:center; margin:8px 0; }
+  .q { margin:0 0 16px; font-size:22px; line-height:1.25; text-align:center; font-weight:800; }
+  .choices { display:grid; gap:8px; margin:0 0 16px; }
+  .choice { display:flex; align-items:center; gap:10px; min-height:52px; padding:10px 14px; border:2px solid var(--line); border-radius:14px;
+    background:var(--surface); color:var(--text); font:700 15px var(--font); text-align:left; cursor:pointer; }
+  .choice.sel { border-color:var(--orange); background:color-mix(in srgb, var(--orange) 9%, var(--surface)); }
+  .next { width:100%; min-height:52px; border:0; border-radius:14px; background:var(--orange); color:#141210; font:800 16px var(--font); cursor:pointer; }
+  .next[disabled] { opacity:.45; }
+  .note { margin:20px 0 12px; padding:14px 16px; border-radius:14px; background:var(--surface); border:1px solid var(--line); font-size:13.5px; color:var(--text-2); line-height:1.45; }
+  .note b { color:var(--text); font-weight:800; }
+  .soft { margin:0 0 16px; font-size:12px; color:var(--text-2); text-align:center; }
+  #replay { width:100%; min-height:52px; border:2px solid var(--line); border-radius:14px; background:transparent; color:var(--text); font:800 16px var(--font); cursor:pointer; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+</style>
+</head>
+<body>
+  <div id="gate" role="button" tabindex="0" aria-label="Tap to start the intro preview">
+    <img src="img/logo.png" alt="">
+    <b>HVAC Ready</b>
+    <p class="hint">Intro preview. Sound starts after you tap — required on iPhone.</p>
+    <span class="tap">Tap to start</span>
+    <p class="sub">Toca para empezar</p>
+  </div>
+  <div id="intro" hidden>
+    <canvas class="si-fx" id="fx" aria-hidden="true"></canvas>
+    <img src="img/logo.png" alt="">
+    <b class="brand">HVAC Ready</b>
+    <p id="tag">Learn. Master your trade. Make more. Have fun doing it.</p>
+  </div>
+  <main id="mock" aria-live="polite">
+    <div class="mock-top"><span class="ghost"></span><h1>Match My Path</h1><span class="ghost"></span></div>
+    <div class="prog" aria-hidden="true"><span></span></div>
+    <p class="qmeta">Question 1 of 8 · Preview</p>
+    <div class="av" aria-hidden="true">👷</div>
+    <h2 class="q">How much field experience do you have?</h2>
+    <div class="choices" id="choices">
+      <button class="choice" type="button" data-v="none">🌱 None — brand new</button>
+      <button class="choice" type="button" data-v="helper">🧰 Helper, 0–6 months</button>
+      <button class="choice" type="button" data-v="6mo">🔧 6–12 months in the field</button>
+      <button class="choice" type="button" data-v="1yr">🛠️ 1–2 years</button>
+      <button class="choice" type="button" data-v="journey">🏅 2+ years / journey level</button>
+    </div>
+    <button class="next" id="next" type="button" disabled>Next</button>
+    <p class="note"><b>This is a preview.</b> In the real app, this intro would play every time you open it (cold launch), then hand off to onboarding or Match My Path for new users, or Home if you’re already set up. The soundtrack on this question screen stays at a locked soft level — there is no music slider here.</p>
+    <p class="soft">Soft soundtrack locked · no volume slider on this screen</p>
+    <button type="button" id="replay">Replay intro</button>
+  </main>
+  <script src="js/audio.js"></script>
+  <script src="js/preview-intro.js"></script>
+</body>
+</html>

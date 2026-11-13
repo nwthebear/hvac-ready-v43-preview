@@ -1,0 +1,101 @@
+{
+ "menu": {
+  "src": "user-suno.mp3",
+  "tempo": 148.0,
+  "bars": 32,
+  "srcStart": 48.213,
+  "srcEnd": 99.413,
+  "loopStart": 0.5,
+  "loopEnd": 51.7,
+  "length": 51.2,
+  "score": 1.198
+ },
+ "quiz": {
+  "src": "user-suno.mp3",
+  "tempo": 148.0,
+  "bars": 32,
+  "srcStart": 101.013,
+  "srcEnd": 152.213,
+  "loopStart": 0.5,
+  "loopEnd": 51.7,
+  "length": 51.2,
+  "score": 1.087
+ },
+ "arcade": {
+  "src": "user-suno-2.mp3",
+  "tempo": 106.1,
+  "bars": 32,
+  "srcStart": 58.571,
+  "srcEnd": 130.976,
+  "loopStart": 0.5,
+  "loopEnd": 72.905333,
+  "length": 72.405,
+  "score": 0.721
+ },
+ "study": {
+  "src": "user-suno-3.mp3",
+  "tempo": 144.2,
+  "bars": 32,
+  "srcStart": 79.328,
+  "srcEnd": 133.088,
+  "loopStart": 0.5,
+  "loopEnd": 54.26,
+  "length": 53.76,
+  "score": 1.78,
+  "rmsStd": 1.64,
+  "maxBarJump": 4.06,
+  "onsetRel": 1.04,
+  "trackRmsRange": [
+   -25.8,
+   -14.9
+  ]
+ },
+ "sim": {
+  "src": "user-suno-4.mp3",
+  "tempo": 144.2,
+  "bars": 32,
+  "srcStart": 23.467,
+  "srcEnd": 76.853,
+  "loopStart": 0.5,
+  "loopEnd": 53.886667,
+  "length": 53.387,
+  "score": 0.881,
+  "rmsStd": 1.0,
+  "maxBarJump": 2.91,
+  "onsetRel": 1.02,
+  "trackRmsRange": [
+   -23.2,
+   -15.6
+  ]
+ },
+ "exam": {
+  "src": "user-suno-5.mp3",
+  "tempo": 148.0,
+  "bars": 32,
+  "srcStart": 61.589,
+  "srcEnd": 112.843,
+  "loopStart": 0.5,
+  "loopEnd": 51.753333,
+  "length": 51.253,
+  "score": 1.119,
+  "rmsStd": 0.65,
+  "maxBarJump": 2.04,
+  "onsetRel": 0.97,
+  "trackRmsRange": [
+   -27.4,
+   -15.1
+  ]
+ },
+ "fanfare-pass": {
+  "src": "user-fanfare-src.mp3 (Triumph in Motion)",
+  "section": "14.91s to end",
+  "length": 7.92,
+  "oneShot": true
+ },
+ "ending": {
+  "src": "ending-6s.mp3 (user Suno track, built-in fade)",
+  "section": "whole file",
+  "length": 6.096,
+  "oneShot": true
+ }
+}
