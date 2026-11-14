@@ -41,7 +41,7 @@ p { margin: 0 0 var(--s3); } ul, ol { padding-left: 1.2em; margin: 0 0 var(--s3)
 html { scroll-padding-top: var(--topbar-h); }
 .page:not(:has(.topbar)):not(:has(.quiz-top)) { padding-top: calc(var(--s4) + var(--sat)); }
 .page { padding: var(--s4) var(--s4) calc(var(--nav-h) + var(--sab) + 40px); }
-#view.in > .page { animation: pageIn .35s var(--ease); } @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } }
+#view.in > .page { animation: pageIn .35s var(--ease); } @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .muted { color: var(--text-2); } .sm { font-size: var(--fs-sm); } .big { font-size: var(--fs-lg); } .center { text-align: center; } .right { text-align: right; } .block { display: block; } .grow { flex: 1; min-width: 0; } .mt { margin-top: var(--s4); } .pad-l { padding-left: var(--s3); }
 .ok { color: var(--ok); } .warn { color: var(--warn); } .row { display: flex; align-items: center; } .between { justify-content: space-between; } .gap { gap: var(--s3); } .stack { display: grid; gap: var(--s3); }
 .eyebrow { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--orange); }
@@ -1138,7 +1138,7 @@ a.card:active, .tile:active, .list-card:active, .kit-chip:active, .tool-card:act
 }
 
 #view.in > .page { animation: pageIn .42s var(--ease); }
-@keyframes pageIn { from { opacity: 0; transform: translateY(10px) scale(.992); } }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px) scale(.992); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   #view.in > .page, .tile-ico, .btn, .list-card, .card, .m-pic, .m-name, #nav a { animation: none !important; transition: none !important; }
@@ -1493,3 +1493,106 @@ a.greet-av:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px
 .m3d-tag { z-index: 3; font: 700 12px/1.2 var(--font); padding: 6px 10px; background: rgba(14,27,44,.9); border: 1px solid rgba(233,225,207,.45); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
 .m3d.labels-off .m3d-labels, .m3d.labels-off .m3d-leaders { display: none !important; }
 .m3d { background: radial-gradient(circle at 50% 28%, #2a4a6a, #12161c 72%); }
+
+/* ===== v47: reachable lesson starts, visible questions, contained avatars ===== */
+.topbar, .quiz-top { pointer-events: none; }
+.topbar > *, .quiz-top > * { pointer-events: auto; }
+.lesson-foot {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 760px;
+  bottom: 0;
+  z-index: 15;
+  box-sizing: border-box;
+  padding: 16px 16px calc(14px + var(--nav-h) + var(--sab));
+  background: linear-gradient(to bottom, transparent, var(--bg) 36%);
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+body.nonav .lesson-foot { padding-bottom: calc(16px + var(--sab)); }
+.lesson-foot > * { pointer-events: auto; width: 100%; min-height: 44px; margin-top: 0; }
+.lesson-foot .btn, .lesson-foot .video-cta, .lesson-foot .lesson-start {
+  min-height: 48px;
+  position: relative;
+  z-index: 2;
+}
+.lesson-foot .video-cta { margin-bottom: 0; }
+.page.has-lesson-foot { padding-bottom: calc(var(--nav-h) + var(--sab) + 148px); }
+body.nonav .page.has-lesson-foot { padding-bottom: calc(var(--sab) + 148px); }
+
+.quiz .quiz-hud, .quiz .qtext { position: relative; z-index: 1; }
+.quiz .qtext { margin-top: 10px; opacity: 1; }
+.page.video .slide h2, .page.video .slide p { opacity: 1; }
+
+/* Avatars: contain in the frame with headroom, never clip the head */
+.greet-av {
+  flex: none;
+  width: 72px;
+  height: 104px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  box-sizing: content-box;
+  padding-top: 6px;
+}
+.greet-av .avatar-svg {
+  margin-top: 0 !important;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  overflow: visible;
+}
+.avatar-svg { overflow: visible; }
+.avatar-svg.av-bust { overflow: visible; }
+.ave-stage { overflow: visible; padding-top: 18px; }
+.ave-prev {
+  width: 100%;
+  height: min(230px, 34vh);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+.ave-prev .avatar-svg {
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+.hc-av {
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.hc-av svg, .hc-av .avatar-svg {
+  width: 78% !important;
+  height: auto !important;
+  max-height: 86%;
+  transform: none !important;
+  overflow: visible;
+}
+.set-av {
+  width: 64px;
+  height: 96px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+.set-av .avatar-svg { max-width: 100%; max-height: 100%; height: auto; overflow: visible; }
+.cert-av {
+  width: 120px;
+  height: 168px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  margin: var(--s3) auto;
+}
+.cert-av .avatar-svg { max-width: 100%; max-height: 100%; width: auto; height: auto; overflow: visible; margin: 0 auto; }
+.match-av { display: flex; justify-content: center; overflow: visible; padding-top: 8px; }
+.match-av .avatar-svg { overflow: visible; }

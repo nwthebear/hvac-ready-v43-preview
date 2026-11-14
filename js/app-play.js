@@ -215,7 +215,9 @@
     if (A.bind[name]) A.bind[name](params, qs);
     A.placeSoundBtn();
     if (["guide", "skill", "module", "epa", "tool"].includes(name) && params[0]) { const title = TITLES[name](params); if (title) { S.last = { route: h, title }; A.save(); } }
-    if (!["quiz"].includes(name)) window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     document.documentElement.lang = S.lang || "en";
   };
   /* Answer feedback: check-mark slam / X shake near the tapped answer + haptics. Sound comes from Sound.sfx. */

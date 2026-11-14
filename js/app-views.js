@@ -52,7 +52,7 @@
       cont = `<section class="card hero-card illustrated">
         <div class="row between gap"><div class="grow"><div class="eyebrow">${nm ? (es ? "Sigue en tu ruta" : "Up next on your path") : t("completed")}</div>
         <h2>${esc(nm ? tx(nm.title) : tx(PATH_LABELS[plan.pathId]))}</h2>
-        <div class="muted sm">${esc(tx(PATH_LABELS[plan.pathId]))}${nm ? " · " + esc(tx(STAGE_LABELS[nm.stage] || "")) : ""}</div></div><div class="hc-ring">${ringSVG(pr.pct, 84)}<span class="hc-av">${avatarSVG(S.avatar, 46)}</span><b class="hc-pct">${pr.pct}%</b></div></div>
+        <div class="muted sm">${esc(tx(PATH_LABELS[plan.pathId]))}${nm ? " · " + esc(tx(STAGE_LABELS[nm.stage] || "")) : ""}</div></div><div class="hc-ring">${ringSVG(pr.pct, 84)}<span class="hc-av">${avatarSVG(S.avatar, 46, { mode: "bust" })}</span><b class="hc-pct">${pr.pct}%</b></div></div>
         <a class="btn primary big full" href="${nm ? A.moduleRoute(nm) : "#/board"}">${ico("play", 18)} ${nm ? (pr.done ? t("continue") : (es ? "Empezar" : "Start")) : (es ? "Ver tablero" : "See board")}</a>
         ${heroBench(["thermostat","gauge-analog","hoses"])}
         ${lastOther ? `<a class="link-row" href="${lastOther.route}">${ico("history", 18)}<span class="grow">${es ? "Retomar" : "Pick up where you left off"}: <b>${esc(lastOther.title)}</b></span></a>` : ""}
@@ -158,8 +158,8 @@
       const ok = A.linkDone([type, lid]);
       return `<a class="list-card ${ok ? "done" : ""}" href="${href}"><span class="lc-ico">${icon}</span><span class="grow">${esc(title)}</span>${ok ? ico("check", 18, "ok") : ico("arrow", 18)}</a>`;
     };
-    return `<main class="page">${head(tx(m.title), "#/path")}
-      ${(() => { const nx = m.links.find(l => !A.linkDone(l)); if (!nx || !open || done) return ""; if (m.status === "review") return `<button class="btn primary big full" id="testoutTop">${ico("target", 18)} ${es ? "Ya lo sabes? Prueba rápida para saltarlo" : "Already know this? Quick check to skip it"}</button><p class="sm muted center">${es ? "O repásalo abajo." : "Or review it below."}</p>`; const tmp = document.createElement("div"); tmp.innerHTML = linkCard(nx); const a = tmp.firstElementChild; return `<a class="btn primary big full" href="${a.getAttribute("href")}">${ico("play", 18)} ${es ? "Empezar" : "Start"}: ${esc(a.textContent.trim())}</a>`; })()}
+    const startCta = (() => { const nx = m.links.find(l => !A.linkDone(l)); if (!nx || !open || done) return ""; if (m.status === "review") return `<button class="btn primary big full lesson-start" id="testoutTop">${ico("target", 18)} ${es ? "Ya lo sabes? Prueba rápida para saltarlo" : "Already know this? Quick check to skip it"}</button>`; const tmp = document.createElement("div"); tmp.innerHTML = linkCard(nx); const a = tmp.firstElementChild; return `<a class="btn primary big full lesson-start" href="${a.getAttribute("href")}">${ico("play", 18)} ${es ? "Empezar" : "Start"}: ${esc(a.textContent.trim())}</a>`; })();
+    return `<main class="page has-lesson-foot">${head(tx(m.title), "#/path")}
       ${!open ? `<div class="note warn">${ico("lock", 18)} ${{ walkthrough: es ? "Se desbloquea cuando completes una llamada/instalación completa supervisada." : "Unlocks after you complete a consistent maintenance or install walkthrough.", options: es ? "Se desbloquea después de 'Presentar opciones'." : "Unlocks after 'Presenting options'.", foundation: es ? "Se desbloquea al terminar los fundamentos." : "Unlocks after the foundation modules." }[m.gate]}</div>` : ""}
       ${m.gate === "epa" ? `<div class="note warn">${ico("shield", 18)} ${es ? "Requiere EPA 608 o supervisión cercana y continua (40 CFR 82.161). Estudia libremente; practica en equipos solo con supervisión." : "Requires EPA 608 or close, continual supervision (40 CFR 82.161). Study freely; do the hands-on part only with supervision."}</div>` : ""}
       <div class="card"><div class="row between"><span class="chip">${esc(tx(STAGE_LABELS[m.stage]))}</span>${done ? `<span class="chip ok">${ico("check", 14)} ${t("completed")}</span>` : ""}</div>
@@ -171,6 +171,7 @@
         ${!done && open ? `<button class="btn full mt" id="testout">${ico("target", 18)} ${es ? "Probar conocimiento (saltar si apruebas)" : "Test out (skip if you pass)"}</button>` : ""}` : ""}
       ${!done && open && !m.links.length ? `<button class="btn primary full mt" id="markdone">${ico("check", 18)} ${es ? "Marcar como listo" : "Mark complete"}</button>` : ""}
       ${m.m.sources && m.m.sources.length ? A.refsBlock(m.m.sources.map(u => ({ url: u, title: u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "").slice(0, 60) })), es ? "Fuentes del plan" : "Where this module comes from") : ""}
+      ${startCta ? `<div class="lesson-foot">${startCta}</div>` : ""}
     </main>`;
   };
   A.bind.module = ([id]) => {
@@ -197,13 +198,10 @@
     const quizSec = g.quizLink;
     const BANNER = { safety: ["co-detector","combustion","multimeter"], cycle: ["compressor","condenser","evaporator"], components: ["thermostat","capacitor","contactor"], tools: ["gauge-analog","hoses","vacuum-pump"], ch5: ["capacitor","txv","thermostat"] };
     const ban = BANNER[id] || ["thermostat","gauge-analog","hoses"];
-    return `<main class="page guide">${head(tx(g.title), "#/library")}
+    return `<main class="page guide has-lesson-foot">${head(tx(g.title), "#/library")}
       <div class="guide-banner" aria-hidden="true">${ban.map(pid => `<img src="img/illust/${pid}.webp" alt="">`).join("")}</div>
       ${g.imageSlot ? `<div class="hero-img">${slotImg(g.imageSlot.replace("img/", "").replace(".jpg", ""))}</div>` : ""}
       ${A.esNote(g.intro)}${g.placeholder ? `<div class="note warn">${ico("info", 18)} ${esc(tx(g.placeholder))}</div>` : ""}${g.note ? `<div class="note">${ico("shield", 18)} ${esc(tx(g.note))}</div>` : ""}
-      <a class="video-cta" href="#/video/guide/${id}"><span class="play-ico">${ico("play", 26)}</span><span><b>${t("watchLesson")}</b><span class="sm block">${(g.sections || []).length + 3} ${es ? "diapositivas" : "slides"} · ${es ? "narración opcional" : "optional narration"}</span></span>${A.isDone("video:guide:" + id) ? ico("check", 20, "ok") : ""}</a>
-      ${g.check && g.check.length ? `<button type="button" class="btn primary big full js-start-check" id="chk">${ico("target", 18)} ${t("startCheck")} (${g.check.length})</button>` : ""}
-      ${quizSec ? `<a class="btn primary big full" href="#/epa/${quizSec}">${ico("target", 18)} ${t("practiceQuiz")}</a>` : ""}
       <section class="card"><h3>${t("summary")}</h3><p>${esc(tx(g.intro))}</p>${g.terms ? `<h4>${t("keyTerms")}</h4><div class="chips">${g.terms.map(x => `<span class="chip">${esc(tx(x))}</span>`).join("")}</div>` : ""}</section>
       ${g.diagram === "cycle" ? `<section class="card"><h3>${es ? "Ciclo animado" : "Animated cycle"}</h3><p class="sm muted">${t("tapPart")}</p><div id="cyc">${cycleSVG(labels, { animate: !A.reduced() })}</div><div id="partInfo" class="part-info"></div><a class="btn ghost full" href="#/models">${ico("box", 18)} ${es ? "Ver modelo 3D" : "View 3D model"}</a></section>` : ""}
       ${g.diagram === "pt" || id === "ch5" ? `<section class="card"><h3>${es ? "Explorador P/T y SH/SC" : "P/T and SH/SC explorer"}</h3>${A.shscWidget()}</section>` : ""}
@@ -214,9 +212,12 @@
       ${g.cards ? cardsBlock(g.cards) : ""}
       ${A.saying("tip")}
       ${g.refs ? A.refsBlock(g.refs, es ? "Fuentes verificadas" : "Checked against") : ""}
-      ${g.check && g.check.length ? `<button type="button" class="btn primary big full js-start-check" id="chkFoot">${ico("target", 18)} ${t("startCheck")} (${g.check.length})</button>` : ""}
-      ${quizSec ? `<a class="btn primary big full" href="#/epa/${quizSec}">${ico("target", 18)} ${t("practiceQuiz")}</a><button class="btn full mt" id="mkdone">${ico("check", 18)} ${t("markDone")}</button>` : ""}
       ${A.isDone("guide:" + id) ? `<div class="center ok mt">${ico("check", 18)} ${t("completed")}</div>` : ""}
+      <div class="lesson-foot">
+        <a class="video-cta lesson-start" href="#/video/guide/${id}"><span class="play-ico">${ico("play", 26)}</span><span><b>${t("watchLesson")}</b><span class="sm block">${(g.sections || []).length + 3} ${es ? "diapositivas" : "slides"} · ${es ? "narración opcional" : "optional narration"}</span></span>${A.isDone("video:guide:" + id) ? ico("check", 20, "ok") : ""}</a>
+        ${g.check && g.check.length ? `<button type="button" class="btn primary big full js-start-check lesson-start" id="chk">${ico("target", 18)} ${t("startCheck")} (${g.check.length})</button>` : ""}
+        ${quizSec ? `<a class="btn primary big full lesson-start" href="#/epa/${quizSec}">${ico("target", 18)} ${t("practiceQuiz")}</a><button class="btn full" id="mkdone">${ico("check", 18)} ${t("markDone")}</button>` : ""}
+      </div>
     </main>`;
   };
   A.bind.guide = ([id]) => {
@@ -260,15 +261,13 @@
   V.skills = () => { const plan = A.plan(); const tag = plan ? (plan.pathId.startsWith("res") ? "residential" : "commercial") : null;
     return `<main class="page">${head(t("handsOn"))}<div class="card-list">${SKILLS.map(s => { const d = A.isDone("skill:" + s.id); const mine = tag && s.tags.includes(tag); return `<a class="list-card ${d ? "done" : ""}" href="#/skill/${s.id}"><span class="lc-ico">${ico("hand")}</span><span class="grow"><b>${esc(tx(s.title))}</b>${mine ? `<span class="chip sm">${t("myPath")}</span>` : ""}</span>${d ? ico("check", 18, "ok") : ico("arrow", 18)}</a>`; }).join("")}</div></main>`; };
   V.skill = ([id]) => { const s = SKILLS.find(x => x.id === id); if (!s) return V.notfound(); const es = S.lang === "es";
-    return `<main class="page">${head(tx(s.title), "#/skills")}${A.esNote(s.title)}
-      <a class="video-cta" href="#/video/skill/${id}"><span class="play-ico">${ico("play", 26)}</span><span><b>${t("watchLesson")}</b><span class="sm block">${s.steps.length + 3} ${es ? "diapositivas" : "slides"}</span></span>${A.isDone("video:skill:" + id) ? ico("check", 20, "ok") : ""}</a>
-      <button type="button" class="btn primary big full js-start-check" id="chk">${ico("target", 18)} ${t("startCheck")} (${s.check.length})</button>
+    return `<main class="page has-lesson-foot">${head(tx(s.title), "#/skills")}${A.esNote(s.title)}
       <section class="card"><p>${esc(tx(s.intro))}</p></section>
       <section class="card warn-card"><h3>${ico("shield", 20)} ${t("safetyNotes")}</h3><ul>${s.safety.map(x => `<li>${esc(esTopic(x))}</li>`).join("")}</ul></section>
       <h3 class="sec-h">${t("stepByStep")}</h3><ol class="step-list num">${s.steps.map(x => `<li class="card tight">${esc(esTopic(x))}</li>`).join("")}</ol>
       <section class="card"><h3>${ico("close", 20)} ${t("mistakes")}</h3><ul>${s.mistakes.map(x => `<li>${esc(esTopic(x))}</li>`).join("")}</ul></section>
       ${cardsBlock(s.cards)}
-      <button type="button" class="btn primary big full js-start-check" id="chkFoot">${ico("target", 18)} ${t("startCheck")} (${s.check.length})</button>${A.isDone("skill:" + id) ? `<div class="center ok mt">${ico("check", 18)} ${t("completed")}</div>` : ""}</main>`; };
+      <div class="lesson-foot"><a class="btn primary big full lesson-start" href="#/video/skill/${id}">${ico("play", 18)} ${t("watchLesson")}</a><button type="button" class="btn primary big full js-start-check lesson-start" id="chkFoot">${ico("target", 18)} ${t("startCheck")} (${s.check.length})</button></div>${A.isDone("skill:" + id) ? `<div class="center ok mt">${ico("check", 18)} ${t("completed")}</div>` : ""}</main>`; };
   A.bind.skill = ([id]) => { const s = SKILLS.find(x => x.id === id); document.querySelectorAll(".js-start-check").forEach(b => { b.onclick = () => A.startQuiz({ key: "check:skill:" + id, title: tx(s.title), questions: s.check, timer: false, onPass: () => A.markDone("skill:" + id, XP_RULES.skill) }); }); };
 
   /* ---------- Day One ---------- */
@@ -309,12 +308,13 @@
       ${window.REG_NOTES ? `<details class="card tight"><summary><b>${ico("info", 16)} ${es ? "R-410A y la Ley AIM: qué está vigente" : "R-410A and the AIM Act: what's current"}</b></summary><p class="sm">${esc(tx(REG_NOTES.r410a.long))}</p>${A.refsBlock(REG_NOTES.r410a.refs)}</details>` : ""}</main>`;
     const s = EPA_SECTIONS.find(x => x.id === sec); if (!s) return V.notfound(); const qs = EPA_QUESTIONS[sec]; const b = A.quizBest("epa:" + sec);
     const gid = { core: "epa-core-guide", type1: "epa-t1-guide", type2: "epa-t2-guide", type3: "epa-t3-guide" }[sec];
-    return `<main class="page">${head("EPA 608 " + tx(s.title), "#/epa")}
+    return `<main class="page has-lesson-foot">${head("EPA 608 " + tx(s.title), "#/epa")}
       <section class="card center">${b != null ? ringSVG(b, 96) : `<div class="lc-ico huge">${ico({ core: "shield", type1: "box", type2: "snow", type3: "cycle" }[sec] || "shield", 38)}</div>`}<h2>${esc(tx(s.title))}</h2><p class="muted">${esc(tx(s.sub))}</p><p class="sm">${Math.min(25, qs.length)} ${es ? "preguntas por intento, de un banco de" : "questions per attempt, from a bank of"} ${qs.length} · ${t("passNote")}</p>
       ${(S.quiz["epa:" + sec] || {}).attempts ? `<p class="sm muted">${es ? "Intentos" : "Attempts"}: ${S.quiz["epa:" + sec].attempts}</p>` : ""}</section>
       <a class="list-card" href="#/guide/${gid}"><span class="lc-ico">${ico("book")}</span><span class="grow">${t("studyFirst")}</span>${A.isDone("guide:" + gid) ? ico("check", 18, "ok") : ico("arrow", 18)}</a>
       <div class="seg"><button data-tm="1" class="${S.settings.timer ? "sel" : ""}">${ico("clock", 16)} ${t("timerMode")}</button><button data-tm="0" class="${S.settings.timer ? "" : "sel"}">${t("relaxed")}</button></div>
-      <button class="btn primary big full" id="sq">${ico("play", 18)} ${t("startQuiz")}</button><div class="note sm">${t("epaDisclaimer")}</div></main>`; };
+      <div class="note sm">${t("epaDisclaimer")}</div>
+      <div class="lesson-foot"><button class="btn primary big full lesson-start" id="sq">${ico("play", 18)} ${t("startQuiz")}</button></div></main>`; };
   A.bind.epa = ([sec]) => { if (!sec) return; document.querySelectorAll("[data-tm]").forEach(b => b.onclick = () => { S.settings.timer = b.dataset.tm === "1"; A.save(); A.render(); });
     $("#sq").onclick = () => A.startQuiz({ key: "epa:" + sec, title: "EPA 608 " + tx(EPA_SECTIONS.find(x => x.id === sec).title), questions: EPA_QUESTIONS[sec], take: 25, timer: S.settings.timer, epa: true }); };
 

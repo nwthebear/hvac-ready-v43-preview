@@ -130,7 +130,7 @@
       <linearGradient id="${id}i" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".5" stop-color="#bfe8ff" stop-opacity=".4"/><stop offset="1" stop-color="#7fcff5" stop-opacity=".6"/></linearGradient></defs>`;
     const ice = opts.frozen ? `<g class="av-ice"><path d="${rr(12, 1, 76, 143, 9)}" fill="url(#${id}i)" stroke="#fff" stroke-width="2"/><path d="M20 14l10-8M22 30l18-16M70 120l10-8M64 136l18-14" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></g>` : "";
     const body = `${defs}<ellipse cx="50" cy="145" rx="25" ry="3.2" fill="#000" opacity=".16" class="av-shadow"/><g class="av-body">${legs}${arm("L")}${torso}${arm("R")}${headG}</g>${ice}`;
-    if (mode === "bust") return `<svg class="avatar-svg av-bust ${opts.cls || ""}" width="${size}" height="${size}" viewBox="12 0 76 76" aria-hidden="true">${body}</svg>`;
-    return `<svg class="avatar-svg av-full ${opts.cls || ""}" width="${Math.round(size * 100 / 150)}" height="${size}" viewBox="0 0 100 150" aria-hidden="true">${body}</svg>`;
+    if (mode === "bust") return `<svg class="avatar-svg av-bust ${opts.cls || ""}" width="${size}" height="${size}" viewBox="10 -10 80 90" aria-hidden="true">${body}</svg>`;
+    return `<svg class="avatar-svg av-full ${opts.cls || ""}" width="${Math.round(size * 100 / 150)}" height="${size}" viewBox="0 -8 100 166" aria-hidden="true">${body}</svg>`;
   };
 })();

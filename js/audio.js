@@ -609,7 +609,7 @@
         return true;
       } catch (e) { return false; }
     },
-    preloadSplash() { if (!init()) return; ["splash-whoosh", "splash-rattle", "splash-impact", "menu"].forEach(k => loadTrack(k).catch(() => {})); },
+    preloadSplash() { if (!init()) return; ["splash-impact", "splash-drill", "splash-torch", "menu"].forEach(k => loadTrack(k).catch(() => {})); },
     ctxState() { return ctx ? ctx.state : "none"; },
     setMusicScale(s) { musicScale = Math.max(0, Math.min(1, +s || 0)); applyVol(); },
     musicScale() { return musicScale; },
