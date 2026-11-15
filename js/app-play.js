@@ -39,9 +39,11 @@
     if (Q.i >= Q.items.length) return quizEnd();
     const it = Q.items[Q.i], es = S.lang === "es";
     return `<main class="page quiz">
+      <div class="quiz-pin">
       <header class="quiz-top"><a class="iconbtn" href="#/home" id="qx" aria-label="${t("close")}">${ico("close")}</a><div class="qprog"><span style="width:${100 * Q.i / Q.items.length}%"></span></div><span class="qnum">${Q.i + 1}/${Q.items.length}</span><span class="topbar-slot"></span></header>
       <div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} ${Q.points}</span>${Q.streak > 1 ? `<span class="hud-streak">${ico("fire", 16)} ×${Q.streak}</span>` : "<span></span>"}${Q.timer ? `<span class="timer" id="tmr"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" class="ring-bg"/><circle cx="18" cy="18" r="15" class="ring-fg" id="tmrc" stroke-dasharray="94.2" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><b id="tmrt">${Q.secs}</b></span>` : ""}</div>
       <h2 class="qtext">${esc(tx(it.q.q))}</h2>${A.esNote(it.q.q)}
+      </div>
       <div class="answers">${it.order.map((oi, k) => `<button class="ans a${k}" data-k="${k}"><span class="ans-shape">${["▲", "◆", "●", "■"][k]}</span><span>${esc(tx(it.q.a[oi]))}</span></button>`).join("")}</div>
       <div id="fb"></div></main>`;
   };
@@ -61,7 +63,7 @@
       $("#fb").innerHTML = `<div class="feedback ${ok ? "ok" : "bad"}"><h3>${ok ? ico("check", 22) + " " + t("correct") : k == null ? ico("clock", 22) + " " + t("timeUp") : ico("close", 22) + " " + t("wrong")}</h3>
         ${!ok ? `<p class="sm"><b>${t("isAnswer")}</b> ${esc(tx(it.q.a[it.q.c]))}</p>` : ""}${A.quizExplain(it.q, ok, origPicked)}${A.saying(ok ? "correct" : "wrong")}
         <button class="btn primary big full" id="qn">${Q.i === Q.items.length - 1 ? t("finish") : t("continue")} ${ico("arrow", 18)}</button></div>`;
-      $("#qn").onclick = () => { Q.i++; A.render(); }; $("#qn").focus({ preventScroll: true }); $("#fb").scrollIntoView({ behavior: A.reduced() ? "auto" : "smooth", block: "end" });
+      $("#qn").onclick = () => { Q.i++; A.render(); }; $("#qn").focus({ preventScroll: true }); A.revealQuizContinue($("#qn"));
     };
     document.querySelectorAll(".ans").forEach(b => b.onclick = () => answer(+b.dataset.k));
     if (Q.timer) tmr = setInterval(() => { left -= 1; const el = $("#tmrt"); if (!el) return clearInterval(tmr); el.textContent = left; $("#tmrc").style.strokeDashoffset = 94.2 * (1 - left / Q.secs); if (left <= 5 && left > 0) { Sound.sfx("tick"); $("#tmr").classList.add("hurry"); } if (left <= 0) answer(null); }, 1000);
@@ -147,7 +149,7 @@
   /* ---------- recognition quiz (tap to identify) ---------- */
   V.play = ([what]) => { if (what === "recog") { const qs = shuffle(COMPONENTS).slice(0, 8).map(c => { const wrong = shuffle(COMPONENTS.filter(x => x.id !== c.id)).slice(0, 3); return { q: { en: "Which component is this?", es: "¿Qué componente es este?" }, img: c.id, a: [c.name, ...wrong.map(w => w.name)], c: 0, why: c.info }; });
       setTimeout(() => A.startQuiz({ key: "recog", title: t("recognition"), questions: qs, timer: S.settings.timer, onPass: () => A.markDone("guide:components", XP_RULES.guide) }), 0); return `<main class="page"></main>`; } return V.notfound(); };
-  const _qv = V.quiz; V.quiz = () => { const h = _qv(); if (Q && Q.i < Q.items.length && Q.items[Q.i].q.img) return h.replace('<h2 class="qtext">', `<div class="q-img">${compSVG(Q.items[Q.i].q.img, { labels: false })}</div><h2 class="qtext">`); return h; };
+  const _qv = V.quiz; V.quiz = () => { const h = _qv(); if (Q && Q.i < Q.items.length && Q.items[Q.i].q.img) return h.replace('<div class="answers">', `<div class="q-img">${compSVG(Q.items[Q.i].q.img, { labels: false })}</div><div class="answers">`); return h; };
 
   /* ---------- coach chat ---------- */
   const chat = A.chat = A.chat || [];
@@ -188,6 +190,31 @@
     else if (STUDY.includes(name)) Sound.playMusic("study");
     else if (name === "arcade" && params[0]) Sound.playMusic("arcade");
     else if (name !== "quiz") Sound.stopMusic(); };
+  A.resetQuizScroll = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+  A.pinQuizQuestion = () => {
+    const page = document.querySelector(".page.quiz");
+    const pin = document.querySelector(".quiz-pin");
+    if (!page || !pin) return;
+    const apply = () => page.style.setProperty("--quiz-pin-h", Math.ceil(pin.getBoundingClientRect().height) + "px");
+    apply();
+    if (typeof ResizeObserver !== "undefined") {
+      if (A._quizPinRO) A._quizPinRO.disconnect();
+      A._quizPinRO = new ResizeObserver(apply);
+      A._quizPinRO.observe(pin);
+    }
+  };
+  /* Scroll just enough to show Continue; the pinned question stays on screen. */
+  A.revealQuizContinue = btn => {
+    if (!btn) return;
+    const room = window.innerHeight - 12;
+    const br = btn.getBoundingClientRect();
+    if (br.bottom <= room) return;
+    window.scrollBy({ top: br.bottom - room, left: 0, behavior: A.reduced() ? "auto" : "smooth" });
+  };
   A.render = () => {
     let h = location.hash.split("?")[0] || "#/home"; const qs = Object.fromEntries(new URLSearchParams(location.hash.split("?")[1] || ""));
     if (!S.onboarded && h !== "#/onboard") h = "#/onboard";
@@ -207,7 +234,7 @@
     const snd = document.getElementById("snd");
     if (snd && view.contains(snd)) document.body.appendChild(snd);
     view.innerHTML = (V[name] || V.notfound)(params, qs);
-    view.classList.remove("in"); void view.offsetWidth; if (!A.reduced()) view.classList.add("in");
+    view.classList.remove("in"); void view.offsetWidth; if (!A.reduced() && name !== "quiz" && name !== "match") view.classList.add("in");
     const full = ["onboard", "quiz", "video", "match"].includes(name) || (name === "arcade" && params[0]);
     document.body.classList.toggle("nonav", !!full);
     document.getElementById("nav").style.display = full ? "none" : "";
@@ -215,9 +242,14 @@
     if (A.bind[name]) A.bind[name](params, qs);
     A.placeSoundBtn();
     if (["guide", "skill", "module", "epa", "tool"].includes(name) && params[0]) { const title = TITLES[name](params); if (title) { S.last = { route: h, title }; A.save(); } }
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    A.resetQuizScroll();
+    if (name === "quiz") A.pinQuizQuestion();
+    if (name === "quiz" || name === "match") {
+      requestAnimationFrame(() => { A.resetQuizScroll(); requestAnimationFrame(A.resetQuizScroll); });
+      setTimeout(A.resetQuizScroll, 60);
+      setTimeout(A.resetQuizScroll, 180);
+    }
     document.documentElement.lang = S.lang || "en";
   };
   /* Answer feedback: check-mark slam / X shake near the tapped answer + haptics. Sound comes from Sound.sfx. */

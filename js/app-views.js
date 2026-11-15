@@ -89,7 +89,7 @@
       <div class="ob-progress"><span style="width:${pct(i + 1, MATCH_QUESTIONS.length)}%"></span></div>
       <div class="muted sm center">${t("questionOf", { n: i + 1, t: MATCH_QUESTIONS.length })}</div>
       <div class="match-av">${avatarSVG(S.avatar, 56, { mode: "bust" })}</div>
-      <h2 class="center">${esc(tx(Q.q))}</h2>${Q.hint ? `<p class="muted center">${esc(tx(Q.hint))}</p>` : ""}
+      <h2 class="center qtext">${esc(tx(Q.q))}</h2>${Q.hint ? `<p class="muted center">${esc(tx(Q.hint))}</p>` : ""}
       <div class="choices ${Q.type}">${Q.options.map(o => { const sel = Q.type === "multi" ? (val || []).includes(o.value) : val === o.value; return `<button class="btn choice ${sel ? "sel" : ""}" data-v="${o.value}"><span class="ch-ico">${o.icon}</span><span>${esc(tx(o.label))}</span>${sel ? ico("check", 18, "ck") : ""}</button>`; }).join("")}</div>
       <div class="row gap sticky-cta">${i ? `<button class="btn big" id="mb">${t("back")}</button>` : ""}<button class="btn primary big grow" id="mn" ${val && (!Array.isArray(val) || val.length) ? "" : "disabled"}>${i === MATCH_QUESTIONS.length - 1 ? t("seeResults") : t("next")}</button></div></main>`;
   };
