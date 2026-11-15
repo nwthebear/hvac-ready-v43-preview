@@ -95,7 +95,7 @@
   }
 
   function cueIntroSfx(vid) {
-    const cues = [[1.45, "splash-impact", 1.0], [2.05, "splash-drill", 0.92], [3.20, "splash-torch", 0.88]];
+    const cues = [[0.04, "splash-drone", 0.95], [2.00, "splash-whoosh", 0.85], [2.14, "splash-impact", 1.0]];
     const fired = new Set();
     const tick = () => {
       if (finish.done || !vid) return;
@@ -142,7 +142,7 @@
     ov.innerHTML = `<video id="intro-vid" playsinline webkit-playsinline preload="auto" poster="${POSTER}" src="${SRC}" muted></video>
       <div id="intro-gate">
         <div class="intro-card">
-          <img src="img/logo.png" width="96" height="96" alt="">
+          <img src="img/intro-badge.png" width="96" height="96" alt="">
           <b>HVAC Ready</b>
           <button type="button" class="intro-start" id="intro-start">${ES ? "Toca para empezar" : "Tap to start"}</button>
         </div>

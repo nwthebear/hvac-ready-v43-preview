@@ -591,7 +591,11 @@
         const buf = buffers[name];
         if (buf) { const src = ctx.createBufferSource(), g = ctx.createGain(); src.buffer = buf; g.gain.value = g0; src.connect(g); g.connect(dest); src.start(t); return true; }
         /* same-tick synth fallback — do not also fire the file later (would double) */
-        if (name === "splash-whoosh") {
+        if (name === "splash-drone") {
+          /* low C1/C2 suspense note — file stem is preferred; this is a short fallback */
+          const mk = (hz, g) => { const o = ctx.createOscillator(), v = ctx.createGain(); o.type = "sine"; o.frequency.value = hz; v.gain.setValueAtTime(0.0001, t); v.gain.exponentialRampToValueAtTime(g, t + 0.35); v.gain.setValueAtTime(g, t + 2.15); v.gain.exponentialRampToValueAtTime(0.0001, t + 4.6); o.connect(v); v.connect(dest); o.start(t); o.stop(t + 4.8); };
+          mk(32.70, 0.14); mk(65.41, 0.10); mk(16.35, 0.06);
+        } else if (name === "splash-whoosh") {
           noise(t, 0.45, 0.28, ["bandpass", 2400, 0.9], dest, true);
           noise(t, 0.5, 0.2, ["lowpass", 400], dest, true);
           const o = tone(70, t, 0.4, "sine", 0.12, dest); try { o.frequency.exponentialRampToValueAtTime(48, t + 0.35); } catch (e) {}
@@ -609,7 +613,7 @@
         return true;
       } catch (e) { return false; }
     },
-    preloadSplash() { if (!init()) return; ["splash-impact", "splash-drill", "splash-torch", "menu"].forEach(k => loadTrack(k).catch(() => {})); },
+    preloadSplash() { if (!init()) return; ["splash-drone", "splash-impact", "splash-whoosh", "menu"].forEach(k => loadTrack(k).catch(() => {})); },
     ctxState() { return ctx ? ctx.state : "none"; },
     setMusicScale(s) { musicScale = Math.max(0, Math.min(1, +s || 0)); applyVol(); },
     musicScale() { return musicScale; },

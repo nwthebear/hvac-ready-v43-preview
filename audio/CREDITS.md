@@ -48,3 +48,15 @@ https://mixkit.co/license/ — free for commercial and personal use in an end pr
 | 2609 | Whoosh resonating metallic hit | Slam ring-out |
 
 Local copies: `/workspace/report/sfx/`. Mix script: `/workspace/report/intro-v47/mix_sfx.py`.
+
+## v49 intro SFX (hvac-v49)
+
+The intro is the v38 8.80 s badge animation (slam at 2.20 s, silver letter hold) composited onto the v47 foundry wall, with wrenches removed. Music is not used. The in-app video stays muted; stems play on cue via `Sound.playSplash` after “Tap to start.” The same mix is baked into `video/intro.mp4` and the 390×844 preview at `/workspace/report/hvac-v49-intro.mp4`. Integrated loudness of the preview mix is about −15.5 LUFS, true peak −1.2 dBTP.
+
+| File | Cue | Role | Source |
+|---|---|---|---|
+| `splash-drone.mp3` / `.m4a` | 0.04 s (≈ 5.2 s stem) | Low building suspense note: sine drone at C0 / C1 / C2 with a trace of G1, a slow swell into the 2.20 s slam, then a decay that is silent by ≈ 5 s. Felt, not loud. No sawtooth musical riser and no late music bed. | Synthesized for HVAC Ready (this file). |
+| `splash-whoosh.mp3` / `.m4a` | 2.00 s | Short spark / flare whoosh just ahead of the slam (existing Mixkit stem, unchanged). | Mixkit 1345 / 1342 / 1492 (see the Splash intro sounds table above). |
+| `splash-impact.mp3` / `.m4a` | 2.14 s (attack 0.06 s into the clip, lands on the 2.20 s slam frame) | Stamp slam (existing Mixkit stem, unchanged). | Mixkit 2980 / 2908 / 2900 / 2609 / 833 plus the 34–68 Hz kick (see above). |
+
+v47 `splash-drill` and `splash-torch` stems remain in the folder but are not cued in the v49 intro.
