@@ -60,3 +60,18 @@ The intro is the v38 8.80 s badge animation (slam at 2.20 s, silver letter hold)
 | `splash-impact.mp3` / `.m4a` | 2.14 s (attack 0.06 s into the clip, lands on the 2.20 s slam frame) | Stamp slam (existing Mixkit stem, unchanged). | Mixkit 2980 / 2908 / 2900 / 2609 / 833 plus the 34–68 Hz kick (see above). |
 
 v47 `splash-drill` and `splash-torch` stems remain in the folder but are not cued in the v49 intro.
+
+## v51 intro SFX (hvac-v51)
+
+The synthesized v49/v50 sine drone (`splash-drone`) is removed. In-app and baked-into-`video/intro.mp4` audio is a single 8.80 s stem, `splash-intro.mp3` / `.m4a`, rebuilt from **option B / v38's actual recorded trailer mix** — the audio track of `/workspace/intro-history/v38/video/intro.mp4` (commit `767843fafe837da87872c9a606ae0a5d92790e62`, extracted to `/tmp/v38frames/v38-audio.wav`, 44.1 kHz stereo, 8.80 s).
+
+That baked mix is what the user heard and liked as option B. It is one file: the low building suspenseful note, the whoosh, the rattle/impact, the slam at 2.20 s, the spark decay, and (later) a music bed. Separate 8.8 s stems were not in the repo or v38 history. v38 `audio/CREDITS.md` notes that an earlier short-trailer whoosh/rattle/impact and a live Web Audio riser were synthesized then, but the 8.80 s video mix is the recording the user signed off on.
+
+v51 keeps that recording through the slam and its decay, and removes the music:
+
+- 0.00–4.70 s: B's mix unfiltered, so the low building note (the sub/low rise that swells into the 2.20 s slam) and B's whoosh / rattle / slam / sparks stay at B's timing.
+- 4.70–5.15 s: fade to silence, before the music bed returns at ~5.5 s.
+- 5.15–8.80 s: silence.
+- Two-pass ffmpeg `loudnorm` I=−14, TP=−1.0. Measured on the shipped mix: **−14.0 LUFS integrated, true peak −1.0 dBTP**. No clipping. No new synthesized sine.
+
+The low building suspenseful note therefore comes from **B's recorded v38 trailer mix itself** (the pre-slam portion of `/tmp/v38frames/v38-audio.wav` / v38 `video/intro.mp4`), not from a Mixkit riser and not from a new synth. Mix script: `/workspace/report/intro-v51/mix_sfx.py`.

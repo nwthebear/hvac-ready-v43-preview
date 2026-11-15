@@ -95,7 +95,7 @@
   }
 
   function cueIntroSfx(vid) {
-    const cues = [[0.04, "splash-drone", 0.95], [2.00, "splash-whoosh", 0.85], [2.14, "splash-impact", 1.0]];
+    const cues = [[0.00, "splash-intro", 1.0]];
     const fired = new Set();
     const tick = () => {
       if (finish.done || !vid) return;
