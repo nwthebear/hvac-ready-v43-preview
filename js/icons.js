@@ -42,11 +42,12 @@
     tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>', send: '<path d="M4 12l16-8-6 17-3-7z"/>', history: '<path d="M3 12a9 9 0 103-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>', moon: '<path d="M20 14.5A8 8 0 119.5 4a6.5 6.5 0 0010.5 10.5z"/>',
     dice: '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><circle cx="15" cy="15" r="1.2"/><circle cx="15" cy="9" r="1.2"/><circle cx="9" cy="15" r="1.2"/>',
+    wind: '<path d="M4 9h11a3 3 0 100-6 3 3 0 00-2 .4"/><path d="M4 15h13a3.5 3.5 0 110 7 3.5 3.5 0 01-2.5-.9"/><path d="M4 12h8"/>',
     drop: '<path d="M12 3c3 4.5 6 7.5 6 11a6 6 0 01-12 0c0-3.5 3-6.5 6-11z"/>', calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'
   };
   window.ICONS = P;
   window.ico = (n, s = 22, cls = "") => `<svg class="ico ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.info}</svg>`;
   /* Content → icon mapping (keeps visuals consistent instead of emoji) */
-  window.CONTENT_ICON = { safety: "shield", cycle: "cycle", components: "cog", tools: "wrench", ch5: "book", science: "atom", "epa-core-guide": "globe", "epa-t1-guide": "box", "epa-t2-guide": "gauge", "epa-t3-guide": "snow", "nate-rtw": "grad",
+  window.CONTENT_ICON = { safety: "shield", cycle: "cycle", components: "cog", tools: "wrench", ch5: "book", science: "atom", airflow: "wind", "epa-core-guide": "globe", "epa-t1-guide": "box", "epa-t2-guide": "gauge", "epa-t3-guide": "snow", "nate-rtw": "grad",
     core: "globe", type1: "box", type2: "gauge", type3: "snow" };
 })();

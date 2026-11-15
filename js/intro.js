@@ -21,19 +21,18 @@
   }
   function applyVisibleFrame(el) {
     if (!el) return;
-    const vv = window.visualViewport;
-    const sat = cssPx("--sat"), sab = cssPx("--sab"), sal = cssPx("--sal"), sar = cssPx("--sar");
-    const top = (vv ? vv.offsetTop : 0) + sat;
-    const left = (vv ? vv.offsetLeft : 0) + sal;
-    const w = (vv ? vv.width : window.innerWidth) - sal - sar;
-    const h = (vv ? vv.height : window.innerHeight) - sat - sab;
+    /* Edge-to-edge on the layout viewport, including under the status
+       bar and home indicator. Safe-area padding belongs on the Tap to
+       start controls, not on the artwork — shrinking the overlay by
+       --sat/--sab (and visualViewport) left black bars on iPhone. */
     el.style.position = "fixed";
-    el.style.top = top + "px";
-    el.style.left = left + "px";
-    el.style.width = Math.max(0, w) + "px";
-    el.style.height = Math.max(0, h) + "px";
-    el.style.right = "auto";
-    el.style.bottom = "auto";
+    el.style.top = "0";
+    el.style.left = "0";
+    el.style.right = "0";
+    el.style.bottom = "0";
+    el.style.width = "100%";
+    el.style.height = "100%";
+    el.style.height = "100dvh";
     el.style.margin = "0";
     el.style.boxSizing = "border-box";
   }

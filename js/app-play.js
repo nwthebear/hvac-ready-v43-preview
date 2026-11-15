@@ -228,15 +228,16 @@
     let name = "notfound", params = [];
     for (const [n, re] of ROUTES) { const m = h.match(re); if (m) { name = n; params = m.slice(1).filter(x => x !== undefined); break; } }
     window.setScene && setScene(name);
-    { const grp = (NAV.find(n => n[3].split(" ").includes(name)) || [name])[0]; if (A._lastRoute && A._lastRoute !== h) Sound.sfx(A._lastGrp && A._lastGrp !== grp ? "whoosh" : "page"); A._lastRoute = h; A._lastGrp = grp; }
+    { const grp = (NAV.find(n => n[3].split(" ").includes(name)) || [name])[0]; if (A._lastRoute && A._lastRoute !== h) { const quiet = name === "guide" || (A._lastRoute || "").indexOf("#/guide/") === 0; if (!quiet) Sound.sfx(A._lastGrp && A._lastGrp !== grp ? "whoosh" : "page"); } A._lastRoute = h; A._lastGrp = grp; }
     A._route = { name, params }; A.routeMusic(name, params);
     const view = document.getElementById("view");
     const snd = document.getElementById("snd");
     if (snd && view.contains(snd)) document.body.appendChild(snd);
     view.innerHTML = (V[name] || V.notfound)(params, qs);
-    view.classList.remove("in"); void view.offsetWidth; if (!A.reduced() && name !== "quiz" && name !== "match") view.classList.add("in");
-    const full = ["onboard", "quiz", "video", "match"].includes(name) || (name === "arcade" && params[0]);
+    view.classList.remove("in"); void view.offsetWidth; if (!A.reduced() && name !== "quiz" && name !== "match" && name !== "guide") view.classList.add("in");
+    const full = ["onboard", "quiz", "video", "match", "guide"].includes(name) || (name === "arcade" && params[0]);
     document.body.classList.toggle("nonav", !!full);
+    document.body.classList.toggle("is-teach", name === "guide");
     document.getElementById("nav").style.display = full ? "none" : "";
     document.getElementById("nav").innerHTML = NAV.map(([k, href, i, act]) => `<a href="${href}" class="${act.split(" ").includes(name) ? "act" : ""}">${ico(i, 22)}<span>${t(k)}</span></a>`).join("");
     if (A.bind[name]) A.bind[name](params, qs);
@@ -245,7 +246,7 @@
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     A.resetQuizScroll();
     if (name === "quiz") A.pinQuizQuestion();
-    if (name === "quiz" || name === "match") {
+    if (name === "quiz" || name === "match" || name === "guide") {
       requestAnimationFrame(() => { A.resetQuizScroll(); requestAnimationFrame(A.resetQuizScroll); });
       setTimeout(A.resetQuizScroll, 60);
       setTimeout(A.resetQuizScroll, 180);
