@@ -140,11 +140,7 @@
     ov.setAttribute("aria-label", ES ? "Introducción de HVAC Ready" : "HVAC Ready intro");
     ov.innerHTML = `<video id="intro-vid" playsinline webkit-playsinline preload="auto" poster="${POSTER}" src="${SRC}" muted></video>
       <div id="intro-gate">
-        <div class="intro-card">
-          <img src="img/intro-badge.png" width="96" height="96" alt="">
-          <b>HVAC Ready</b>
-          <button type="button" class="intro-start" id="intro-start">${ES ? "Toca para empezar" : "Tap to start"}</button>
-        </div>
+        <button type="button" class="intro-start" id="intro-start">${ES ? "Toca para empezar" : "Tap to start"}</button>
       </div>`;
     document.body.appendChild(ov);
     const splash = document.getElementById("splash");

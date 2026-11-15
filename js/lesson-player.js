@@ -26,7 +26,7 @@
     const end = v.end != null ? Number(v.end) : 0;
     const cap = es ? "Mira este video (se carga al tocar)" : "Watch this video (loads when you tap)";
     return `<button type="button" class="yt-wait" data-yt="${esc(v.id)}" data-start="${start}" data-end="${end}" aria-label="${esc(cap)}">
-      <span class="yt-thumb"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+      <span class="yt-thumb"><img src="img/video/${esc(v.id)}.jpg" alt="" width="480" height="270">
         <span class="yt-play"><b>▶</b></span></span>
       <span class="yt-meta"><b>${esc(v.title)}</b><span>${esc(v.channel)} · ${cap}</span></span>
     </button>`;
@@ -35,12 +35,16 @@
   function stepHtml(g, id, i, teach) {
     const es = A.S.lang === "es";
     const steps = teach.steps;
-    const total = steps.length + (teach.recap || teach.check ? 1 : 0);
-    const isEnd = i >= steps.length;
+    const rec = (teach.recap && teach.recap.length) ? 1 : 0;
+    const checks = teach.check || g.check || [];
+    const chk = checks.length ? 1 : 0;
+    const total = steps.length + rec + chk;
+    const recapI = rec ? steps.length : -1;
+    const checkI = chk ? steps.length + rec : -1;
     const pct = Math.round((Math.min(i, total - 1) + 1) / total * 100);
     const backHref = "#/library";
     let body = "";
-    if (!isEnd) {
+    if (i < steps.length) {
       const s = steps[i];
       body += s.kicker ? `<p class="teach-kicker">${esc(tx(s.kicker))}</p>` : "";
       body += `<h2>${esc(tx(s.title))}</h2>`;
@@ -49,20 +53,21 @@
       if (s.video) body += ytButton(s.video, es);
       if (s.analogy) body += `<div class="teach-note"><span class="lbl">${es ? "Piénsalo así" : "Think of it like this"}</span><p>${esc(tx(s.analogy))}</p></div>`;
       if (s.call) body += `<div class="teach-note"><span class="lbl">${es ? "En una llamada de servicio" : "On a service call"}</span><p>${esc(tx(s.call))}</p></div>`;
-    } else {
+    } else if (i === recapI) {
       body += `<h2>${es ? "Lo que ahora sabes" : "What you now know"}</h2>`;
-      const rec = teach.recap || [];
-      if (rec.length) body += `<ul class="teach-recap">${rec.map(x => `<li>${esc(tx(x))}</li>`).join("")}</ul>`;
-      (teach.check || g.check || []).forEach((q, qi) => {
+      body += `<ul class="teach-recap">${(teach.recap || []).map(x => `<li>${esc(tx(x))}</li>`).join("")}</ul>`;
+    } else {
+      body += `<h2>${es ? "Comprueba lo que aprendiste" : "Check what you learned"}</h2>`;
+      checks.forEach((q, qi) => {
         body += `<div class="teach-q" data-qi="${qi}">
           <h3>${esc(tx(q.q))}</h3>
-          ${(q.a || []).map((ans, ai) => `<button type="button" class="ans a${ai}" data-qi="${qi}" data-ai="${ai}">${esc(tx(ans))}</button>`).join("")}
+          ${(q.a || []).map((ans, ai) => `<button type="button" class="ans teach-ans" data-qi="${qi}" data-ai="${ai}">${esc(tx(ans))}</button>`).join("")}
           <div class="teach-why" hidden></div>
         </div>`;
       });
       body += `<div class="teach-done" id="teachDone" hidden><p class="ok">${es ? "Bien. Marcamos esta lección como lista." : "Nice work. This lesson is marked done."}</p></div>`;
     }
-    const last = isEnd;
+    const last = i >= total - 1;
     const nextLabel = last ? (es ? "Listo" : "Done") : (es ? "Siguiente" : "Next");
     const backLabel = i === 0 ? (es ? "Salir" : "Back") : (es ? "Atrás" : "Back");
     return `<main class="page teach" data-guide="${esc(id)}" data-step="${i}">
@@ -86,7 +91,7 @@
     if (!g) return V.notfound ? V.notfound() : "";
     const teach = A.teachSteps(g);
     if (!teach.steps || !teach.steps.length) return prevGuide ? prevGuide([id], qs) : "";
-    const max = teach.steps.length + (teach.recap || teach.check || g.check ? 1 : 0) - 1;
+    const max = teach.steps.length + (teach.recap && teach.recap.length ? 1 : 0) + ((teach.check || g.check || []).length ? 1 : 0) - 1;
     let i = A._teachStep[id];
     if (i == null) i = 0;
     i = Math.max(0, Math.min(max, i | 0));
@@ -102,7 +107,7 @@
     if (!teach.steps || !teach.steps.length) { if (prevBind) prevBind([id]); return; }
     document.querySelectorAll(".rku, .vic, .celebrate-ov, .cel-gear").forEach(el => { try { el.remove(); } catch (e) {} });
     const page = document.querySelector(".page.teach");
-    const max = teach.steps.length + (teach.recap || teach.check || g.check ? 1 : 0) - 1;
+    const max = teach.steps.length + (teach.recap && teach.recap.length ? 1 : 0) + ((teach.check || g.check || []).length ? 1 : 0) - 1;
     const go = (n) => {
       A._teachStep[id] = Math.max(0, Math.min(max, n));
       /* Re-render in place — no hash change, so no whoosh or scroll jump. */
