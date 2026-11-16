@@ -221,12 +221,20 @@
   const FILE_FOR = { quiz: "quiz", chill: "menu", menu: "menu", arcade: "arcade", study: "study", sim: "sim", exam: "exam" }, MUSIC_LEVEL = 0.34, XFADE = 0.6;
   let loopMeta = null;
   const fmt = () => { const a = document.createElement("audio"); return a.canPlayType && a.canPlayType('audio/mp4; codecs="mp4a.40.2"') ? "m4a" : "mp3"; };
+  function needsLoopMeta(key) {
+    return !!(FILE_FOR[key] || key === "menu" || key === "quiz" || key === "arcade" || key === "study" || key === "sim" || key === "exam");
+  }
   function loadTrack(key) {
     if (buffers[key]) return Promise.resolve(buffers[key]);
-    if (!loading[key]) loading[key] = (loopMeta ? Promise.resolve(loopMeta) : fetch("audio/loops.json").then(r => r.json()).then(j => (loopMeta = j)))
-      .then(() => fetch(`audio/${key}.${fmt()}`)).then(r => { if (!r.ok) throw new Error("audio " + r.status); return r.arrayBuffer(); })
-      .then(ab => new Promise((ok, no) => ctx.decodeAudioData(ab, ok, no))).then(b => (buffers[key] = b))
-      .catch(err => { delete loading[key]; throw err; });
+    if (!loading[key]) {
+      const meta = needsLoopMeta(key)
+        ? (loopMeta ? Promise.resolve(loopMeta) : fetch("audio/loops.json").then(r => r.json()).then(j => (loopMeta = j)))
+        : Promise.resolve(null);
+      loading[key] = meta
+        .then(() => fetch(`audio/${key}.${fmt()}`)).then(r => { if (!r.ok) throw new Error("audio " + r.status); return r.arrayBuffer(); })
+        .then(ab => new Promise((ok, no) => ctx.decodeAudioData(ab, ok, no))).then(b => (buffers[key] = b))
+        .catch(err => { delete loading[key]; throw err; });
+    }
     return loading[key];
   }
   function startFile(buf, key) {
@@ -612,6 +620,51 @@
       } catch (e) { return false; }
     },
     preloadSplash() { if (!init()) return; ["splash-intro", "menu"].forEach(k => loadTrack(k).catch(() => {})); },
+    /* HTMLAudioElement path for the launch stem. Started synchronously in the
+       Tap-to-start gesture so iOS allows playback, and so the ringer switch
+       (which mutes WebAudio) does not silence the intro. */
+    _introEl() {
+      if (A._introAudio) return A._introAudio;
+      const a = new Audio();
+      a.preload = "auto";
+      a.playsInline = true;
+      try { a.setAttribute("playsinline", ""); a.setAttribute("webkit-playsinline", ""); } catch (e) {}
+      a.muted = false;
+      a.volume = 1;
+      a.src = "audio/splash-intro." + fmt();
+      try {
+        a.setAttribute("data-hvac", "intro-stem");
+        a.style.cssText = "position:absolute;width:0;height:0;opacity:0;pointer-events:none;left:0;top:0";
+        if (document.body) document.body.appendChild(a);
+      } catch (e) {}
+      A._introAudio = a;
+      return a;
+    },
+    preloadIntroStem() {
+      try { const a = A._introEl(); a.load(); } catch (e) {}
+    },
+    playIntroStem() {
+      try {
+        try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+        if (!S.sound) return false;
+        const a = A._introEl();
+        a.muted = false;
+        a.volume = 1;
+        try { if (a.currentTime && a.currentTime > 0.05) a.currentTime = 0; } catch (e) {}
+        const p = a.play();
+        if (p && p.catch) p.catch(() => {});
+        return true;
+      } catch (e) { return false; }
+    },
+    stopIntroStem() {
+      try {
+        const a = A._introAudio;
+        if (!a) return;
+        a.pause();
+        try { a.currentTime = 0; } catch (e) {}
+      } catch (e) {}
+    },
+    introStemEl() { return A._introAudio || null; },
     ctxState() { return ctx ? ctx.state : "none"; },
     setMusicScale(s) { musicScale = Math.max(0, Math.min(1, +s || 0)); applyVol(); },
     musicScale() { return musicScale; },

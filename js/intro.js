@@ -4,6 +4,8 @@
    with a smooth fade-in to SOFT. No tagline. */
 (function () {
   const SRC = "video/intro.mp4", POSTER = "video/intro-poster.jpg", SOFT = 0.65;
+  /* Source plate in the 720x1560 intro art (object-fit: cover, centered). */
+  const ART_W = 720, ART_H = 1560, PLATE_BOTTOM = 1080;
 
   function markStandalone() {
     try {
@@ -36,15 +38,41 @@
     el.style.margin = "0";
     el.style.boxSizing = "border-box";
   }
+  function placeStartBtn() {
+    const ov = document.getElementById("intro-ov");
+    const btn = document.getElementById("intro-start");
+    if (!ov || !btn || finish.done) return;
+    const iw = ov.clientWidth || window.innerWidth;
+    const ih = ov.clientHeight || window.innerHeight;
+    const scale = Math.max(iw / ART_W, ih / ART_H);
+    const artTop = (ih - ART_H * scale) / 2;
+    const plateBottomY = artTop + PLATE_BOTTOM * scale;
+    const btnH = btn.offsetHeight || 40;
+    const sab = cssPx("--sab");
+    const vv = window.visualViewport;
+    const visTop = vv ? vv.offsetTop : 0;
+    const visBottom = vv ? (vv.offsetTop + vv.height) : ih;
+    const maxBottom = Math.min(ih, visBottom) - Math.max(sab, 12);
+    const minTop = visTop + 8;
+    let top = plateBottomY + 28;
+    if (top + btnH > maxBottom) top = maxBottom - btnH;
+    if (top < minTop) top = minTop;
+    btn.style.top = Math.round(top) + "px";
+    btn.style.bottom = "auto";
+    btn.style.left = "50%";
+    btn.style.transform = "translateX(-50%)";
+  }
   function frameIntro() {
     applyVisibleFrame(document.getElementById("intro-ov"));
     applyVisibleFrame(document.getElementById("splash"));
+    placeStartBtn();
   }
   function hookFrame() {
     frameIntro();
     const vv = window.visualViewport;
     if (hookFrame.on) return; hookFrame.on = true;
     window.addEventListener("resize", frameIntro);
+    window.addEventListener("orientationchange", frameIntro);
     if (vv) {
       vv.addEventListener("resize", frameIntro);
       vv.addEventListener("scroll", frameIntro);
@@ -52,11 +80,13 @@
   }
   function unhookFrame() {
     window.removeEventListener("resize", frameIntro);
+    window.removeEventListener("orientationchange", frameIntro);
     const vv = window.visualViewport;
     if (vv) {
       vv.removeEventListener("resize", frameIntro);
       vv.removeEventListener("scroll", frameIntro);
     }
+    hookFrame.on = false;
   }
 
   try { if (window.Sound && Sound.deferMusic) Sound.deferMusic(true); } catch (e) {}
@@ -67,6 +97,7 @@
     if (finish.done) return; finish.done = true;
     const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid");
     try { if (vid) { vid.pause(); vid.removeAttribute("src"); vid.load(); } } catch (e) {}
+    try { Sound.stopIntroStem && Sound.stopIntroStem(); } catch (e) {}
     if (ov) {
       ov.classList.add("out");
       ov.style.pointerEvents = "none";
@@ -93,41 +124,30 @@
     if (gate) { gate.hidden = true; gate.classList.add("off"); gate.setAttribute("aria-hidden", "true"); gate.style.display = "none"; }
   }
 
-  function cueIntroSfx(vid) {
-    const cues = [[0.00, "splash-intro", 1.0]];
-    const fired = new Set();
-    const tick = () => {
-      if (finish.done || !vid) return;
-      const t = vid.currentTime || 0;
-      cues.forEach((c, i) => {
-        if (!fired.has(i) && t >= c[0]) {
-          fired.add(i);
-          try { Sound.playSplash && Sound.playSplash(c[1], { gain: c[2] }); } catch (e) {}
-        }
-      });
-      if (fired.size < cues.length) requestAnimationFrame(tick);
-    };
-    vid.addEventListener("timeupdate", tick);
-    requestAnimationFrame(tick);
-  }
-
   function play() {
+    if (play.started) return;
+    play.started = true;
     const vid = document.getElementById("intro-vid");
     hideGate(); /* hide immediately — do not wait on play() */
+    /* Start the intro stem synchronously in this gesture. iOS will not
+       unlock media started later on rAF / timeupdate, and WebAudio is
+       muted by the ringer switch. */
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
     try {
+      Sound.playIntroStem && Sound.playIntroStem();
       Sound.unlock && Sound.unlock();
       Sound.deferMusic && Sound.deferMusic(true);
-      Sound.preloadSplash && Sound.preloadSplash();
     } catch (e) {}
     if (!vid) return finish();
-    vid.muted = true; /* baked soundtrack stays off; SFX play on their own cues */
+    vid.muted = true; /* picture only; soundtrack is the HTMLAudio stem */
     const p = vid.play();
-    cueIntroSfx(vid);
     if (p && p.catch) p.catch(() => {
       /* only restore the gate if the picture never started (audio unlock still needed) */
       if (vid.paused && vid.currentTime < 0.05) {
+        play.started = false;
         const gate = document.getElementById("intro-gate");
         if (gate) { gate.hidden = false; gate.classList.remove("off"); gate.removeAttribute("aria-hidden"); gate.style.display = ""; }
+        requestAnimationFrame(placeStartBtn);
       }
     });
   }
@@ -146,10 +166,19 @@
     const splash = document.getElementById("splash");
     if (splash) splash.style.visibility = "hidden";
     hookFrame();
+    requestAnimationFrame(() => { frameIntro(); requestAnimationFrame(placeStartBtn); });
 
     const vid = ov.querySelector("#intro-vid");
     if (vid) vid.muted = true;
+    try { Sound.preloadIntroStem && Sound.preloadIntroStem(); } catch (e) {}
+
+    const start = ev => { if (ev && ev.preventDefault && ev.type === "keydown") ev.preventDefault(); play(); };
+    /* Whole screen is tappable, not just the pill. pointerdown keeps the
+       HTMLAudio play() inside the iOS user-gesture window. */
+    ov.addEventListener("pointerdown", start);
+    ov.addEventListener("click", start);
     document.getElementById("intro-start").addEventListener("click", ev => { ev.stopPropagation(); play(); });
+    ov.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") start(ev); });
     vid.addEventListener("ended", finish);
   }
 
