@@ -13,7 +13,7 @@
   --r-sm: 8px; --r: 14px; --r-lg: 18px; --r-pill: 999px;
   --sh-1: 0 1px 0 rgba(255,255,255,.04) inset, 0 2px 6px rgba(0,0,0,.45); --sh-2: 0 6px 18px rgba(0,0,0,.5); --sh-3: 0 14px 36px rgba(0,0,0,.6);
   --ease: cubic-bezier(.2,.8,.2,1); --nav-h: 68px;
-  --vvh: 100dvh; --vv-top: 0px; --vv-bottom-gap: 0px;
+  --app-h: 100dvh; --vvh: 100dvh; --vv-top: 0px; --vv-bottom-gap: 0px; --vv-nudge: 0px;
   --foot-pad: max(16px, calc(var(--sab) + 12px));
   --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);
@@ -1313,8 +1313,8 @@ a.card:active, .tile:active, .list-card:active, .kit-chip:active, .tool-card:act
   padding-bottom: calc(var(--sab) + 12px);
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  height: 100svh;
+  height: 100%;
+  max-height: 100%;
   overflow: hidden;
 }
 .page.game.match-page .topbar { margin-bottom: 4px; flex: 0 0 auto; }
@@ -1718,10 +1718,8 @@ body.nonav .page.has-lesson-foot { padding-bottom: calc(var(--sab) + 148px); }
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: 100dvh;
-  height: 100svh;
-  max-height: 100dvh;
-  max-height: 100svh;
+  height: 100%;
+  max-height: 100%;
   min-height: 0;
   padding: calc(10px + var(--sat)) 20px 0;
   max-width: 640px;
@@ -1732,7 +1730,7 @@ body.is-teach #snd, body:has(.page.teach) #snd { display: none !important; }
 body.is-teach #scene, body:has(.page.teach) #scene { display: none !important; }
 body.is-teach, body:has(.page.teach) { background-color: var(--bg) !important; background-image: none !important; }
 body.is-teach #app, body.is-teach #view, body:has(.page.teach) #app, body:has(.page.teach) #view {
-  height: 100dvh; height: 100svh; max-height: 100dvh; max-height: 100svh; overflow: hidden;
+  height: 100%; max-height: none; overflow: hidden;
 }
 .teach-top { display: flex; align-items: center; gap: 8px; flex: none; min-height: 44px; }
 .teach-top .iconbtn { width: 44px; height: 44px; flex: none; }
@@ -1820,16 +1818,18 @@ body.nonav .page.teach { padding-bottom: 0; }
 }
 
 
-/* ===== v56: size the shell to the visible viewport, keep action footers tappable ===== */
+/* ===== v58: shell fills the layout viewport; footers nudge only when covered ===== */
 html, body {
-  height: var(--vvh, 100dvh);
-  max-height: var(--vvh, 100dvh);
-  min-height: 0;
+  height: var(--app-h, 100dvh);
+  min-height: var(--app-h, 100dvh);
+  max-height: none;
+  background-color: var(--bg);
   overflow: hidden;
 }
 body {
   display: flex;
   flex-direction: column;
+  min-height: var(--app-h, 100dvh);
 }
 #app {
   flex: 1 1 auto;
@@ -1839,6 +1839,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--bg);
 }
 #view {
   flex: 1 1 auto;
@@ -1856,7 +1857,7 @@ body {
   width: 100%;
   height: auto;
   min-height: var(--nav-h);
-  padding-bottom: var(--foot-pad);
+  padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px));
   box-sizing: border-box;
 }
 .page {
@@ -1911,7 +1912,7 @@ body.nonav .onboard.step-2 { padding-bottom: 0; }
   box-sizing: border-box;
   padding-left: 16px;
   padding-right: 16px;
-  padding-bottom: var(--foot-pad);
+  padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px));
   pointer-events: auto;
   z-index: 6;
 }
@@ -1922,14 +1923,14 @@ body.nonav .onboard.step-2 { padding-bottom: 0; }
   padding-left: 0;
   padding-right: 0;
 }
-.lesson-foot { padding: 16px 16px var(--foot-pad); }
-body.nonav .lesson-foot { padding-bottom: var(--foot-pad); }
-.ob-foot { padding: 16px 16px var(--foot-pad); }
-.teach-foot { padding: 10px 0 var(--foot-pad); }
+.lesson-foot { padding: 16px 16px calc(var(--foot-pad) + var(--vv-nudge, 0px)); }
+body.nonav .lesson-foot { padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px)); }
+.ob-foot { padding: 16px 16px calc(var(--foot-pad) + var(--vv-nudge, 0px)); }
+.teach-foot { padding: 10px 0 calc(var(--foot-pad) + var(--vv-nudge, 0px)); }
 .sticky-cta {
   position: relative;
   bottom: auto;
-  padding: 12px 0 var(--foot-pad);
+  padding: 12px 0 calc(var(--foot-pad) + var(--vv-nudge, 0px));
   background: linear-gradient(to top, var(--bg) 70%, transparent);
 }
 .onboard .sticky-cta, .match .sticky-cta { bottom: auto; }
@@ -1966,55 +1967,56 @@ body:has(.page.teach) #view {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
-.page.quiz #fb { flex: none; padding-bottom: var(--foot-pad); }
+.page.quiz #fb { flex: none; padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px)); }
 
 .composer {
   position: sticky;
   bottom: 0;
-  margin-bottom: var(--foot-pad);
+  margin-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px));
 }
 .coach { min-height: 0; height: 100%; }
 
-/* Fixed overlays and sheets sit on the visual viewport, not the layout viewport. */
+/* Full-screen overlays fill the layout viewport (edge to edge).
+   Sheets and toasts use --vv-nudge only when the visual viewport covers them. */
 .celebrate-ov,
 .fr-ov,
 .rku,
 #starter-ov,
 .sp-back,
 .tg-learn-back {
-  top: var(--vv-top, 0px);
-  height: var(--vvh, 100dvh);
+  top: 0;
+  height: var(--app-h, 100dvh);
   bottom: auto;
   box-sizing: border-box;
 }
 .celebrate-ov,
 .fr-ov,
 #starter-ov {
-  padding-bottom: var(--foot-pad);
+  padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px));
 }
 .pt-sheet,
 .sp-sheet,
 .tg-learn {
-  bottom: var(--vv-bottom-gap, 0px);
+  bottom: var(--vv-nudge, 0px);
   padding-bottom: var(--foot-pad);
-  max-height: min(88dvh, calc(var(--vvh, 100dvh) - 12px));
+  max-height: min(88dvh, calc(var(--app-h, 100dvh) - 12px));
 }
 .pt-tab {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 10px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--nav-h) + var(--foot-pad) + 10px);
 }
 body.nonav .pt-tab {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 10px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--foot-pad) + 10px);
 }
 .toast {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 16px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--nav-h) + var(--foot-pad) + 16px);
 }
 body.nonav .toast {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 16px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--foot-pad) + 16px);
 }
 .cel-gear {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 18px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--nav-h) + var(--foot-pad) + 18px);
 }
 body.nonav .cel-gear {
-  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 12px);
+  bottom: calc(var(--vv-nudge, 0px) + var(--foot-pad) + 12px);
 }
-.mgz-bar { padding-bottom: var(--foot-pad); }
+.mgz-bar { padding-bottom: calc(var(--foot-pad) + var(--vv-nudge, 0px)); }

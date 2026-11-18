@@ -5,24 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
 (function(){
-  function setVV(){
+  /* Shell fills the layout viewport (innerHeight / 100dvh). visualViewport is
+     only used to nudge in-flow footers when they are actually covered. */
+  function setShell(){
     try{
-      var r=document.documentElement, vv=window.visualViewport;
-      var h=(vv&&vv.height)?vv.height:(window.innerHeight||0);
-      var top=(vv&&vv.offsetTop)||0;
-      var layout=window.innerHeight||h;
-      var gap=Math.max(0, layout-(top+h));
-      r.style.setProperty("--vvh", h+"px");
+      var r=document.documentElement;
+      var layout=window.innerHeight||0;
+      var app=layout? (layout+"px") : "100dvh";
+      r.style.setProperty("--app-h", app);
+      /* leftover --vvh must not shrink the shell if any rule still references it */
+      r.style.setProperty("--vvh", app);
+      var vv=window.visualViewport, top=0, nudge=0;
+      if(vv && vv.height){
+        top=vv.offsetTop||0;
+        nudge=Math.max(0, layout-(top+vv.height));
+        if(nudge<1) nudge=0;
+      }
+      r.style.setProperty("--vv-nudge", nudge+"px");
+      r.style.setProperty("--vv-bottom-gap", nudge+"px");
       r.style.setProperty("--vv-top", top+"px");
-      r.style.setProperty("--vv-bottom-gap", gap+"px");
     }catch(e){}
   }
-  setVV();
-  window.addEventListener("resize", setVV);
-  window.addEventListener("orientationchange", setVV);
+  setShell();
+  window.addEventListener("resize", setShell);
+  window.addEventListener("orientationchange", setShell);
   if(window.visualViewport){
-    visualViewport.addEventListener("resize", setVV);
-    visualViewport.addEventListener("scroll", setVV);
+    visualViewport.addEventListener("resize", setShell);
+    visualViewport.addEventListener("scroll", setShell);
   }
 })();
 </script>
