@@ -1,11 +1,39 @@
 /* Core: state, i18n helpers, router, XP/badges/certs, celebrations, game board. */
 (function () {
   const KEY = "hvac.state.v1";
-  const DEF = { lang: null, name: "", avatar: null, onboarded: false, profile: null, done: {}, quiz: {}, xp: 0, streak: { count: 0, last: null }, history: [], high: {}, games: 0, quizzes: 0, perfect: 0, videos: 0, dayoneSeen: {}, toolsSeen: {}, coachAsked: 0, badges: {}, certs: {}, kit: {}, settings: { sound: true, music: true, timer: true, narration: false, reduceMotion: false, haptics: true, gameDay: false, vol: { master: 0.8, music: 0.8, game: 0.8, quiz: 0.8, ui: 0.8 } }, last: null, daily: {}, early: false, late: false, usedEs: false, lastModule: null };
+  const DEF = { lang: null, name: "", avatar: null, onboarded: false, profile: null, done: {}, quiz: {}, xp: 0, streak: { count: 0, last: null }, history: [], high: {}, games: 0, quizzes: 0, perfect: 0, videos: 0, dayoneSeen: {}, toolsSeen: {}, coachAsked: 0, badges: {}, certs: {}, kit: {}, settings: { sound: true, music: true, timer: true, narration: false, reduceMotion: false, haptics: true, gameDay: false, vol: { master: 0.8, music: 0.8, game: 0.8, quiz: 0.8, ui: 0.8 } }, last: null, daily: {}, early: false, late: false, usedEs: false, lastModule: null, ownerUnlocked: false, ownerMode: false };
   let S;
   try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem(KEY) || "{}")); S.settings = Object.assign({}, DEF.settings, S.settings); S.settings.vol = Object.assign({}, DEF.settings.vol, S.settings.vol); if (S.last && typeof S.last.route !== "string") S.last = null; } catch (e) { S = Object.assign({}, DEF); }
   const save = () => localStorage.setItem(KEY, JSON.stringify(S));
   const App = window.App = { S, save, KEY };
+  /* Owner-only arcade unlock: a hidden ?owner=<key> URL sets a local flag on this
+     device. Additive on hvac.state.v1; default stays locked for everyone else. */
+  App.OWNER_KEY = "8onZY6Q2v8MT";
+  App.ownerMode = () => !!S.ownerMode;
+  App.syncOwnerUnlock = () => { if (App.TG) App.TG.devUnlockAll = !!S.ownerMode; };
+  App.consumeOwnerKey = () => {
+    const sp = new URLSearchParams(location.search);
+    let hashPath = location.hash || "", hashQ = "";
+    const qi = hashPath.indexOf("?");
+    if (qi >= 0) { hashQ = hashPath.slice(qi + 1); hashPath = hashPath.slice(0, qi); }
+    const hp = new URLSearchParams(hashQ);
+    const got = sp.get("owner") || hp.get("owner");
+    if (got && got === App.OWNER_KEY) {
+      S.ownerUnlocked = true;
+      S.ownerMode = true;
+      save();
+      let dirty = false;
+      if (sp.has("owner")) { sp.delete("owner"); dirty = true; }
+      if (hp.has("owner")) { hp.delete("owner"); dirty = true; }
+      if (dirty) {
+        const q = sp.toString(), hq = hp.toString();
+        history.replaceState(null, "", location.pathname + (q ? "?" + q : "") + hashPath + (hq ? "?" + hq : ""));
+      }
+    }
+    App.syncOwnerUnlock();
+  };
+  App.consumeOwnerKey();
+
 
   /* ---------- i18n ---------- */
   const lang = () => S.lang || "en";

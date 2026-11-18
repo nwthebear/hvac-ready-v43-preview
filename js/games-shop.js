@@ -55,7 +55,7 @@
   }
   function braze() {
     const R = new TG.Round({ id: "braze_master" }); const joints = TG.shuffle(BR.joints).slice(0, 3).sort((a, b) => a.rule - b.rule); let ji = 0;
-    if (S.tg.braze_master && S.tg.braze_master.lv <= 1) joints.sort((a, b) => (a.id === "cucu" ? -1 : 0) - (b.id === "cucu" ? -1 : 0));
+    if (TG.level("braze_master") <= 1) joints.sort((a, b) => (a.id === "cucu" ? -1 : 0) - (b.id === "cucu" ? -1 : 0));
     const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-bust" id="tgAvB">${avatarSVG(S.avatar, 40, { mode: "bust" })}</span><span class="tg-prog" id="brProg"></span>`; $("#tgAv").remove(); $("#tgAvB").id = "tgAv";
     const prog = () => { $("#brProg").innerHTML = joints.map((b, i) => `<i class="${i < ji ? "done" : i === ji ? "cur" : ""}"></i>`).join(""); };
     const next = () => { if (R.over) return; if (ji >= joints.length) return R.end(true); prog(); R.boardStart(); joint(joints[ji]); };
@@ -135,7 +135,7 @@
         const up = () => { if (!holding) return; holding = false; scene.classList.remove("heating"); roar && roar.stop(0.15); release(); };
         scene.addEventListener("pointerdown", down); scene.addEventListener("pointermove", move); scene.addEventListener("pointerup", up); scene.addEventListener("pointercancel", up);
         R.stops.push(() => roar && roar.stop());
-        const lv = TG.state(R.id).lv, rate = 520 + lv * 40;
+        const lv = TG.level(R.id), rate = 520 + lv * 40;
         R.onFrame = dt => { if (st.heated) return; torch.setAttribute("transform", `translate(${fx + 26} 89) rotate(${holding ? -8 : 0})`); flame.style.opacity = holding ? 1 : 0.15;
           const onTube = fx < 196; if (holding) { if (Math.abs(fx - lastX) < 3) parked += dt; else parked = Math.max(0, parked - dt * 2); lastX = fx;
             if (onTube) { st.tubeT += rate * dt; st.fitT += rate * 0.28 * dt; } else { st.fitT += rate * 0.85 * dt; st.tubeT += rate * 0.35 * dt; } roar && roar.set(0.5 + 0.5 * Math.min(1, parked)); }
@@ -161,7 +161,7 @@
           <button class="btn primary big full br-feed-btn" id="brFeed">${ico("hand", 18)} ${L("Hold to feed rod", "Mantén para aplicar")}<small class="block">${esc(filler)}</small></button></div>`;
         const fillEl = $("#brFill"), btn = $("#brFeed"), roar = Sound.loop("torch", 0.5); R.stops.push(() => roar.stop());
         let T = Math.max(820, Math.min(st.tubeT, st.fitT) - 300), held = false, endT = false, sweep = 0, sizzT = 0, rodLen = 120;
-        const lvl = TG.state(R.id).lv, rise = 150 + lvl * 15;
+        const lvl = TG.level(R.id), rise = 150 + lvl * 15;
         const end = async (kind, extra) => { if (endT) return; endT = true; held = false; R.onFrame = null; roar.stop(0.2); torch.style.display = "none"; btn.disabled = true;
           if (kind === "ok") { fillet.setAttribute("class", "br-fillet done"); cap.classList.add("done"); FX.burst("glint", 196, 89, 18); Sound.sfx("flow"); Sound.sfx("correct", { pitch: 1.12 }); TG.buzz("correct"); R.hit({ pts: 180, label: L("capillary flow", "flujo capilar") }); await wait(500); return cool(hiss); }
           st.fail = kind; await R.miss(failCard(kind, extra.did, { rule: tx(BR.temperatureCues.phosColorCue) + " " + L("Feed only after both parts are at temperature; stop once the joint is filled.", "Aplica solo con ambas piezas a temperatura; detente cuando la unión esté llena."), sources: uniq([...fail(kind).sources, "harris_proc"]) })); cool(hiss); };

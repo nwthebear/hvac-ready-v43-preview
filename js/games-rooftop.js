@@ -57,7 +57,7 @@
 
   /* ---------- the runner ---------- */
   function rooftop2() {
-    const R = new TG.Round({ id: "rooftop_run", hearts: 3, seconds: 180 }); const lvl = TG.state(R.id).lv, call = TG.pick(CALLS);
+    const R = new TG.Round({ id: "rooftop_run", hearts: 3, seconds: 180 }); const lvl = TG.level(R.id), call = TG.pick(CALLS);
     const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="rr2-dist" id="rr2D">0 ft</span>`; const av0 = $("#tgAv"); if (av0) av0.style.display = "none";
     R.body.innerHTML = `<div class="rr2" id="rr2"><canvas id="rr2C"></canvas><div class="rr2-call" id="rr2Call"><small>${L("THE CALL", "LA LLAMADA")}</small><b>${esc(tx(call.call))}</b><span>${L("Grab what this job needs. Skip the rest.", "Toma lo que pide el trabajo. Deja lo demás.")}</span></div>
       <div class="rr2-why" id="rr2Why"></div><div class="rr2-help" id="rr2Help">${L("Swipe ← → lanes · swipe ↑ or tap middle to step over", "Desliza ← → carriles · desliza ↑ o toca al centro para pasar por encima")}</div></div>`;

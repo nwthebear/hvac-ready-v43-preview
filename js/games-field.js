@@ -31,7 +31,7 @@
       <g id="lhSpot" class="lh-spot"><circle r="10"/></g><g id="lhOil" class="lh-oil"><ellipse rx="34" ry="14"/></g><g id="lhBub" class="lh-bub"></g>
       <g id="lhProbe" class="lh-probe"><circle r="14"/><circle r="3"/></g><g id="lhMarks"></g></svg>`;
   function leak() {
-    const R = new TG.Round({ id: "leak_hunter" }); bust("lhProg"); const lv = TG.state(R.id).lv, N = 3; let hi = 0;
+    const R = new TG.Round({ id: "leak_hunter" }); bust("lhProg"); const lv = TG.level(R.id), N = 3; let hi = 0;
     const next = () => { if (R.over) return; if (hi >= N) return R.end(true); progDots("lhProg", N, hi); R.boardStart(); hunt(); };
     function hunt() {
       const si = lv <= 1 && hi === 0 ? LH.situations[0] : TG.pick(LH.situations.concat(LH.situations[0])), spot = weighted(LH.leakSpots), pos = LH.spotPos[spot.id];
@@ -101,7 +101,7 @@
     if (kind === "wet") return base + ((o.leakAbove ? (o.pass + o.leakAbove) / 2 : o.pass * 2.1) - base) * (1 - Math.exp(-x * 4.5));
     return base + (o.pass * 1.1 - base) * x * 1.2 + Math.pow(x, 1.4) * o.pass * 2.6; };
   function vacuum() {
-    const R = new TG.Round({ id: "vacuum_pump_rush" }); bust("vpProg"); const lv = TG.state(R.id).lv, N = 2; let ji = 0;
+    const R = new TG.Round({ id: "vacuum_pump_rush" }); bust("vpProg"); const lv = TG.level(R.id), N = 2; let ji = 0;
     const next = () => { if (R.over) return; if (ji >= N) return R.end(true); progDots("vpProg", N, ji); R.boardStart(); job(); };
     function job() {
       const o = TG.pick(VP.oemRules), kinds = lv <= 1 && ji === 0 ? ["tightDry"] : ["tightDry", "wet", "leak"], kind = TG.pick(kinds); let good = 0, firstHold = true;
@@ -163,7 +163,7 @@
   const rrQ = k => rrReviewBank().find(q => q.key === k);
   const HZ = { edge: "#E8A23A", skylight: "#7FB7D9", ladder: "#C8A15A", crane: "#E8C34A", powerline: "#E05A3C", box: "#9AA3AD", sun: "#F2C14E" };
   function rooftop() {
-    const R = new TG.Round({ id: "rooftop_run", hearts: 3 }); bust("rrProg"); const lv = TG.state(R.id).lv, cards = TG.shuffle(RR.safetyCards).slice(0, 4 + Math.min(2, lv - 1)); let ci = 0, incidents = 0;
+    const R = new TG.Round({ id: "rooftop_run", hearts: 3 }); bust("rrProg"); const lv = TG.level(R.id), cards = TG.shuffle(RR.safetyCards).slice(0, 4 + Math.min(2, lv - 1)); let ci = 0, incidents = 0;
     R.body.innerHTML = `<div class="rr-wrap" id="rrW"><canvas id="rrC"></canvas><div class="rr-dist" id="rrD">0 ft</div></div><p class="sm muted rr-tip">${L("Swipe or tap left/right to grab tools and water.", "Desliza o toca izquierda/derecha para tomar herramientas y agua.")}</p>`;
     const W = $("#rrW"), cv = $("#rrC"), ctx = cv.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1); let w = 0, h = 0;
     const size = () => { w = W.clientWidth; h = Math.min(460, Math.round(window.innerHeight * 0.52)); cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); RRA && RRA.resize(w, h); }; const RRA = TG.ART && TG.ART.roofR ? TG.ART.roofR(ctx) : null; size();

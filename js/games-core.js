@@ -10,13 +10,16 @@
   S.tg = S.tg || {}; /* per game: { lv, best, plays, unlocked } */
   const st = id => (S.tg[id] = S.tg[id] || { lv: 1, plays: 0 });
   TG.state = st;
+  /* Owner mode plays every level (max 6) without rewriting the saved lv. */
+  TG.level = id => (A.ownerMode && A.ownerMode()) ? 6 : (st(id).lv || 1);
+  A.syncOwnerUnlock && A.syncOwnerUnlock();
   TG.L = L;
   TG.src = id => GD.sources[id] || { title: id, url: "" };
   TG.shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   TG.pick = a => a[Math.floor(Math.random() * a.length)];
   TG.clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   /* draw mostly from the player's level, plus one from the next level (spec §0 Difficulty) */
-  TG.draw = (items, id, n, lvKey = "level") => { const lv = st(id).lv, sh = TG.shuffle(items);
+  TG.draw = (items, id, n, lvKey = "level") => { const lv = TG.level(id), sh = TG.shuffle(items);
     const cur = sh.filter(x => (x[lvKey] || 1) <= lv), next = sh.filter(x => (x[lvKey] || 1) === lv + 1), out = [];
     const pool = TG.shuffle(cur.filter(x => (x[lvKey] || 1) >= lv - 1)).concat(TG.shuffle(cur.filter(x => (x[lvKey] || 1) < lv - 1)));
     for (const x of pool) { if (out.length >= n - (next.length ? 1 : 0)) break; out.push(x); }
@@ -46,6 +49,7 @@
   /* new unlock → the victory scene (trophy + unlock sfx). Batched: several at once share one scene. Never during a quiz/round. */
   TG.checkUnlocks = (opts = {}) => {
     if (!S.onboarded) return [];
+    if (A.ownerMode && A.ownerMode()) return [];
     const fresh = TG.defs.filter(d => TG.isUnlocked(d.id) && !st(d.id).unlocked);
     if (!fresh.length) return [];
     fresh.forEach(d => (st(d.id).unlocked = Date.now())); A.save();
@@ -108,7 +112,7 @@
       <p class="sm muted tg-hub-sub">${es ? "Práctica real en forma de juego. Cada error abre una tarjeta con la regla y su fuente." : "Real practice in game form. Every mistake opens a card with the rule and its source."}</p>
       <div class="tg-grid">${TG.defs.map((d, k) => { const g = GM[d.id], un = TG.isUnlocked(d.id), best = st(d.id).best || 0, fresh = un && !st(d.id).plays;
         return un ? `<a class="tg-card has-cov" href="#/arcade/${d.slug}" style="--k:${k}"><span class="tg-cov">${TG.ART ? TG.ART.cover(d.slug) : d.art(56)}</span><b>${esc(tx(g.name))}</b><small>${esc(tx(d.tag))}</small>
-            <span class="tg-meta">${fresh ? `<span class="tg-new">${es ? "NUEVO" : "NEW"}</span>` : `${ico("trophy", 13)} ${best}`}<span class="tg-lv">${es ? "Nv" : "Lv"} ${st(d.id).lv}</span></span></a>`
+            <span class="tg-meta">${fresh ? `<span class="tg-new">${es ? "NUEVO" : "NEW"}</span>` : `${ico("trophy", 13)} ${best}`}<span class="tg-lv">${es ? "Nv" : "Lv"} ${TG.level(d.id)}</span></span></a>`
           : `<div class="tg-card locked has-cov" style="--k:${k}" aria-disabled="true"><span class="tg-cov sil">${TG.ART ? TG.ART.cover(d.slug) : d.art(56)}</span><span class="tg-lock">${ico("lock", 14)}</span><b>${esc(tx(g.name))}</b><small>${esc(TG.unlockText(d.id))}</small></div>`; }).join("")}</div></section>`; };
 
   /* ---------- haptics / shake / popups ---------- */

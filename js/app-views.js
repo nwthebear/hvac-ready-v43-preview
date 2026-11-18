@@ -373,6 +373,7 @@
       <label class="sm">${t("apiKey")}<input class="input" id="aiK" type="password" autocomplete="off" placeholder="sk-…" value="${esc(c.apiKey || "")}"></label>
       <label class="sm">${t("model")}<input class="input" id="aiM" placeholder="model-name" value="${esc(c.model || "")}"></label>
       <div class="row gap"><button class="btn primary" id="aiS">${t("save")}</button><button class="btn" id="aiX">${es ? "Borrar" : "Clear"}</button></div></section>
+    ${S.ownerUnlocked ? `<section class="card owner-card"><label class="switch-row"><span>${es ? "Modo propietario" : "Owner mode"}<small class="block muted">${es ? "Desbloquea todos los juegos y niveles de arcade en este dispositivo." : "Unlocks every arcade game and level on this device."}</small></span><input type="checkbox" class="switch" id="ownerMode" ${S.ownerMode ? "checked" : ""}></label></section>` : ""}
     <section class="card"><a class="list-card" href="#/credits"><span class="lc-ico">${ico("info")}</span><span class="grow">${es ? "Fuentes y créditos" : "Sources & credits"}</span>${ico("arrow", 18)}</a><p class="sm muted">${t("privacy")}</p><button class="btn danger full" id="rst">${t("resetAll")}</button></section></main>`; };
   A.bind.settings = () => {
     document.querySelectorAll("[data-set-lang]").forEach(b => b.onclick = () => { S.lang = b.dataset.setLang; if (S.lang === "es") S.usedEs = true; A.save(); Coach.rebuild(); A.render(); });
@@ -382,6 +383,8 @@
     const ss = $("#setSound"), paintSS = () => { ss.innerHTML = A.soundControls("ss"); A.bindSoundControls(ss, paintSS); }; if (ss && A.bindSoundControls) A.bindSoundControls(ss, paintSS);
     $("#aiS").onclick = () => { Coach.saveCfg({ endpoint: $("#aiE").value.trim(), apiKey: $("#aiK").value.trim(), model: $("#aiM").value.trim() }); A.toast(t("saved")); };
     $("#aiX").onclick = () => { Coach.saveCfg({}); A.render(); };
+    const om = $("#ownerMode");
+    if (om) om.onchange = () => { S.ownerMode = !!om.checked; A.save(); A.syncOwnerUnlock && A.syncOwnerUnlock(); Sound.sfx && Sound.sfx("toggle"); };
     $("#rst").onclick = () => { if (confirm(t("resetConfirm"))) { localStorage.removeItem(A.KEY); location.hash = ""; location.reload(); } };
   };
 

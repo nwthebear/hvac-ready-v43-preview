@@ -345,7 +345,7 @@
   window.addEventListener("hashchange", A.render);
   document.addEventListener("pointerdown", () => Sound.unlock(), { once: false, passive: true });
   document.addEventListener("DOMContentLoaded", () => {
-    A.applySettings(); A.normalizeStreak && A.normalizeStreak(); A.render(); soundBtn();
+    A.applySettings(); A.normalizeStreak && A.normalizeStreak(); A.consumeOwnerKey && A.consumeOwnerKey(); A.render(); soundBtn();
     document.getElementById("snd").onclick = () => { Sound.unlock(); if (A.openSoundSheet) A.openSoundSheet(); };
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
   });

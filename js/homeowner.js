@@ -49,7 +49,7 @@
   const HOME_GAMES = { freeze: "home_shop", thermostat_wiring: "home_yard", gauge_reader: "home_attic" };
   A.homeUnlock = id => { if (!isHome()) return null; const z = HOME_GAMES[id]; return z ? { type: "zoneComplete", zone: z } : { type: "tech" }; };
   const zoneDone = zid => { const plan = A.plan(); if (!plan) return false; const s = A.progress(plan).stages.find(x => x.id === zid); return !!s && s.pct === 100; };
-  A.homeArcade = games => isHome() ? games.filter(g => g[0] === "freeze" || g[0] === "match") : games;
+  A.homeArcade = games => (isHome() && !(A.ownerMode && A.ownerMode())) ? games.filter(g => g[0] === "freeze" || g[0] === "match") : games;
   /* Don't Freeze: locked for homeowners until The Shop is done */
   const arc0 = V.arcade;
   V.arcade = (args) => { let h = arc0(args); const g = args && args[0];
