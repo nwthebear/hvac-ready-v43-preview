@@ -17,7 +17,9 @@
     vent: YT("s2e3VfZBZ6I", "Fined $37,500 for Venting Refrigerant? How to Prevent This!", "AC Service Tech LLC"),
     recover: YT("6F-u55EoMcU", "Refrigerant Recovery Procedure! Including Vacuuming the Hose Setup and Recovery Tank Weight!", "AC Service Tech LLC"),
     bottles: YT("dDwI3CQp84Q", "HVAC Training on Refrigerant Bottles! R-32, R-454B, R-410A, R-22 Disposable Types, Recovery Bottles!", "AC Service Tech LLC"),
-    gauges: YT("xTctTHhOgaw", "Connect & Disconnect Refrigerant Gauges! Low Loss Fittings!", "AC Service Tech LLC")
+    gauges: YT("xTctTHhOgaw", "Connect & Disconnect Refrigerant Gauges! Low Loss Fittings!", "AC Service Tech LLC"),
+    t1recover: YT("yXJNuMmEPog", "Recovering Refrigerant! Use the System's Compressor or Recovery Machine? Explained!", "AC Service Tech LLC"),
+    chiller: YT("0rzQhSXVq60", "Chiller Basics - How they work", "The Engineering Mindset")
   };
 
   function attach(id, teach) {
@@ -491,6 +493,226 @@
       { q: T("Low-loss fittings on gauge hoses are there to:", "Los fittings de baja pérdida en las mangueras de manómetro sirven para:"),
         a: [T("Cut down how much refrigerant escapes when you connect and disconnect", "Reducir cuánto refrigerante se escapa al conectar y desconectar"), T("Raise suction pressure", "Subir la presión de succión"), T("Replace the need for a recovery cylinder", "Reemplazar la necesidad de un cilindro de recuperación"), T("Charge the system with air", "Cargar el sistema con aire")],
         c: 0, why: T("Every hookup can vent a little. Low-loss fittings — plus good habits — keep that de minimis, not a cloud.", "Cada conexión puede liberar un poco. Los fittings de baja pérdida, más buenos hábitos, lo dejan en de minimis, no en una nube.") }
+    ]
+  });
+
+  /* ---------------- EPA 608 Type I ---------------- */
+  attach("epa-t1-guide", {
+    minutes: 12,
+    steps: [
+      { kicker: T("EPA 608 Type I", "EPA 608 Tipo I"),
+        title: T("Type I is the fridge, the window unit, and the other sealed boxes", "El Tipo I es el refri, la unidad de ventana y las otras cajas selladas"),
+        body: [
+          T("Think of the appliances already in a kitchen, a dorm, or a break room: a refrigerator, a freezer, a window air conditioner, a dehumidifier, a water cooler, a vending machine. They leave the factory already sealed, with five pounds of refrigerant or less inside. That is the whole definition of a 'small appliance.'",
+            "Piensa en los aparatos que ya están en una cocina, un dormitorio o un comedor: un refrigerador, un congelador, un aire de ventana, un deshumidificador, un enfriador de agua, una máquina expendedora. Salen de fábrica ya sellados, con cinco libras de refrigerante o menos adentro. Esa es toda la definición de un 'aparato pequeño'."),
+          T("Type I is its own certification because these units are everywhere, they usually have no regular service ports, and it is tempting to just let the charge hiss out when you throw one away. The law does not allow that.",
+            "El Tipo I es su propia certificación porque estos equipos están en todos lados, casi nunca traen puertos de servicio normales, y es tentador dejar que la carga silbe hacia afuera cuando los tiras. La ley no lo permite.")
+        ]
+      },
+      { title: T("Get the refrigerant out before you open it or throw it away", "Saca el refrigerante antes de abrirlo o tirarlo"),
+        body: [
+          T("Before you cut into a sealed system, or before a fridge or window unit goes to the scrap pile, the refrigerant has to come out into a proper recovery cylinder. Opening a process tube and letting it hiss empty is venting, and venting is illegal.",
+            "Antes de cortar un sistema sellado, o antes de que un refri o un aire de ventana vaya a la chatarra, el refrigerante tiene que salir a un cilindro de recuperación correcto. Abrir un tubo de proceso y dejarlo silbar hasta vaciarse es liberar, y liberar es ilegal.")
+        ],
+        call: T("A landlord says, 'It's just a dorm fridge — pop the tube and toss it.' That shortcut is how refrigerant ends up in the air, and it is exactly what Type I certification is meant to stop.",
+          "Un dueño dice: 'Es solo un refri de dormitorio: ábrele el tubo y tíralo.' Ese atajo es cómo el refrigerante termina en el aire, y es justo lo que la certificación Tipo I está pensada para detener.")
+      },
+      { title: T("How much you have to recover, and why the number changes", "Cuánto tienes que recuperar, y por qué cambia el número"),
+        body: [
+          T("With the recovery equipment you'll actually use — machines made after November 15, 1993 — you must recover 90% of the charge if the compressor still runs, or 80% if the compressor is dead. You can also satisfy the rule by pulling the unit down to a 4-inch mercury vacuum.",
+            "Con el equipo de recuperación que realmente vas a usar — máquinas hechas después del 15 de noviembre de 1993 — debes recuperar el 90% de la carga si el compresor todavía corre, o el 80% si el compresor está muerto. También cumples la regla si bajas la unidad a un vacío de 4 pulgadas de mercurio."),
+          T("The compressor is why those numbers are different. When it still runs, it helps push refrigerant out, so the law asks for more. When it is dead, some refrigerant hides in the oil and is harder to get, so 80% is the requirement — unless you pull that 4-inch vacuum instead.",
+            "El compresor es la razón de que esos números sean distintos. Cuando todavía corre, ayuda a empujar el refrigerante hacia afuera, así que la ley pide más. Cuando está muerto, parte del refrigerante se esconde en el aceite y es más difícil de sacar, así que el requisito es 80% — a menos que en su lugar hagas ese vacío de 4 pulgadas.")
+        ],
+        analogy: T("It's like emptying a squeeze bottle. If you can still squeeze (the compressor runs), you can get almost all of it out. If you can't, you pour what you can and accept that a little stays behind — unless you hook up a pump and pull a vacuum.",
+          "Es como vaciar un bote que se aprieta. Si todavía puedes apretar (el compresor corre), sacas casi todo. Si no, viertes lo que puedes y aceptas que queda un poco — a menos que conectes una bomba y hagas vacío.")
+      },
+      { title: T("Two ways to pull the charge: your machine, or the appliance itself", "Dos formas de sacar la carga: tu máquina, o el mismo aparato"),
+        body: [
+          T("A self-contained, or active, recovery machine has its own compressor. It is a pump that pulls refrigerant out of the appliance and into your cylinder. That is the method you'll use most.",
+            "Una máquina de recuperación autocontenida, o activa, tiene su propio compresor. Es una bomba que saca el refrigerante del aparato y lo manda a tu cilindro. Ese es el método que más vas a usar."),
+          T("A system-dependent, or passive, method uses the appliance's own compressor or its own pressure to push refrigerant into a cylinder. You may only use that method on appliances that hold 15 pounds or less — which includes every Type I small appliance. If the compressor is dead, you have to open a path on both the high side and the low side, or a lot of the charge will stay trapped.",
+            "Un método dependiente del sistema, o pasivo, usa el propio compresor del aparato o su propia presión para empujar el refrigerante a un cilindro. Solo puedes usar ese método en aparatos que tienen 15 libras o menos — y eso incluye todo aparato pequeño Tipo I. Si el compresor está muerto, tienes que abrir un camino en el lado alto y en el lado bajo, o gran parte de la carga se queda atrapada.")
+        ],
+        video: V.t1recover,
+        analogy: T("Active recovery is bringing your own shop-vac. Passive recovery is tipping the bucket and letting it pour — it only works on small containers, and only if there's something left to push the liquid out.",
+          "La recuperación activa es traer tu propia aspiradora de taller. La pasiva es inclinar el balde y dejar que se vacíe: solo sirve en recipientes pequeños, y solo si queda algo que empuje el líquido hacia afuera.")
+      },
+      { title: T("Getting in: piercing valves are a temporary door, not a new port", "Cómo entrar: las válvulas de perforación son una puerta temporal, no un puerto nuevo"),
+        body: [
+          T("Most small appliances have no regular service ports. A piercing valve, sometimes called a saddle or bullet valve, clamps onto a straight piece of copper and pokes a hole so you can hook up and recover. Wear glasses and gloves — refrigerant can spray when the tube is pierced.",
+            "La mayoría de los aparatos pequeños no tienen puertos de servicio normales. Una válvula de perforación, a veces llamada de silla o de bala, se sujeta a un tramo recto de cobre y hace un agujero para que puedas conectar y recuperar. Usa lentes y guantes: el refrigerante puede salir disparado al perforar el tubo."),
+          T("These valves can leak later. If the appliance is being repaired and will stay in service, don't leave the piercing valve on as a permanent port. Recover, make a proper repair, and use a real process stub or service fitting if the unit needs one. If you are disposing of the unit, recover first, then it can be scrapped.",
+            "Estas válvulas pueden fugar después. Si el aparato se va a reparar y se queda en servicio, no dejes la válvula de perforación como puerto permanente. Recupera, haz una reparación correcta y usa un tubo de proceso o un fitting de servicio de verdad si lo necesita. Si lo estás desechando, recupera primero y luego se puede chatarrear.")
+        ],
+        call: T("You get a 'dead fridge, just recycle it' call. The compressor doesn't run. You install piercing access on both sides, recover to the 80% rule or a 4-inch vacuum, and only then do you let it go to the scrap truck. You do not leave a piercing valve on a fridge the family still wants to keep.",
+          "Te toca una llamada de 'el refri está muerto, solo recíclalo.' El compresor no corre. Instalas acceso de perforación en ambos lados, recuperas al 80% o a un vacío de 4 pulgadas, y solo entonces va al camión de chatarra. No dejas una válvula de perforación en un refri que la familia todavía quiere usar.")
+      }
+    ],
+    recap: [
+      T("Type I covers factory-sealed appliances with 5 pounds of refrigerant or less — fridges, window units, dehumidifiers, vending machines.", "El Tipo I cubre aparatos sellados de fábrica con 5 libras de refrigerante o menos: refris, unidades de ventana, deshumidificadores, expendedoras."),
+      T("Recover before you open the system or throw the unit away. Letting it hiss out is venting.", "Recupera antes de abrir el sistema o tirar la unidad. Dejar que silbe hacia afuera es liberar."),
+      T("With modern recovery equipment: 90% if the compressor runs, 80% if it doesn't — or a 4-inch vacuum.", "Con equipo de recuperación moderno: 90% si el compresor corre, 80% si no — o un vacío de 4 pulgadas."),
+      T("System-dependent recovery is only for appliances with 15 pounds or less. Piercing valves are temporary. If the compressor is dead, access both sides.", "La recuperación dependiente del sistema solo es para aparatos de 15 libras o menos. Las válvulas de perforación son temporales. Si el compresor está muerto, accede a ambos lados.")
+    ],
+    check: [
+      { q: T("Which of these is a Type I 'small appliance'?", "¿Cuál de estos es un 'aparato pequeño' Tipo I?"),
+        a: [T("A kitchen refrigerator, factory-sealed with 5 pounds of refrigerant or less", "Un refrigerador de cocina, sellado de fábrica con 5 libras de refrigerante o menos"), T("A 3-ton split-system air conditioner at a house", "Un aire acondicionado split de 3 toneladas en una casa"), T("A centrifugal chiller in a building basement", "Un chiller centrífugo en el sótano de un edificio"), T("The air conditioner in a car", "El aire acondicionado de un auto")],
+        c: 0, why: T("Type I is factory-sealed equipment with 5 pounds or less. A house split is Type II, a low-pressure chiller is Type III, and car AC is a different certification (609).", "El Tipo I es equipo sellado de fábrica con 5 libras o menos. Un split de casa es Tipo II, un chiller de baja presión es Tipo III, y el AC de auto es otra certificación (609).") },
+      { q: T("The compressor on a window unit still runs. You are using a recovery machine made after 1993. How much refrigerant do you have to recover?", "El compresor de un aire de ventana todavía corre. Usas una máquina de recuperación hecha después de 1993. ¿Cuánto refrigerante tienes que recuperar?"),
+        a: [T("90% of the charge, or pull a 4-inch vacuum", "El 90% de la carga, o un vacío de 4 pulgadas"), T("80% of the charge only — 90% is never required", "Solo el 80% de la carga: el 90% nunca se exige"), T("Half the charge is enough", "La mitad de la carga es suficiente"), T("You can vent what's left once the unit is outside", "Puedes liberar lo que queda si la unidad ya está afuera")],
+        c: 0, why: T("With post-1993 equipment and a running compressor, the rule is 90%, or a 4-inch mercury vacuum. 80% is the number when the compressor is dead.", "Con equipo de después de 1993 y un compresor que corre, la regla es 90%, o un vacío de 4 pulgadas de mercurio. El 80% es el número cuando el compresor está muerto.") },
+      { q: T("When may you use system-dependent (passive) recovery, which uses the appliance itself to push the charge out?", "¿Cuándo puedes usar recuperación dependiente del sistema (pasiva), que usa el mismo aparato para empujar la carga?"),
+        a: [T("Only on appliances that hold 15 pounds of refrigerant or less", "Solo en aparatos que tienen 15 libras de refrigerante o menos"), T("On any rooftop unit, as long as you're in a hurry", "En cualquier unidad de azotea, si tienes prisa"), T("Only on low-pressure chillers", "Solo en chillers de baja presión"), T("Anytime the recovery machine is broken", "Siempre que la máquina de recuperación esté descompuesta")],
+        c: 0, why: T("The law limits system-dependent recovery to appliances with a full charge of 15 pounds or less, unless a pump-out unit is permanently attached. That includes Type I small appliances. A big rooftop or a chiller is not in that group.", "La ley limita la recuperación dependiente del sistema a aparatos con 15 libras o menos, salvo una unidad de bombeo permanente. Eso incluye los aparatos pequeños Tipo I. Una azotea grande o un chiller no entran.") },
+      { q: T("You need to recover a sealed dorm fridge that has no service ports. Which statement is right?", "Tienes que recuperar un refri de dormitorio sellado que no tiene puertos de servicio. ¿Cuál afirmación es correcta?"),
+        a: [T("A piercing valve can get you in, but don't leave it on a unit that will stay in service", "Una válvula de perforación te puede dar acceso, pero no la dejes en una unidad que se va a quedar en servicio"), T("Leave the piercing valve on forever — it is as good as a factory port", "Déjala puesta para siempre: es tan buena como un puerto de fábrica"), T("Skip recovery if the fridge is going to the scrap yard", "Sáltate la recuperación si el refri va a la chatarra"), T("Pierce only the low side even if the compressor is dead and you can't move the charge", "Perfora solo el lado bajo aunque el compresor esté muerto y no puedas mover la carga")],
+        c: 0, why: T("Piercing valves are a temporary door. They can leak later, so they should not stay on an appliance the customer will keep. If the compressor is dead, you need access on both sides, and you still have to recover before disposal.", "Las válvulas de perforación son una puerta temporal. Pueden fugar después, así que no deben quedarse en un aparato que el cliente va a conservar. Si el compresor está muerto, necesitas acceso en ambos lados, y aún así tienes que recuperar antes de desecharlo.") }
+    ]
+  });
+
+  /* ---------------- EPA 608 Type II ---------------- */
+  attach("epa-t2-guide", {
+    minutes: 14,
+    steps: [
+      { kicker: T("EPA 608 Type II", "EPA 608 Tipo II"),
+        title: T("Type II is the house AC, the rooftop, and the grocery-store rack", "El Tipo II es el AC de la casa, la azotea y el rack del supermercado"),
+        body: [
+          T("Type II covers medium-pressure, high-pressure, and very high-pressure systems — except small appliances and car air conditioners. The unit that cools a house, a rooftop package unit, a heat pump, and the rack that keeps a grocery case cold all live here.",
+            "El Tipo II cubre sistemas de media, alta y muy alta presión, excepto aparatos pequeños y el aire del auto. La unidad que enfría una casa, un paquete de azotea, una bomba de calor y el rack que mantiene fría una vitrina de supermercado viven aquí."),
+          T("The fridge in the kitchen is Type I. The giant low-pressure chiller in a building basement is Type III. Car AC is a separate certification. Type II is everything in between that uses the higher-pressure refrigerants you'll see on most service calls, like R-22 and R-410A.",
+            "El refri de la cocina es Tipo I. El gran chiller de baja presión en el sótano de un edificio es Tipo III. El AC del auto es otra certificación. El Tipo II es todo lo de en medio que usa los refrigerantes de más presión que vas a ver en la mayoría de las llamadas, como R-22 y R-410A.")
+        ]
+      },
+      { title: T("If a system holds 50 pounds or more, the law tracks how fast it leaks", "Si un sistema tiene 50 libras o más, la ley sigue qué tan rápido fuga"),
+        body: [
+          T("For appliances with 50 pounds or more of an ozone-depleting refrigerant (the older CFC and HCFC stuff, like R-22, or a blend that contains one), the owner has to watch the leak rate. If it goes over the limit, the leak generally has to be repaired within 30 days — or the equipment has to be retrofitted or retired.",
+            "En aparatos con 50 libras o más de un refrigerante que agota el ozono (los CFC y HCFC viejos, como el R-22, o una mezcla que lo contiene), el dueño tiene que vigilar la tasa de fuga. Si se pasa del límite, en general hay que reparar la fuga en un plazo de 30 días, o cambiar o retirar el equipo."),
+          T("The limits are easy to remember as Comfort 10, Commercial 20, Industrial 30: 10% a year for comfort cooling (the AC that keeps people comfortable), 20% for commercial refrigeration (grocery cases, walk-ins), and 30% for industrial process refrigeration.",
+            "Los límites se recuerdan fácil como Confort 10, Comercial 20, Industrial 30: 10% al año para enfriamiento de confort (el AC que mantiene cómoda a la gente), 20% para refrigeración comercial (vitrinas, cámaras), y 30% para refrigeración de proceso industrial.")
+        ],
+        analogy: T("Leak rate is like a tire that loses air. Losing a little every month can still leave you flat by the end of the year. The percentages are that yearly loss compared with a full charge.",
+          "La tasa de fuga es como una llanta que pierde aire. Perder un poco cada mes igual te deja ponchado al cabo del año. Los porcentajes son esa pérdida anual comparada con una carga completa."),
+        call: T("A supermarket rack holds 300 pounds of R-22. Over a year it needs 75 pounds added back. That's 25%. Commercial refrigeration's limit is 20%, so this one is over the line and has to be addressed.",
+          "Un rack de supermercado tiene 300 libras de R-22. En un año hay que reponerle 75 libras. Eso es 25%. El límite de la refrigeración comercial es 20%, así que este ya se pasó y hay que atenderlo.")
+      },
+      { title: T("How deep you have to recover depends on the refrigerant and the charge", "Qué tan profundo tienes que recuperar depende del refrigerante y de la carga"),
+        body: [
+          T("Once you are off a small appliance, the law sets a vacuum level you have to reach before you open the system or scrap it. Almost every recovery machine you'll use was made after November 15, 1993, so memorize the 'after 1993' column.",
+            "Cuando ya no es un aparato pequeño, la ley fija el nivel de vacío que debes alcanzar antes de abrir el sistema o chatarrearlo. Casi toda máquina de recuperación que uses se hizo después del 15 de noviembre de 1993, así que memoriza la columna de 'después de 1993'."),
+          T("Most of the systems you'll work on are high-pressure — R-22 and R-410A live here. If the unit holds less than 200 pounds, you recover until you are at 0 inches of vacuum, which is back to outdoor air pressure. If it holds 200 pounds or more, you keep going to a 10-inch vacuum so less is left inside.",
+            "La mayoría de los sistemas que vas a trabajar son de alta presión: ahí viven el R-22 y el R-410A. Si la unidad tiene menos de 200 libras, recuperas hasta 0 pulgadas de vacío, que es volver a la presión del aire de afuera. Si tiene 200 libras o más, sigues hasta un vacío de 10 pulgadas para que quede menos adentro.")
+        ],
+        analogy: T("Think of wringing out a sponge. A small, high-pressure system can be wrung to 'just damp' (0 inches). A bigger charge, or a medium-pressure one, has to be wrung harder so less is left in the corners.",
+          "Piensa en escurrir una esponja. Un sistema pequeño de alta presión se puede escurrir hasta 'solo húmedo' (0 pulgadas). Una carga más grande, o una de media presión, hay que escurrirla más fuerte para que quede menos en las esquinas.")
+      },
+      { title: T("The other pressure groups get their own numbers", "Los otros grupos de presión tienen sus propios números"),
+        body: [
+          T("Medium-pressure refrigerants (like R-12 and R-134a on this test) need a deeper pull: 10 inches if the charge is under 200 pounds, 15 inches if it is 200 or more. Very high-pressure specialty refrigerants only have to be recovered to 0 inches of vacuum.",
+            "Los refrigerantes de media presión (como el R-12 y el R-134a en este examen) piden un vacío más profundo: 10 pulgadas si la carga es menor de 200 libras, 15 pulgadas si es de 200 o más. Los refrigerantes especiales de muy alta presión solo hay que recuperarlos a 0 pulgadas de vacío.")
+        ],
+        call: T("On the test, read the refrigerant first, then the charge size, then the year of the recovery machine. Those three facts pick the row.", "En el examen, lee primero el refrigerante, luego el tamaño de la carga y luego el año de la máquina de recuperación. Esos tres datos eligen el renglón.")
+      },
+      { title: T("How you actually pull a charge on a real unit", "Cómo sacas una carga de verdad en una unidad real"),
+        body: [
+          T("Recover liquid first, then the remaining vapor. Liquid moves a lot of refrigerant in a short time; vapor is slower and gets what's left. Weigh the recovery cylinder and never fill it more than 80% by weight — a hot truck will make the liquid expand. Identify the refrigerant, use certified recovery equipment, and keep the hoses short and tight.",
+            "Recupera primero el líquido y luego el vapor que queda. El líquido mueve mucho refrigerante en poco tiempo; el vapor es más lento y saca lo que falta. Pesa el cilindro de recuperación y nunca lo llenes a más del 80% por peso: una camioneta caliente hace que el líquido se expanda. Identifica el refrigerante, usa equipo de recuperación certificado y mantén las mangueras cortas y bien puestas."),
+          T("When you look for leaks, oil spots and numbers that don't look right are clues. Pressurize with dry nitrogen — never oxygen or shop air, which can turn oil into a bomb. A little soap solution, an electronic detector, or an ultrasonic detector will show you where it is coming from.",
+            "Cuando buscas fugas, las manchas de aceite y los números que no cuadran son pistas. Presuriza con nitrógeno seco: nunca oxígeno ni aire del taller, que pueden convertir el aceite en una bomba. Un poco de agua jabonosa, un detector electrónico o uno ultrasónico te muestran de dónde sale.")
+        ],
+        video: V.recover,
+        call: T("It's 95°F, you're recovering a 5-ton R-410A changeout, and the cylinder is already heavy. Check the scale before you keep going. An overfilled gray-and-yellow recovery bottle on a hot truck is a safety problem, not just a paperwork one.",
+          "Hace 95°F, estás recuperando un cambio de 5 toneladas de R-410A, y el cilindro ya está pesado. Revisa la báscula antes de seguir. Una botella de recuperación gris y amarilla sobrecargada en una camioneta caliente es un problema de seguridad, no solo de papeles.")
+      }
+    ],
+    recap: [
+      T("Type II is medium-, high-, and very high-pressure equipment — house splits, heat pumps, rooftops, and commercial racks — not fridges, cars, or low-pressure chillers.", "El Tipo II es equipo de media, alta y muy alta presión: splits de casa, bombas de calor, azoteas y racks comerciales; no refris, autos ni chillers de baja presión."),
+      T("For 50+ pound ozone-depleting systems: Comfort 10, Commercial 20, Industrial 30. Repair is generally due within 30 days.", "En sistemas de 50 libras o más que agotan el ozono: Confort 10, Comercial 20, Industrial 30. En general hay que reparar en 30 días."),
+      T("With post-1993 equipment, high-pressure under 200 lb recovers to 0 inches of vacuum; 200 lb or more goes to 10 inches. Medium-pressure is 10 inches under 200 lb and 15 inches at 200 lb or more.", "Con equipo de después de 1993, la alta presión de menos de 200 lb se recupera a 0 pulgadas de vacío; 200 lb o más, a 10 pulgadas. La media presión es 10 pulgadas bajo 200 lb y 15 pulgadas a 200 lb o más."),
+      T("Recover liquid first, then vapor. Never fill a recovery cylinder over 80%. Leak-check with nitrogen, never oxygen or shop air.", "Recupera líquido primero y luego vapor. Nunca llenes un cilindro de recuperación a más del 80%. Busca fugas con nitrógeno, nunca con oxígeno ni aire de taller.")
+    ],
+    check: [
+      { q: T("Which job is Type II?", "¿Cuál trabajo es Tipo II?"),
+        a: [T("A 3-ton split-system air conditioner at a house", "Un aire acondicionado split de 3 toneladas en una casa"), T("A kitchen refrigerator with 4 ounces of refrigerant", "Un refrigerador de cocina con 4 onzas de refrigerante"), T("A low-pressure centrifugal chiller", "Un chiller centrífugo de baja presión"), T("Recharging the air conditioner in a pickup truck", "Recargar el aire acondicionado de una troquita")],
+        c: 0, why: T("A residential split is a high-pressure appliance, so it is Type II. The fridge is Type I, the low-pressure chiller is Type III, and vehicle AC is Section 609, not 608 Type II.", "Un split residencial es un aparato de alta presión, así que es Tipo II. El refri es Tipo I, el chiller de baja presión es Tipo III, y el AC de vehículo es la Sección 609, no el Tipo II de 608.") },
+      { q: T("A comfort-cooling system holds 50 pounds or more of an ozone-depleting refrigerant. At what yearly leak rate must the leak be addressed?", "Un sistema de enfriamiento de confort tiene 50 libras o más de un refrigerante que agota el ozono. ¿A qué tasa de fuga anual hay que atender la fuga?"),
+        a: [T("Over 10%", "Más del 10%"), T("Over 20%", "Más del 20%"), T("Over 30%", "Más del 30%"), T("Over 50%", "Más del 50%")],
+        c: 0, why: T("Comfort cooling is 10%. Commercial refrigeration is 20%. Industrial process is 30%. Remember: Comfort 10, Commercial 20, Industrial 30.", "El enfriamiento de confort es 10%. La refrigeración comercial es 20%. El proceso industrial es 30%. Recuerda: Confort 10, Comercial 20, Industrial 30.") },
+      { q: T("You are using a recovery machine made after 1993 on a high-pressure R-410A split that holds less than 200 pounds. What vacuum does the law require before you open it?", "Usas una máquina de recuperación hecha después de 1993 en un split de alta presión R-410A que tiene menos de 200 libras. ¿Qué vacío exige la ley antes de abrirlo?"),
+        a: [T("0 inches of mercury vacuum (back to outdoor air pressure)", "0 pulgadas de vacío de mercurio (volver a la presión del aire de afuera)"), T("10 inches of mercury vacuum", "10 pulgadas de vacío de mercurio"), T("15 inches of mercury vacuum", "15 pulgadas de vacío de mercurio"), T("25 mm Hg absolute", "25 mm Hg absolutos")],
+        c: 0, why: T("High-pressure appliances under 200 pounds, with post-1993 equipment, recover to 0 inches of vacuum. 10 inches is the number when that same high-pressure system holds 200 pounds or more. 15 inches is medium-pressure at 200 pounds or more. 25 mm Hg absolute is Type III (low-pressure).", "Los aparatos de alta presión de menos de 200 libras, con equipo de después de 1993, se recuperan a 0 pulgadas de vacío. 10 pulgadas es el número cuando ese mismo sistema de alta presión tiene 200 libras o más. 15 pulgadas es media presión a 200 libras o más. 25 mm Hg absolutos es Tipo III (baja presión).") },
+      { q: T("A 300-pound R-22 supermarket rack needs 75 pounds added over a year. What does that tell you?", "Un rack de supermercado de 300 libras de R-22 necesita que le agreguen 75 libras en un año. ¿Qué te dice eso?"),
+        a: [T("That's a 25% leak rate, over the 20% commercial limit, so it has to be addressed", "Es una tasa de fuga del 25%, por encima del límite comercial del 20%, así que hay que atenderlo"), T("That's under every leak limit, so no one has to do anything", "Está bajo todos los límites de fuga, así que nadie tiene que hacer nada"), T("Leak rates only apply to window air conditioners", "Las tasas de fuga solo aplican a aires de ventana"), T("You should vent the rest and start over", "Debes liberar el resto y empezar de cero")],
+        c: 0, why: T("75 ÷ 300 = 25%. Commercial refrigeration's threshold is 20% per year on a 50-pound-or-more ozone-depleting system, so this rack is over the line. Comfort would have been 10%; industrial would have been 30%.", "75 ÷ 300 = 25%. El umbral de la refrigeración comercial es 20% al año en un sistema de 50 libras o más que agota el ozono, así que este rack ya se pasó. En confort habría sido 10%; en industrial, 30%.") }
+    ]
+  });
+
+  /* ---------------- EPA 608 Type III ---------------- */
+  attach("epa-t3-guide", {
+    minutes: 12,
+    steps: [
+      { kicker: T("EPA 608 Type III", "EPA 608 Tipo III"),
+        title: T("Type III is the big low-pressure chiller that cools a whole building", "El Tipo III es el gran chiller de baja presión que enfría todo un edificio"),
+        body: [
+          T("A low-pressure chiller is the machine in a basement or mechanical room that makes cold water for an entire building. The refrigerant inside — often something like R-123 or a newer low-pressure replacement — boils at such a low pressure that part of the machine actually runs below outdoor air pressure: in a vacuum.",
+            "Un chiller de baja presión es la máquina en un sótano o cuarto de máquinas que hace agua fría para todo un edificio. El refrigerante de adentro — a menudo algo como R-123 o un reemplazo nuevo de baja presión — hierve a una presión tan baja que parte de la máquina corre por debajo de la presión del aire de afuera: en un vacío."),
+          T("That one fact changes almost everything about how you service it. Type I was the fridge. Type II was the house AC and the rooftop. Type III is this vessel, and you treat it carefully.",
+            "Ese solo hecho cambia casi todo en cómo lo sirves. El Tipo I era el refri. El Tipo II era el AC de la casa y la azotea. El Tipo III es este recipiente, y lo tratas con cuidado.")
+        ],
+        video: V.chiller
+      },
+      { title: T("Leaks on this machine often suck air in, not just let refrigerant out", "En esta máquina, las fugas a menudo meten aire, no solo dejan salir refrigerante"),
+        body: [
+          T("Because part of the chiller is under a vacuum, a pinhole on the low side can pull air and moisture in. Air is a non-condensable: it takes up space, raises head pressure, and makes the machine work harder. A purge unit is the little separator that pulls that air back out and tries not to throw refrigerant away with it.",
+            "Como parte del chiller está en vacío, un pinhole en el lado bajo puede meter aire y humedad. El aire es un no condensable: ocupa espacio, sube la presión de descarga y hace que la máquina trabaje más. Una unidad de purga es el pequeño separador que saca ese aire y trata de no tirar refrigerante junto con él."),
+          T("If the purge starts running a lot more than it used to, that is an early leak warning. The machine is telling you it is swallowing air.",
+            "Si la purga empieza a correr mucho más que antes, eso es una alerta temprana de fuga. La máquina te está diciendo que está tragando aire.")
+        ],
+        analogy: T("A low-pressure chiller is like a straw in a drink. A pinhole in the straw doesn't spray the drink out — it sucks air in and the sip gets weak. The purge is the burp that gets that air out of the line.",
+          "Un chiller de baja presión es como un popote en una bebida. Un pinhole en el popote no rocía la bebida hacia afuera: mete aire y el sorbo queda flojo. La purga es el eructo que saca ese aire de la línea."),
+        call: T("A building engineer says the chiller 'is always purging now.' You don't ignore that. You look for the leak, because a purge that runs for hours is rarely 'just how this old machine is.'",
+          "Un ingeniero del edificio dice que el chiller 'ahora está purgando todo el tiempo.' No lo ignores. Buscas la fuga, porque una purga que corre horas casi nunca es 'así es esta máquina vieja.'")
+      },
+      { title: T("When you look for a leak, don't blow the rupture disc", "Cuando buscas una fuga, no revientes el disco de ruptura"),
+        body: [
+          T("These vessels are not built for high pressure. A rupture disc — usually rated around 15 psig — is the emergency relief. If you over-pressurize the chiller, the disc bursts and you have a much worse day.",
+            "Estos recipientes no están hechos para alta presión. Un disco de ruptura, por lo general calibrado cerca de 15 psig, es el alivio de emergencia. Si presurizas de más el chiller, el disco revienta y el día se te pone mucho peor."),
+          T("To leak-test, raise the pressure gently: controlled warm water or heating blankets, or a little dry nitrogen. Stay around 10 psig, under that 15 psig disc. Then use soap, an electronic detector, or ultrasonic listening to find the leak. Never use a torch to heat a refrigerant vessel, and never use oxygen or shop air.",
+            "Para probar fugas, sube la presión con cuidado: agua tibia controlada o cobertores térmicos, o un poco de nitrógeno seco. Quédate cerca de 10 psig, por debajo de ese disco de 15 psig. Luego usa jabón, un detector electrónico o escucha ultrasónica para hallar la fuga. Nunca uses un soplete para calentar un recipiente de refrigerante, y nunca uses oxígeno ni aire de taller.")
+        ]
+      },
+      { title: T("Recover liquid first, keep the water moving, and pull a deep vacuum", "Recupera el líquido primero, mantén el agua en movimiento y haz un vacío profundo"),
+        body: [
+          T("Same idea as Type II, with two chiller-specific rules. Take the liquid out first, then the vapor. Keep water circulating through the tubes so they don't freeze as the pressure drops. Freeze a tube bundle and you can crack it.",
+            "La misma idea que en el Tipo II, con dos reglas propias del chiller. Saca primero el líquido y luego el vapor. Mantén el agua circulando por los tubos para que no se congelen cuando baja la presión. Si congelas un paquete de tubos, lo puedes agrietar."),
+          T("The required recovery level is 25 millimeters of mercury absolute — a deep vacuum, close to a nearly empty vessel. That is not the same thing as 25 inches of vacuum, and it is much deeper than the 4- or 10-inch numbers from Type I and Type II. When you charge back, add vapor first until the pressure is high enough that liquid won't freeze the water in the tubes, then add liquid.",
+            "El nivel de recuperación exigido es 25 milímetros de mercurio absolutos: un vacío profundo, casi un recipiente vacío. No es lo mismo que 25 pulgadas de vacío, y es mucho más profundo que los números de 4 o 10 pulgadas del Tipo I y el Tipo II. Cuando vuelvas a cargar, agrega vapor primero hasta que la presión sea lo bastante alta para que el líquido no congele el agua de los tubos, y luego agrega líquido.")
+        ],
+        analogy: T("25 mm Hg absolute is like almost all the air sucked out of a jar. 25 inches of vacuum is a different, shallower measurement. On this test, low-pressure chillers want the deep one: 25 mm Hg absolute.",
+          "25 mm Hg absolutos es como succionar casi todo el aire de un frasco. 25 pulgadas de vacío es otra medida, menos profunda. En este examen, los chillers de baja presión piden la profunda: 25 mm Hg absolutos."),
+        call: T("You're recovering a chiller on a tight schedule. If you skip the water pumps, the barrel can frost and a tube can suffer. Keep the pumps on, liquid first, then vapor, down to 25 mm Hg absolute.",
+          "Estás recuperando un chiller con poco tiempo. Si te saltas las bombas de agua, el tanque se puede escarchar y un tubo puede sufrir. Deja las bombas encendidas, líquido primero, luego vapor, hasta 25 mm Hg absolutos.")
+      }
+    ],
+    recap: [
+      T("Type III is low-pressure appliances — mainly centrifugal chillers — where part of the system runs in a vacuum.", "El Tipo III es aparatos de baja presión, sobre todo chillers centrífugos, donde parte del sistema corre en un vacío."),
+      T("Leaks can suck air in. A purge unit removes that air. A purge that runs a lot more than usual is a leak warning.", "Las fugas pueden meter aire. Una unidad de purga saca ese aire. Una purga que corre mucho más de lo usual es una alerta de fuga."),
+      T("Leak-test gently, around 10 psig, so you stay under the 15 psig rupture disc. Never heat a vessel with a torch.", "Prueba fugas con suavidad, cerca de 10 psig, para quedarte bajo el disco de ruptura de 15 psig. Nunca calientes un recipiente con soplete."),
+      T("Recover liquid first, keep water circulating, and pull to 25 mm Hg absolute. Charge vapor first, then liquid, so the tubes don't freeze.", "Recupera el líquido primero, mantén el agua circulando y llega a 25 mm Hg absolutos. Carga vapor primero y luego líquido, para que los tubos no se congelen.")
+    ],
+    check: [
+      { q: T("Why can a leak on a low-pressure chiller pull air in?", "¿Por qué una fuga en un chiller de baja presión puede meter aire?"),
+        a: [T("Part of the system runs below outdoor air pressure, in a vacuum", "Parte del sistema corre por debajo de la presión del aire de afuera, en un vacío"), T("The refrigerant is always at 400 psig, so air is sucked toward it", "El refrigerante siempre está a 400 psig, así que el aire es succionado hacia él"), T("Window units always pull air in, and a chiller is the same thing", "Los aires de ventana siempre meten aire, y un chiller es lo mismo"), T("Air is heavier than refrigerant, so it falls in through the drain", "El aire es más pesado que el refrigerante, así que cae por el desagüe")],
+        c: 0, why: T("The low side of these chillers is under a vacuum. A pinhole can let outdoor air and moisture in. That's why a purge unit exists, and why extra purge time is a warning.", "El lado bajo de estos chillers está en vacío. Un pinhole puede meter aire y humedad de afuera. Por eso existe la unidad de purga, y por eso más tiempo de purga es una alerta.") },
+      { q: T("The purge unit on a chiller has started running for hours every day. What should you think first?", "La unidad de purga de un chiller empezó a correr horas todos los días. ¿Qué debes pensar primero?"),
+        a: [T("Air is leaking in — look for a leak", "Está entrando aire: busca una fuga"), T("That's normal on every chiller, all day, every day", "Es normal en todos los chillers, todo el día, todos los días"), T("The rupture disc has already burst, so you can ignore the purge", "El disco de ruptura ya reventó, así que puedes ignorar la purga"), T("Add oxygen to keep the purge busy", "Agrega oxígeno para mantener la purga ocupada")],
+        c: 0, why: T("The purge removes non-condensables. If it suddenly has a lot more work, air is getting in, which usually means a leak.", "La purga saca no condensables. Si de pronto tiene mucho más trabajo, está entrando aire, y eso casi siempre significa una fuga.") },
+      { q: T("You need to leak-test a low-pressure chiller. What is the safe way to raise the pressure?", "Necesitas probar fugas en un chiller de baja presión. ¿Cuál es la forma segura de subir la presión?"),
+        a: [T("Warm water or heating blankets, or a little nitrogen, staying around 10 psig — under the 15 psig rupture disc", "Agua tibia o cobertores térmicos, o un poco de nitrógeno, quedándote cerca de 10 psig, bajo el disco de ruptura de 15 psig"), T("Shop air, up to 150 psig, to really find it", "Aire de taller, hasta 150 psig, para encontrarla de verdad"), T("A torch on the vessel until the gauges climb", "Un soplete en el recipiente hasta que suban los manómetros"), T("Oxygen, because it is cheap and clean", "Oxígeno, porque es barato y limpio")],
+        c: 0, why: T("The rupture disc commonly opens around 15 psig. Stay near 10 psig with controlled heat or a little dry nitrogen. Oxygen, shop air, and a torch on the vessel are all unsafe.", "El disco de ruptura por lo general abre cerca de 15 psig. Quédate cerca de 10 psig con calor controlado o un poco de nitrógeno seco. El oxígeno, el aire de taller y un soplete en el recipiente son inseguros.") },
+      { q: T("What recovery level does the law require on a low-pressure appliance, and what else do you have to watch?", "¿Qué nivel de recuperación exige la ley en un aparato de baja presión, y qué más tienes que cuidar?"),
+        a: [T("25 mm Hg absolute, and keep water circulating so the tubes don't freeze", "25 mm Hg absolutos, y mantén el agua circulando para que los tubos no se congelen"), T("4 inches of mercury vacuum, same as a window unit", "4 pulgadas de vacío de mercurio, igual que un aire de ventana"), T("0 inches of vacuum, same as a small high-pressure split", "0 pulgadas de vacío, igual que un split pequeño de alta presión"), T("25 inches of mercury vacuum — it's the same as 25 mm Hg absolute", "25 pulgadas de vacío de mercurio: es lo mismo que 25 mm Hg absolutos")],
+        c: 0, why: T("Low-pressure appliances must be recovered to 25 mm Hg absolute, which is a deep vacuum, not 25 inches of vacuum and not the Type I or Type II inch numbers. Circulating water protects the tubes. Charge vapor first, then liquid, for the same reason.", "Los aparatos de baja presión deben recuperarse a 25 mm Hg absolutos, un vacío profundo, no 25 pulgadas de vacío ni los números en pulgadas del Tipo I o II. El agua circulando protege los tubos. Carga vapor primero y luego líquido, por la misma razón.") }
     ]
   });
 })();

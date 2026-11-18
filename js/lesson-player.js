@@ -32,6 +32,15 @@
     </button>`;
   }
 
+  /* Stable per-question answer order so the right answer isn't always first. */
+  function order(id, qi, n) {
+    let h = 2166136261; const s = id + ":" + qi;
+    for (let k = 0; k < s.length; k++) { h ^= s.charCodeAt(k); h = Math.imul(h, 16777619) >>> 0; }
+    const a = Array.from({ length: n }, (_, k) => k);
+    for (let k = n - 1; k > 0; k--) { h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0; const j = h % (k + 1); [a[k], a[j]] = [a[j], a[k]]; }
+    return a;
+  }
+
   function stepHtml(g, id, i, teach) {
     const es = A.S.lang === "es";
     const steps = teach.steps;
@@ -61,7 +70,7 @@
       checks.forEach((q, qi) => {
         body += `<div class="teach-q" data-qi="${qi}">
           <h3>${esc(tx(q.q))}</h3>
-          ${(q.a || []).map((ans, ai) => `<button type="button" class="ans teach-ans" data-qi="${qi}" data-ai="${ai}">${esc(tx(ans))}</button>`).join("")}
+          ${order(id, qi, (q.a || []).length).map(ai => `<button type="button" class="ans teach-ans" data-qi="${qi}" data-ai="${ai}">${esc(tx(q.a[ai]))}</button>`).join("")}
           <div class="teach-why" hidden></div>
         </div>`;
       });
