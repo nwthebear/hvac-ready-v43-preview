@@ -91,7 +91,7 @@
         <button type="button" class="st-x" id="starter-x" aria-label="${es ? "Cerrar" : "Close"}">×</button>
         <div class="eyebrow">${es ? "Inicio" : "Starter"}</div>
         <h2 id="starter-title">${es ? "¡Juego de inicio desbloqueado!" : "Starter game unlocked!"}</h2>
-        <p class="st-body">${es ? "Emparejar Herramientas: estás en la camioneta. Toca cada herramienta o pieza y luego su nombre. Un par a la vez, sin trucos — un calentamiento rápido antes de sacar manómetros o cables." : "Tool Match: you're at the truck. Tap each tool or part, then tap its name. One pair at a time, no trick questions — a quick warm-up before you break out gauges or wire."}</p>
+        <p class="st-body">${es ? "Emparejar Herramientas: toca cada herramienta o pieza y luego su nombre. Un par a la vez." : "Tool Match: tap each tool or part, then tap its name. One pair at a time."}</p>
         <div class="st-btns">
           <button type="button" class="btn primary big" id="starter-play">${es ? "Jugar ahora" : "Play now"}</button>
           <button type="button" class="btn big" id="starter-skip">${es ? "Ahora no" : "Skip for now"}</button>

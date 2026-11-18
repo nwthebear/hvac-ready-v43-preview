@@ -203,8 +203,16 @@ details summary { cursor: pointer; list-style: none; } details summary::-webkit-
 .history { list-style: none; padding: 0; } .history li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); } .h-type { width: 30px; height: 30px; border-radius: 50%; background: var(--mist); display: grid; place-items: center; color: var(--steel); }
 /* day one, tools, gear */
 .qa-list { display: grid; gap: var(--s2); } .qa { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); } .qa summary { display: flex; gap: 10px; align-items: center; padding: 14px; min-height: 60px; } .qa p { padding: 0 16px 16px; margin: 0; } .qa-ico { font-size: 1.4rem; }
-.tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); } .tool-card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 8px; display: grid; gap: 4px; font: 600 11px var(--font); text-align: center; line-height: 1.2; box-shadow: var(--sh-1); }
-.tool-card .seen { position: absolute; top: 6px; right: 6px; color: var(--ok); } .tool-hero { background: var(--surface); border-radius: var(--r-lg); padding: var(--s4); margin-bottom: var(--s3); box-shadow: var(--sh-1); } .tool-hero .comp-svg { max-height: 180px; }
+.tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.tool-card { position: relative; background: var(--surface); border: 1px solid rgba(201,180,143,.16); border-radius: 16px; padding: 0 0 10px; display: grid; gap: 0; font: 600 12px/1.25 var(--font); text-align: center; box-shadow: var(--sh-1); overflow: hidden; }
+.tool-card .seen { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in srgb, var(--ok) 88%, #111); color: #10200c; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.45); }
+.tool-hero { background: var(--surface); border-radius: var(--r-lg); padding: var(--s4); margin-bottom: var(--s3); box-shadow: var(--sh-1); } .tool-hero .comp-svg { max-height: 180px; }
+.tools-lead { margin: 0 0 var(--s3); }
+.tool-sheet { padding: 18px 16px 8px; margin-bottom: 0; }
+.tool-fact { margin: 0 0 16px; }
+.tool-fact h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fde-3); font-weight: 700; }
+.tool-fact p { margin: 0; font-size: 15px; line-height: 1.45; }
+.tool-fact.tip { border-top: 1px solid var(--line); padding-top: 14px; }
 .kit-list { display: grid; gap: 6px; } .kit-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 10px; min-height: 56px; cursor: pointer; } .kit-item input { width: 22px; height: 22px; accent-color: var(--ok); } .kit-svg { width: 54px; } .kit-item.have { background: color-mix(in srgb, var(--ok) 8%, var(--surface)); }
 .deal.placeholder { border-style: dashed; } .deal-logo { font-size: 32px; width: 56px; height: 56px; border-radius: 14px; background: var(--mist); display: grid; place-items: center; } .partner { background: linear-gradient(130deg, color-mix(in srgb, var(--orange) 12%, var(--surface)), var(--surface)); }
 code { background: var(--mist); padding: 2px 6px; border-radius: 4px; }
@@ -1261,6 +1269,13 @@ a.card:active, .tile:active, .list-card:active, .kit-chip:active, .tool-card:act
   margin-inline: auto;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,.45));
 }
+.tool-card .comp-svg, .tool-card .comp-photo {
+  width: 100%;
+  margin: 0;
+  padding: 8px;
+  background: radial-gradient(70% 70% at 50% 40%, #2a2c30, #101112);
+}
+.tool-card span { display: block; padding: 8px 8px 0; color: var(--text); }
 .kit-svg { width: 64px; }
 .kit-svg .comp-svg, .kit-svg .comp-photo { width: 100%; max-height: none !important; }
 .tool-hero {
@@ -1270,11 +1285,23 @@ a.card:active, .tile:active, .list-card:active, .kit-chip:active, .tool-card:act
   place-items: center;
   padding: 10px 16px 16px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.1), var(--sh-2);
+  border: 1px solid rgba(201,180,143,.14);
 }
 .tool-hero .comp-svg, .tool-hero .comp-photo {
-  max-height: 280px !important;
-  width: 78%;
+  max-height: 240px !important;
+  width: 82%;
   object-fit: contain;
+}
+.page.tool-learn .tool-hero { margin-bottom: var(--s3); }
+@media (max-height: 720px) {
+  .page.tool-learn .tool-hero { padding: 4px 10px 8px; margin-bottom: 10px; }
+  .page.tool-learn .tool-hero .comp-svg,
+  .page.tool-learn .tool-hero .comp-photo { max-height: 132px !important; width: 70%; }
+  .page.tool-learn .tool-sheet { padding: 12px 14px 2px; }
+  .page.tool-learn .tool-fact { margin: 0 0 10px; }
+  .page.tool-learn .tool-fact h4 { margin-bottom: 4px; }
+  .page.tool-learn .tool-fact p { font-size: 14px; line-height: 1.4; }
+  .page.tool-learn .tool-fact.tip { padding-top: 10px; }
 }
 .q-img, .art-pop {
   display: grid;

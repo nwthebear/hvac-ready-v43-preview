@@ -287,17 +287,23 @@
   /* ---------- tools ---------- */
   V.tools = () => { const plan = A.plan(); const pk = plan ? { residential_service_tech: "rs", residential_installer: "ri", commercial_service_tech: "cs", commercial_installer: "ci" }[plan.pathId] : null; const f = A.toolFilter || "all"; const es = S.lang === "es";
     const list = TOOLS.filter(x => f === "all" || x.paths.includes(f));
-    return `<main class="page">${head(es ? "Herramientas especializadas" : "Specialized HVAC Tools")}
+    return `<main class="page tools-gallery">${head(es ? "Herramientas especializadas" : "Specialized HVAC Tools")}
+      <p class="tools-lead muted sm">${es ? "Toca una foto para ver qué es, qué hace, cuándo la toma un técnico y un consejo." : "Tap a picture to see what it is, what it does, when a tech grabs it, and one tip."}</p>
       <div class="seg scroll">${[["all", es ? "Todas" : "All"], ["rs", es ? "Serv. resid." : "Res. service"], ["ri", es ? "Inst. resid." : "Res. install"], ["cs", es ? "Serv. com." : "Com. service"], ["ci", es ? "Inst. com." : "Com. install"]].map(([k, l]) => `<button data-tf="${k}" class="${f === k ? "sel" : ""}">${l}${k === pk ? " ★" : ""}</button>`).join("")}</div>
-      <div class="tool-grid">${list.map(x => `<a class="tool-card" href="#/tool/${x.id}">${toolSVG(x.id)}<span>${esc(tx(x.name))}</span>${S.toolsSeen[x.id] ? `<i class="seen">${ico("check", 12)}</i>` : ""}</a>`).join("")}</div>
-      <a class="btn full" href="#/arcade/match">${ico("game", 18)} ${t("compMatch")}</a></main>`; };
+      <div class="tool-grid">${list.map(x => `<a class="tool-card" href="#/tool/${x.id}">${toolSVG(x.id)}<span>${esc(tx(x.name))}</span>${S.toolsSeen[x.id] ? `<i class="seen">${ico("check", 14)}</i>` : ""}</a>`).join("")}</div>
+    </main>`; };
   A.bind.tools = () => document.querySelectorAll("[data-tf]").forEach(b => b.onclick = () => { A.toolFilter = b.dataset.tf; A.render(); });
   V.tool = ([id]) => { const x = TOOLS.find(y => y.id === id); if (!x) return V.notfound(); const es = S.lang === "es";
     if (!S.toolsSeen[id]) { S.toolsSeen[id] = Date.now(); A.save(); setTimeout(() => A.checkBadges().forEach(b => A.toast(`${b.icon} ${tx(b.name)}`, "badge")), 300); }
-    const pn = { rs: es ? "Servicio residencial" : "Residential service", ri: es ? "Instalación residencial" : "Residential install", cs: es ? "Servicio comercial" : "Commercial service", ci: es ? "Instalación comercial" : "Commercial install" };
-    return `<main class="page">${head(tx(x.name), "#/tools")}<div class="tool-hero">${toolSVG(id)}</div>
-      ${[["info", es ? "Qué es" : "What it is", x.what], ["target", es ? "Para qué y cómo" : "What it's for & how", x.use], ["shield", t("safetyNotes"), x.safety], ["close", es ? "Error de novato" : "Rookie mistake", x.mistake]].map(([i, h, v]) => `<section class="card tight ${i === "shield" ? "warn-card" : ""}"><h4>${ico(i, 18)} ${h}</h4><p>${esc(tx(v))}</p></section>`).join("")}
-      <h4>${es ? "Rutas que lo necesitan" : "Paths that need it"}</h4><div class="chips">${x.paths.map(p => `<span class="chip">${pn[p]}</span>`).join("")}</div></main>`; };
+    return `<main class="page tool-learn">${head(tx(x.name), "#/tools")}
+      <div class="tool-hero">${toolSVG(id)}</div>
+      <article class="tool-sheet card">
+        <section class="tool-fact"><h4>${es ? "Qué es" : "What it is"}</h4><p>${esc(tx(x.what))}</p></section>
+        <section class="tool-fact"><h4>${es ? "Qué hace" : "What it does"}</h4><p>${esc(tx(x.use))}</p></section>
+        <section class="tool-fact"><h4>${es ? "Cuándo la toma un técnico" : "When a tech grabs it"}</h4><p>${esc(tx(x.when))}</p></section>
+        <section class="tool-fact tip"><h4>${es ? "Un consejo" : "One tip"}</h4><p>${esc(tx(x.tip))}</p></section>
+      </article>
+    </main>`; };
 
   /* ---------- EPA ---------- */
   V.epa = ([sec]) => { const es = S.lang === "es";
