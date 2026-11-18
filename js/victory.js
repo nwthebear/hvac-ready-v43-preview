@@ -1,6 +1,6 @@
 /* VICTORY SCENE — synced to the user's 8 s 'Triumph in Motion' pass sting (~103 bpm, beat ≈ 0.583 s).
    Timeline (s): 0 overlay + speed streaks · 0–0.58 avatar drops in (squash on beat 1) · 1.17–2.92 three hops on beats 2–4
-   with arms up · 2.92 trophy rises spinning · 3.50 trophy lands above the hands → UNLOCK sfx + haptic · 3.8 title + Continue.
+   with arms up · 2.92 trophy rises spinning · 3.50 trophy lands above the hands → UNLOCK sfx + haptic · title card fades in after the avatar lands (~0.8 s) so the message is never invisible.
    Tap anywhere skips to the end state; tap again / Continue closes. Reduced motion: fade + trophy only. Transform/opacity only. */
 (function () {
   const A = window.App, S = A.S, esc = A.esc;
@@ -30,7 +30,10 @@
     Sound.sting && Sound.sting("pass");
     let landed = false, done = false;
     const land = () => { if (landed) return; landed = true; Sound.sfx("unlock"); A.haptic("unlock"); ov.classList.add("vic-landed"); };
-    const tLand = setTimeout(land, (reduced ? 0.9 : LAND) * 1000), tEnd = setTimeout(() => ov.classList.add("vic-end"), (reduced ? 1.1 : LAND + 0.35) * 1000);
+    /* Keep the hop / trophy beat, but don't hide the title for 3.8s — a full-screen
+       textless avatar + X looked broken. Show the message after the avatar lands. */
+    const tLand = setTimeout(land, (reduced ? 0.9 : LAND) * 1000);
+    const tEnd = setTimeout(() => ov.classList.add("vic-end"), (reduced ? 0.25 : 0.8) * 1000);
     const skip = () => { if (ov.classList.contains("vic-end")) return false; clearTimeout(tEnd); ov.classList.add("vic-skip", "vic-end"); land(); return true; };
     const close = after => { if (done) return; done = true; clearTimeout(tLand); clearTimeout(tEnd); ov.classList.add("vic-out"); Sound.stopSting && Sound.stopSting(); setTimeout(() => { ov.remove(); document.body.classList.remove("vic-open"); after && after(); }, 260); };
     ov.addEventListener("click", e => { if (e.target.closest("#vicGo")) return close(o.onContinue); if (e.target.closest("#vicLater") || e.target.closest("#vicX")) return close(); if (e.target.closest("#vicAgain")) return close(o.again); skip(); });
