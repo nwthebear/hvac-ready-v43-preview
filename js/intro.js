@@ -6,6 +6,59 @@
   const SRC = "video/intro.mp4", POSTER = "video/intro-poster.jpg", SOFT = 0.65;
   /* Source plate in the 720x1560 intro art (object-fit: cover, centered). */
   const ART_W = 720, ART_H = 1560, PLATE_BOTTOM = 1080;
+  /* 2x emblem crop in 1x art pixels (from Gen B, rest pose). GPU-composited. */
+  const LOGO_CROP = [6.5, 381.0, 720.0, 1107.0];
+  const LOGO = {
+    start: { cx: 363.5, cy: 757.5, s: 0.88 },
+    rest:  { cx: 363.0, cy: 703.0, s: 0.80 },
+    tA: 1.70, tI: 2.20,
+    zeta: 0.38, omega: 11.4,
+    vSpr: { cx: -2.19934009, cy: -239.72806959, s: -0.35189441 },
+    letterOn: [2.1333333333333333, 2.2]
+  };
+  function logoEaseIn(u) { u = Math.min(1, Math.max(0, u)); return u * u * u * u; }
+  function logoSpring(t, v0) {
+    const z = LOGO.zeta, w = LOGO.omega, wd = w * Math.sqrt(1 - z * z);
+    return Math.exp(-z * w * t) * (v0 / wd) * Math.sin(wd * t);
+  }
+  function logoPose(t) {
+    const S = LOGO.start, R = LOGO.rest;
+    let p;
+    if (t <= LOGO.tA) p = { cx: S.cx, cy: S.cy, s: S.s };
+    else if (t <= LOGO.tI) {
+      const e = logoEaseIn((t - LOGO.tA) / (LOGO.tI - LOGO.tA));
+      p = { cx: S.cx + (R.cx - S.cx) * e, cy: S.cy + (R.cy - S.cy) * e, s: S.s + (R.s - S.s) * e };
+    } else {
+      const dt = t - LOGO.tI;
+      if (dt > 2) p = { cx: R.cx, cy: R.cy, s: R.s };
+      else p = {
+        cx: R.cx + logoSpring(dt, LOGO.vSpr.cx),
+        cy: R.cy + logoSpring(dt, LOGO.vSpr.cy),
+        s:  R.s  + logoSpring(dt, LOGO.vSpr.s)
+      };
+    }
+    const a = LOGO.letterOn;
+    p.letter = t <= a[0] ? 0 : t >= a[1] ? 1 : (t - a[0]) / (a[1] - a[0]);
+    const dt = 1 / 120, p0 = logoPoseBare(Math.max(0, t - dt)), p1 = logoPoseBare(t + dt);
+    p.speed = Math.hypot((p1.cx - p0.cx) / (2 * dt), (p1.cy - p0.cy) / (2 * dt));
+    return p;
+  }
+  function logoPoseBare(t) {
+    const S = LOGO.start, R = LOGO.rest;
+    if (t <= LOGO.tA) return S;
+    if (t <= LOGO.tI) {
+      const e = logoEaseIn((t - LOGO.tA) / (LOGO.tI - LOGO.tA));
+      return { cx: S.cx + (R.cx - S.cx) * e, cy: S.cy + (R.cy - S.cy) * e, s: S.s + (R.s - S.s) * e };
+    }
+    const dt = t - LOGO.tI;
+    if (dt > 2) return R;
+    return { cx: R.cx + logoSpring(dt, LOGO.vSpr.cx), cy: R.cy + logoSpring(dt, LOGO.vSpr.cy), s: R.s + logoSpring(dt, LOGO.vSpr.s) };
+  }
+  function logoFlash(t) {
+    if (t < 2.15 || t > 2.55) return 0;
+    if (t <= 2.22) return 0.55;
+    return 0.55 * Math.exp(-(t - 2.22) / 0.12);
+  }
 
   function markStandalone() {
     try {
@@ -62,9 +115,60 @@
     btn.style.left = "50%";
     btn.style.transform = "translateX(-50%)";
   }
+  function artBox(ov) {
+    const iw = ov.clientWidth || window.innerWidth;
+    const ih = ov.clientHeight || window.innerHeight;
+    const scale = Math.max(iw / ART_W, ih / ART_H);
+    return { iw, ih, scale, w: ART_W * scale, h: ART_H * scale, left: (iw - ART_W * scale) / 2, top: (ih - ART_H * scale) / 2 };
+  }
+  function placeLogo(t) {
+    const ov = document.getElementById("intro-ov");
+    const box = document.getElementById("intro-logo");
+    if (!ov || !box) return;
+    const a = artBox(ov);
+    box.style.left = a.left + "px";
+    box.style.top = a.top + "px";
+    box.style.width = a.w + "px";
+    box.style.height = a.h + "px";
+    const [x0, y0, x1, y1] = LOGO_CROP;
+    const blank = document.getElementById("intro-logo-blank");
+    const type = document.getElementById("intro-logo-type");
+    [blank, type].forEach(img => {
+      if (!img) return;
+      img.style.left = (x0 / ART_W * a.w) + "px";
+      img.style.top = (y0 / ART_H * a.h) + "px";
+      img.style.width = ((x1 - x0) / ART_W * a.w) + "px";
+      img.style.height = ((y1 - y0) / ART_H * a.h) + "px";
+    });
+    const time = t == null ? (placeLogo.t || 0) : t;
+    placeLogo.t = time;
+    const p = logoPose(time);
+    const tx = (p.cx - LOGO.rest.cx) * a.scale;
+    const ty = (p.cy - LOGO.rest.cy) * a.scale;
+    const k = p.s / LOGO.rest.s;
+    box.style.transformOrigin = (LOGO.rest.cx / ART_W * 100) + "% " + (LOGO.rest.cy / ART_H * 100) + "%";
+    box.style.transform = "translate3d(" + tx + "px," + ty + "px,0) scale(" + k + ")";
+    const blur = Math.min(2.2, p.speed * 0.012);
+    const lift = logoFlash(time);
+    const filters = [
+      "drop-shadow(" + (-12 * a.scale) + "px " + (22 * a.scale) + "px " + (11 * a.scale) + "px rgba(0,0,0,.48))"
+    ];
+    if (blur > 0.18) filters.push("blur(" + blur + "px)");
+    if (lift > 0.02) filters.push("brightness(" + (1 + 0.55 * lift) + ")", "sepia(" + (0.22 * lift) + ")");
+    box.style.filter = filters.join(" ");
+    if (type) type.style.opacity = String(p.letter);
+  }
+  function logoTick(now) {
+    if (finish.done) return;
+    const t0 = logoTick.t0;
+    const t = t0 == null ? 0 : Math.max(0, (now - t0) / 1000);
+    placeLogo(t);
+    if (t0 != null && t < 9) logoTick.raf = requestAnimationFrame(logoTick);
+  }
   function frameIntro() {
     applyVisibleFrame(document.getElementById("intro-ov"));
     applyVisibleFrame(document.getElementById("splash"));
+    placeLogo(placeLogo.t || 0);
     placeStartBtn();
   }
   function hookFrame() {
@@ -95,6 +199,7 @@
 
   function finish() {
     if (finish.done) return; finish.done = true;
+    cancelAnimationFrame(logoTick.raf);
     const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid");
     try { if (vid) { vid.pause(); vid.removeAttribute("src"); vid.load(); } } catch (e) {}
     try { Sound.stopIntroStem && Sound.stopIntroStem(); } catch (e) {}
@@ -129,6 +234,9 @@
     play.started = true;
     const vid = document.getElementById("intro-vid");
     hideGate(); /* hide immediately — do not wait on play() */
+    logoTick.t0 = performance.now();
+    cancelAnimationFrame(logoTick.raf);
+    logoTick.raf = requestAnimationFrame(logoTick);
     /* Start the intro stem synchronously in this gesture. iOS will not
        unlock media started later on rAF / timeupdate, and WebAudio is
        muted by the ringer switch. */
@@ -159,6 +267,10 @@
     ov.setAttribute("role", "dialog");
     ov.setAttribute("aria-label", ES ? "Introducción de HVAC Ready" : "HVAC Ready intro");
     ov.innerHTML = `<video id="intro-vid" playsinline webkit-playsinline preload="auto" poster="${POSTER}" src="${SRC}" muted></video>
+      <div id="intro-logo" aria-hidden="true">
+        <img id="intro-logo-blank" src="img/intro-emblem-blank.webp" alt="" draggable="false">
+        <img id="intro-logo-type" src="img/intro-emblem.webp" alt="" draggable="false">
+      </div>
       <div id="intro-gate">
         <button type="button" class="intro-start" id="intro-start">${ES ? "Toca para empezar" : "Tap to start"}</button>
       </div>`;
@@ -166,7 +278,12 @@
     const splash = document.getElementById("splash");
     if (splash) splash.style.visibility = "hidden";
     hookFrame();
-    requestAnimationFrame(() => { frameIntro(); requestAnimationFrame(placeStartBtn); });
+    const paint = () => { frameIntro(); requestAnimationFrame(placeStartBtn); };
+    requestAnimationFrame(() => { paint(); requestAnimationFrame(paint); });
+    ["intro-logo-blank", "intro-logo-type"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("load", paint, { once: true });
+    });
 
     const vid = ov.querySelector("#intro-vid");
     if (vid) vid.muted = true;
