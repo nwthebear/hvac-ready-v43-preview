@@ -3,6 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+(function(){
+  function setVV(){
+    try{
+      var r=document.documentElement, vv=window.visualViewport;
+      var h=(vv&&vv.height)?vv.height:(window.innerHeight||0);
+      var top=(vv&&vv.offsetTop)||0;
+      var layout=window.innerHeight||h;
+      var gap=Math.max(0, layout-(top+h));
+      r.style.setProperty("--vvh", h+"px");
+      r.style.setProperty("--vv-top", top+"px");
+      r.style.setProperty("--vv-bottom-gap", gap+"px");
+    }catch(e){}
+  }
+  setVV();
+  window.addEventListener("resize", setVV);
+  window.addEventListener("orientationchange", setVV);
+  if(window.visualViewport){
+    visualViewport.addEventListener("resize", setVV);
+    visualViewport.addEventListener("scroll", setVV);
+  }
+})();
+</script>
 <meta name="theme-color" content="#0f1011">
 <meta name="description" content="HVAC Ready: a mobile-first trainee app. Match My Path, HVAC 101, EPA 608 practice, hands-on skills, and arcade games.">
 <title>HVAC Ready</title>

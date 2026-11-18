@@ -13,6 +13,8 @@
   --r-sm: 8px; --r: 14px; --r-lg: 18px; --r-pill: 999px;
   --sh-1: 0 1px 0 rgba(255,255,255,.04) inset, 0 2px 6px rgba(0,0,0,.45); --sh-2: 0 6px 18px rgba(0,0,0,.5); --sh-3: 0 14px 36px rgba(0,0,0,.6);
   --ease: cubic-bezier(.2,.8,.2,1); --nav-h: 68px;
+  --vvh: 100dvh; --vv-top: 0px; --vv-bottom-gap: 0px;
+  --foot-pad: max(16px, calc(var(--sab) + 12px));
   --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -1816,3 +1818,203 @@ body.nonav .page.teach { padding-bottom: 0; }
   .page.teach { padding-left: calc(20px + var(--sal)); padding-right: calc(20px + var(--sar)); }
   .teach-body h2 { font-size: 1.25rem; }
 }
+
+
+/* ===== v56: size the shell to the visible viewport, keep action footers tappable ===== */
+html, body {
+  height: var(--vvh, 100dvh);
+  max-height: var(--vvh, 100dvh);
+  min-height: 0;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+#app {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#view {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+#nav {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  flex: none;
+  width: 100%;
+  height: auto;
+  min-height: var(--nav-h);
+  padding-bottom: var(--foot-pad);
+  box-sizing: border-box;
+}
+.page {
+  padding-bottom: var(--s4);
+}
+@media (min-width: 700px) {
+  .page { padding-bottom: var(--s5); }
+}
+body.nonav .page { padding-bottom: var(--s4); }
+body.nonav .onboard.step-2 { padding-bottom: 0; }
+
+.page.has-lesson-foot,
+.page.onboard,
+.page.match,
+.page.teach,
+.page.quiz,
+.page.game,
+.page.video,
+.coach {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.page-body,
+.teach-body,
+.page.game .game-stage,
+.page.video .player,
+.coach .chat {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.page.has-lesson-foot { padding-bottom: 0; }
+
+.lesson-foot,
+.ob-foot,
+.teach-foot,
+.page.match .sticky-cta {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  transform: none;
+  flex: none;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: var(--foot-pad);
+  pointer-events: auto;
+  z-index: 6;
+}
+.page.teach .teach-foot,
+.page.has-lesson-foot .lesson-foot,
+.page.onboard .ob-foot,
+.page.match .sticky-cta {
+  padding-left: 0;
+  padding-right: 0;
+}
+.lesson-foot { padding: 16px 16px var(--foot-pad); }
+body.nonav .lesson-foot { padding-bottom: var(--foot-pad); }
+.ob-foot { padding: 16px 16px var(--foot-pad); }
+.teach-foot { padding: 10px 0 var(--foot-pad); }
+.sticky-cta {
+  position: relative;
+  bottom: auto;
+  padding: 12px 0 var(--foot-pad);
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+.onboard .sticky-cta, .match .sticky-cta { bottom: auto; }
+
+.page.teach,
+body.is-teach #app,
+body.is-teach #view,
+body:has(.page.teach) #app,
+body:has(.page.teach) #view {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+.page.game.match-page {
+  height: 100%;
+  max-height: 100%;
+}
+
+.page.quiz { padding-top: 0; padding-bottom: 0; }
+.quiz-pin {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  flex: none;
+  width: 100%;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.page.quiz .answers {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.page.quiz #fb { flex: none; padding-bottom: var(--foot-pad); }
+
+.composer {
+  position: sticky;
+  bottom: 0;
+  margin-bottom: var(--foot-pad);
+}
+.coach { min-height: 0; height: 100%; }
+
+/* Fixed overlays and sheets sit on the visual viewport, not the layout viewport. */
+.celebrate-ov,
+.fr-ov,
+.rku,
+#starter-ov,
+.sp-back,
+.tg-learn-back {
+  top: var(--vv-top, 0px);
+  height: var(--vvh, 100dvh);
+  bottom: auto;
+  box-sizing: border-box;
+}
+.celebrate-ov,
+.fr-ov,
+#starter-ov {
+  padding-bottom: var(--foot-pad);
+}
+.pt-sheet,
+.sp-sheet,
+.tg-learn {
+  bottom: var(--vv-bottom-gap, 0px);
+  padding-bottom: var(--foot-pad);
+  max-height: min(88dvh, calc(var(--vvh, 100dvh) - 12px));
+}
+.pt-tab {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 10px);
+}
+body.nonav .pt-tab {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 10px);
+}
+.toast {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 16px);
+}
+body.nonav .toast {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 16px);
+}
+.cel-gear {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--nav-h) + var(--foot-pad) + 18px);
+}
+body.nonav .cel-gear {
+  bottom: calc(var(--vv-bottom-gap, 0px) + var(--foot-pad) + 12px);
+}
+.mgz-bar { padding-bottom: var(--foot-pad); }

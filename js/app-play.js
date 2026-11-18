@@ -194,6 +194,30 @@
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+    const view = document.getElementById("view");
+    if (view) view.scrollTop = 0;
+    const body = document.querySelector(".page-body, .teach-body");
+    if (body) body.scrollTop = 0;
+  };
+  /* Wrap everything above a bottom action bar so the bar stays in the visible shell. */
+  A.pinActionFooter = () => {
+    const page = document.querySelector("main.page");
+    if (!page || page.classList.contains("teach") || page.querySelector(":scope > .page-body")) return;
+    const foot = page.querySelector(":scope > .lesson-foot, :scope > .ob-foot, :scope > .sticky-cta");
+    if (!foot) return;
+    const keep = { topbar: 1, "ob-top": 1, "teach-top": 1, "teach-prog": 1, "teach-foot": 1, "teach-body": 1, "quiz-pin": 1 };
+    const move = [];
+    Array.from(page.children).forEach(el => {
+      if (el === foot) return;
+      let hold = false;
+      el.classList.forEach(c => { if (keep[c]) hold = true; });
+      if (!hold) move.push(el);
+    });
+    if (!move.length) return;
+    const wrap = document.createElement("div");
+    wrap.className = "page-body";
+    foot.before(wrap);
+    move.forEach(n => wrap.appendChild(n));
   };
   A.pinQuizQuestion = () => {
     const page = document.querySelector(".page.quiz");
@@ -210,10 +234,15 @@
   /* Scroll just enough to show Continue; the pinned question stays on screen. */
   A.revealQuizContinue = btn => {
     if (!btn) return;
-    const room = window.innerHeight - 12;
+    const vv = window.visualViewport;
+    const room = ((vv ? vv.offsetTop + vv.height : window.innerHeight) - 12);
     const br = btn.getBoundingClientRect();
     if (br.bottom <= room) return;
-    window.scrollBy({ top: br.bottom - room, left: 0, behavior: A.reduced() ? "auto" : "smooth" });
+    const delta = br.bottom - room;
+    const scroller = document.querySelector(".page.quiz .answers") || document.getElementById("view") || window;
+    const opts = { top: delta, left: 0, behavior: A.reduced() ? "auto" : "smooth" };
+    if (scroller === window) window.scrollBy(opts);
+    else scroller.scrollBy(opts);
   };
   A.render = () => {
     let h = location.hash.split("?")[0] || "#/home"; const qs = Object.fromEntries(new URLSearchParams(location.hash.split("?")[1] || ""));
@@ -234,6 +263,7 @@
     const snd = document.getElementById("snd");
     if (snd && view.contains(snd)) document.body.appendChild(snd);
     view.innerHTML = (V[name] || V.notfound)(params, qs);
+    A.pinActionFooter();
     view.classList.remove("in"); void view.offsetWidth; if (!A.reduced() && name !== "quiz" && name !== "match" && name !== "guide") view.classList.add("in");
     const full = ["onboard", "quiz", "video", "match", "guide"].includes(name) || (name === "arcade" && params[0]);
     document.body.classList.toggle("nonav", !!full);

@@ -459,3 +459,16 @@
 .rr2-sum .btn { margin-top: 16px; }
 @media (prefers-reduced-motion: reduce) { .rr2.hit { animation: none; } .rr2-why { transition: opacity .15s; transform: none; } }
 :root[data-theme="light"] .rr2-clean { color: #3f6b1a; }
+
+
+/* v56: bottom sheets stay in the visual viewport */
+.sp-sheet, .tg-learn {
+  bottom: var(--vv-bottom-gap, 0px);
+  padding-bottom: var(--foot-pad, max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px)));
+  max-height: min(88dvh, calc(var(--vvh, 100dvh) - 12px));
+}
+.sp-back, .tg-learn-back {
+  top: var(--vv-top, 0px);
+  height: var(--vvh, 100dvh);
+  bottom: auto;
+}
