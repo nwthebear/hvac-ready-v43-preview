@@ -544,3 +544,328 @@ html.reduce-motion .tg-hl { animation: none; }
 .gr-readout { display: flex; gap: 10px; justify-content: center; margin: 8px 0; }
 .gr-readout span { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 8px 12px; font-weight: 700; }
 .gr-readout b { display: block; font-size: 20px; letter-spacing: -.03em; }
+
+
+/* ===== v62: premium arcade cards, compact gauges, icy Don't Freeze, feel, results ===== */
+.arcade-lineup .game-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 172px;
+  padding: 14px 14px 40px;
+  border-radius: 18px;
+  border: 1px solid rgba(243,224,180,.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12);
+  overflow: hidden;
+  isolation: isolate;
+  color: #F3F0E4;
+}
+.arcade-lineup .game-card .g-art {
+  position: absolute;
+  right: -8%;
+  bottom: -12%;
+  width: 70%;
+  max-height: 88%;
+  object-fit: contain;
+  object-position: right bottom;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  filter: drop-shadow(0 16px 22px rgba(0,0,0,.55)) saturate(1.06);
+  -webkit-mask-image: linear-gradient(118deg, transparent 0 26%, #000 58%);
+  mask-image: linear-gradient(118deg, transparent 0 26%, #000 58%);
+}
+.arcade-lineup .game-card .g-shade {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(160deg, rgba(8,8,10,.72) 0%, rgba(8,8,10,.42) 38%, rgba(8,8,10,.08) 68%, transparent 100%),
+    linear-gradient(to top, rgba(8,8,10,.35) 0%, transparent 36%);
+}
+.arcade-lineup .game-card .g-ico,
+.arcade-lineup .game-card .g-copy,
+.arcade-lineup .game-card .g-hi,
+.arcade-lineup .game-card .g-lock { position: relative; z-index: 2; }
+.arcade-lineup .game-card .g-ico {
+  width: 40px; height: 40px; border-radius: 12px; margin-bottom: 10px;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+}
+.arcade-lineup .game-card .g-copy { max-width: 58%; }
+.arcade-lineup .game-card b {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  text-shadow: 0 1px 10px rgba(0,0,0,.75);
+}
+.arcade-lineup .game-card small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  opacity: .94;
+  color: #F3F0E4;
+  text-shadow: 0 1px 8px rgba(0,0,0,.8);
+}
+.arcade-lineup .game-card .tg-starter {
+  margin-left: 4px;
+  vertical-align: 2px;
+  font-size: 9px;
+  padding: 2px 6px;
+}
+.arcade-lineup .game-card .g-best {
+  position: absolute;
+  left: 12px; bottom: 10px; right: auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; letter-spacing: .04em;
+  color: #E8D5A0;
+  background: rgba(12,12,14,.6);
+  border: 1px solid rgba(201,162,74,.4);
+  border-radius: 999px;
+  padding: 3px 9px 3px 7px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.arcade-lineup .game-card .g-best b { display: inline; font-size: 11px; letter-spacing: .02em; }
+.arcade-lineup .game-card:last-child { min-height: 128px; padding-bottom: 16px; }
+.arcade-lineup .game-card:last-child .g-copy { max-width: 46%; }
+.arcade-lineup .game-card:last-child .g-art {
+  width: 52%; right: -2%; bottom: -18%;
+  -webkit-mask-image: linear-gradient(100deg, transparent 0 18%, #000 46%);
+  mask-image: linear-gradient(100deg, transparent 0 18%, #000 46%);
+}
+.arcade-lineup .game-card:last-child .g-best { bottom: 14px; }
+.arcade-lineup .g-match { background: linear-gradient(155deg, #2a2c22 0%, #3d4330 50%, #5a4a28 100%); }
+.arcade-lineup .g-freeze { background: linear-gradient(155deg, #141c24 0%, #1a3344 55%, #2a5368 100%); }
+.arcade-lineup .g-braze { background: linear-gradient(155deg, #1c1612 0%, #3a2a1c 55%, #6a3a18 100%); }
+.arcade-lineup .g-gauges { background: linear-gradient(155deg, #161412 0%, #2a2620 60%, #3a3428 100%); }
+.arcade-lineup .g-thermostat { background: linear-gradient(155deg, #141414 0%, #22201c 60%, #3a3830 100%); }
+.arcade-lineup .game-card.locked {
+  opacity: 1;
+  filter: none;
+  pointer-events: none;
+}
+.arcade-lineup .game-card.locked .g-art { filter: grayscale(.6) brightness(.65); opacity: .5; }
+.arcade-lineup .game-card.locked .g-shade { background: linear-gradient(160deg, rgba(8,8,10,.8) 0%, rgba(8,8,10,.55) 50%, rgba(8,8,10,.35) 100%); }
+.arcade-lineup .game-card .g-lock {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.16);
+  color: #F3F0E4;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+
+/* Don't Freeze — icy scene with depth */
+.freeze .fz-scene,
+#fz.fz-scene {
+  flex: 0 0 38%;
+  min-height: 150px;
+  background:
+    radial-gradient(40% 30% at 78% 14%, rgba(255,244,220,.22), transparent 55%),
+    radial-gradient(80% 50% at 50% 100%, rgba(10,40,70,.55), transparent 50%),
+    linear-gradient(180deg, #0b1220 0%, #163044 42%, #1b3a4e 70%, #102030 100%) !important;
+  box-shadow: inset 0 -40px 50px rgba(0,16,32,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+  border: 1px solid rgba(180,210,230,.12);
+}
+.freeze .fz-sky { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,28,48,.35), transparent 50%); pointer-events: none; }
+.freeze .fz-moon {
+  position: absolute; top: 10%; right: 14%; width: 34px; height: 34px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f7f1de, #c9d6e4 60%, #8aa0b8);
+  box-shadow: 0 0 24px 8px rgba(200,220,255,.25), 0 0 60px 16px rgba(140,180,220,.12);
+  z-index: 1;
+}
+.freeze .fz-ridge { position: absolute; left: -8%; right: -8%; bottom: 18%; height: 42%; z-index: 1; pointer-events: none; }
+.freeze .fz-ridge-2 {
+  bottom: 22%; height: 36%;
+  background: linear-gradient(180deg, #1a2e40, #0e1a26);
+  clip-path: polygon(0 70%, 8% 48%, 18% 60%, 30% 32%, 42% 50%, 55% 28%, 70% 46%, 82% 22%, 94% 44%, 100% 36%, 100% 100%, 0 100%);
+  opacity: .7;
+  filter: blur(.4px);
+}
+.freeze .fz-ridge-1 {
+  background: linear-gradient(180deg, #2a4558, #152430 70%, #0c1822);
+  clip-path: polygon(0 80%, 12% 52%, 24% 66%, 38% 40%, 52% 58%, 64% 36%, 76% 50%, 88% 30%, 100% 48%, 100% 100%, 0 100%);
+  box-shadow: 0 -10px 30px rgba(0,0,0,.35);
+}
+.freeze .fz-snow {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1.2px 1.2px at 28% 42%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 48% 12%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.4px 1.4px at 70% 28%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1px 1px at 86% 16%, rgba(255,255,255,.65), transparent),
+    radial-gradient(1.2px 1.2px at 18% 70%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1px 1px at 62% 64%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.6px 1.6px at 90% 58%, rgba(255,255,255,.6), transparent);
+  animation: fzSnow 9s linear infinite;
+  opacity: .7;
+}
+@keyframes fzSnow { to { background-position: 0 80px, 0 60px, 0 90px, 0 70px, 0 50px, 0 85px, 0 65px, 0 75px; } }
+.freeze .fz-block {
+  z-index: 3;
+  height: 16px;
+  width: 11%;
+  border-radius: 3px 3px 5px 5px;
+  background:
+    linear-gradient(180deg, #f8fdff 0%, #d4eaf3 38%, #8fb8c9 78%, #5e8798 100%);
+  box-shadow:
+    0 7px 0 #3a5c6e,
+    0 9px 10px rgba(0,16,32,.4),
+    inset 0 1px 0 #fff,
+    inset 0 -2px 3px rgba(30,70,90,.35);
+}
+.freeze .fz-block i {
+  display: block; position: absolute; inset: 2px 10% auto 18%; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
+  opacity: .8;
+}
+.freeze .fz-av { z-index: 5; filter: saturate(calc(1 - var(--ice, 0) * .55)) drop-shadow(0 6px 8px rgba(0,10,20,.55)) drop-shadow(0 0 calc(var(--ice, 0) * 12px) #8fd3ff); }
+.freeze .fz-water {
+  z-index: 4;
+  background:
+    linear-gradient(180deg, rgba(170,220,245,.55) 0%, rgba(30,90,130,.9) 28%, #0a3a5c 100%) !important;
+  box-shadow: inset 0 8px 16px rgba(200,240,255,.2), 0 -10px 24px rgba(20,80,120,.25);
+}
+.freeze .fz-water::before {
+  height: 14px; top: -10px;
+  background:
+    radial-gradient(circle at 12px 2px, rgba(210,240,255,.9) 7px, transparent 8px) 0 0 / 24px 14px repeat-x;
+  animation: wave 2.4s linear infinite;
+  filter: blur(.2px);
+}
+.freeze .fz-foam {
+  position: absolute; left: 0; right: 0; top: -6px; height: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), transparent);
+  opacity: .5;
+}
+.freeze .fz-icebit {
+  position: absolute; bottom: 40%; width: 18px; height: 7px; border-radius: 3px;
+  background: linear-gradient(180deg, #eef8ff, #7ea8ba);
+  box-shadow: 0 3px 0 #3a5c6e, 0 2px 6px rgba(0,0,0,.3);
+  opacity: .85;
+}
+.freeze .fz-icebit.a { left: 12%; transform: rotate(-8deg); }
+.freeze .fz-icebit.b { right: 18%; width: 14px; transform: rotate(10deg); bottom: 28%; }
+.freeze .fz-mist {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34%; z-index: 4; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(180,210,230,.18));
+}
+.freeze .fz-vignette {
+  position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  box-shadow: inset 0 0 60px 8px rgba(0,8,16,.45);
+}
+@media (prefers-reduced-motion: reduce) {
+  .freeze .fz-snow, .freeze .fz-water::before { animation: none; }
+}
+
+/* Gauge Reader — compact playfield, details drawer */
+.tg-round.g-gauges .tg-body { overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.gr-play { position: relative; display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; height: 100%; }
+.gr-play .tg-goal { flex: none; margin-bottom: 6px; }
+.gr-stage { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.gr-play .gr-man.real.compact {
+  width: 100%;
+  max-height: 100%;
+  padding: 6px 6px 4px;
+  grid-template-columns: 1fr 1fr;
+}
+.gr-play .gr-man.real.compact .gr-dial .mg-dial { max-width: 180px; }
+.gr-play .gr-man.real.compact .gr-body { margin: 0 10% 8px; padding: 5px 8px; }
+.gr-play .gr-man.real.compact .gr-mid { gap: 4px; }
+.gr-play .gr-man.real.compact .gr-ref { padding: 2px 8px; pointer-events: none; }
+.gr-facts { flex: none; display: flex; align-items: center; gap: 8px; margin: 4px 0 6px; }
+.gr-facts .gr-readout { flex: 1; margin: 0; gap: 8px; }
+.gr-facts .gr-readout span { padding: 6px 10px; }
+.gr-facts .gr-readout b { font-size: 18px; }
+.gr-more {
+  flex: none;
+  appearance: none;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #E8D5A0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: 700 12px/1 var(--font, system-ui);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.gr-play .gr-step { flex: none; padding: 8px; margin: 0; background: transparent; border: 0; }
+.gr-play .gr-step .tg-choices { margin-top: 0; }
+.gr-play .tg-choice { min-height: 48px; }
+.gr-drawer {
+  position: absolute; inset: 0; z-index: 8;
+  display: none;
+  align-items: flex-end;
+  background: rgba(0,0,0,.45);
+}
+.gr-drawer.open { display: flex; }
+.gr-draw-in {
+  width: 100%;
+  max-height: 78%;
+  overflow: auto;
+  background: linear-gradient(180deg, #2a2620, #161412);
+  border-top: 1px solid rgba(243,224,180,.2);
+  border-radius: 18px 18px 0 0;
+  padding: 16px 14px calc(16px + var(--sab, 0px));
+  box-shadow: 0 -12px 40px rgba(0,0,0,.5);
+}
+.gr-draw-in .gr-tags { margin: 10px 0; }
+.gr-draw-in #grLeg { margin: 8px 0 12px; }
+@media (max-height: 720px) {
+  .gr-play .tg-goal { font-size: 14px; margin-bottom: 4px; }
+  .gr-facts .gr-readout span { padding: 4px 8px; }
+  .gr-facts .gr-readout b { font-size: 16px; }
+  .gr-play .tg-choice { min-height: 42px; font-size: 13px; }
+  .gr-play .gr-man.real.compact .gr-body { display: none; }
+  .gr-play .gr-step { padding: 6px 0 0; }
+  .freeze .fz-scene, #fz.fz-scene { flex-basis: 34%; min-height: 132px; }
+}
+
+/* Feel + result plates */
+.feel-flash {
+  position: absolute; inset: 0; pointer-events: none; z-index: 20; border-radius: inherit;
+  background: radial-gradient(circle at 50% 40%, rgba(255,90,74,.28), rgba(255,90,74,.08) 45%, transparent 70%);
+  animation: feelFlash .32s ease-out forwards;
+}
+@keyframes feelFlash { from { opacity: 1; } to { opacity: 0; } }
+.feel-combo {
+  position: absolute; left: 50%; top: -6px; transform: translateX(-50%);
+  font: 800 18px/1 var(--font, system-ui); color: #F5D76E;
+  text-shadow: 0 0 12px rgba(245,215,110,.7);
+  animation: feelCombo .7s cubic-bezier(.2,.8,.2,1) forwards;
+  pointer-events: none; z-index: 6;
+}
+@keyframes feelCombo { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.8); } 30% { opacity: 1; transform: translate(-50%, -4px) scale(1.12); } 100% { opacity: 0; transform: translate(-50%, -16px) scale(1); } }
+.go-plate {
+  background:
+    radial-gradient(90% 50% at 50% -10%, rgba(201,162,74,.16), transparent 55%),
+    linear-gradient(180deg, #1c1a16 0%, #12110f 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(243,224,180,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 32px rgba(0,0,0,.25);
+  padding: 18px 14px calc(18px + var(--sab, 0px) + var(--vv-nudge, 0px));
+}
+.game-over.go-plate .go-score,
+.tg-result.go-plate .tg-res-score {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  background: linear-gradient(180deg, #F8E7B0, #C9A24A 70%, #8a6a28);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(40,28,8,.65));
+}
+.tg-result.fail.go-plate .tg-res-score { background: linear-gradient(180deg, #f0d0c8, #c45a4a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.go-plate .btn.primary { box-shadow: 0 8px 20px rgba(255,158,42,.28); }
+
+/* Braze / thermostat lighting + reliable touch */
+.br-scene { touch-action: none; box-shadow: inset 0 0 40px rgba(0,0,0,.35), 0 10px 24px rgba(0,0,0,.3); }
+.tw-board { touch-action: none; }
+.matchg .m-pic.matched, .matchg .m-name.matched { box-shadow: 0 0 0 2px #C9E08A, 0 8px 22px rgba(160,200,80,.4); }
+@media (prefers-reduced-motion: reduce) {
+  .feel-flash, .feel-combo { animation: none; }
+}

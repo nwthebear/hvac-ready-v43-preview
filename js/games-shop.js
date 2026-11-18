@@ -133,10 +133,13 @@
         const scene = $("#brS"), svg = scene.querySelector(".br-svg"); let holding = false, fx = 120, tubeFirst = null, roar = null, parked = 0, lastX = 0;
         if (guided) { scene.classList.add("tg-hl"); }
         const toSvg = e => { const r = svg.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 360; };
-        const down = e => { if (st.heated) return; holding = true; fx = toSvg(e); lastX = fx; if (tubeFirst == null) tubeFirst = fx < 196; roar = Sound.loop("torch", 0.6); scene.setPointerCapture(e.pointerId); scene.classList.add("heating"); scene.classList.remove("tg-hl"); R.resume("guide"); TG.buzz("tap"); };
+        const down = e => { if (st.heated) return; e.preventDefault(); holding = true; fx = toSvg(e); lastX = fx; if (tubeFirst == null) tubeFirst = fx < 196; roar = Sound.loop("torch", 0.6); try { scene.setPointerCapture(e.pointerId); } catch (err) {} scene.classList.add("heating"); scene.classList.remove("tg-hl"); R.resume("guide"); TG.buzz("tap"); };
         const move = e => { if (holding) fx = Math.max(20, Math.min(300, toSvg(e))); };
-        const up = () => { if (!holding) return; holding = false; scene.classList.remove("heating"); roar && roar.stop(0.15); release(); };
+        const up = e => { if (!holding) return; if (e && e.pointerId != null) { try { scene.releasePointerCapture(e.pointerId); } catch (err) {} } holding = false; scene.classList.remove("heating"); roar && roar.stop(0.15); release(); };
         scene.addEventListener("pointerdown", down); scene.addEventListener("pointermove", move); scene.addEventListener("pointerup", up); scene.addEventListener("pointercancel", up);
+        const moveDoc = e => { if (holding) move(e); }, upDoc = e => { if (holding) up(e); };
+        document.addEventListener("pointermove", moveDoc); document.addEventListener("pointerup", upDoc); document.addEventListener("pointercancel", upDoc);
+        R.stops.push(() => { document.removeEventListener("pointermove", moveDoc); document.removeEventListener("pointerup", upDoc); document.removeEventListener("pointercancel", upDoc); });
         R.stops.push(() => roar && roar.stop());
         const lv = TG.level(R.id), rate = 520 + lv * 40;
         R.onFrame = dt => { if (st.heated) return; torch.setAttribute("transform", `translate(${fx + 26} 89) rotate(${holding ? -8 : 0})`); flame.style.opacity = holding ? 1 : 0.15;
@@ -237,14 +240,15 @@
     const next = () => { if (R.over) return; if (ci >= picked.length) return R.end(true); prog(); R.boardStart(); one(picked[ci]); };
     function one(c0) { let c = c0, stepN = 0; TG.qaCur = { kind: "gr", get c() { return c; }, diagI: () => DIAG.findIndex(d => d.id === c.diag) }; const blend = () => PT.meta.info[c.refrigerant].glide >= 0.5;
       const guided = firstPlay && ci === 0;
-      R.body.innerHTML = `<p class="tg-goal">${L("The house is still warm. Read the gauges and pick what's wrong.", "La casa sigue caliente. Lee los manómetros y elige qué está mal.")}</p>
-        <div class="gr-man real"><div class="gr-g"><div class="gr-dial" id="grDL"></div><b id="grLo"></b><small>psig</small></div><div class="gr-g"><div class="gr-dial" id="grDH"></div><b id="grHi"></b><small>psig</small></div><div class="gr-body"><span class="gr-sight"></span><div class="gr-mid"><button class="gr-ref" id="grRef"><span>${c.refrigerant}</span><small>${c.metering}</small></button><span class="gr-meter">${c.metering}</span></div><span class="gr-sight"></span><i class="gr-port lo"></i><i class="gr-port mid"></i><i class="gr-port hi"></i></div><div id="grLeg"></div></div>
-        <div class="gr-readout" id="grRead"><span>${L("Superheat", "Sobrecalentamiento")}<b id="grSH">—</b></span><span>${L("Subcooling", "Subenfriamiento")}<b id="grSC">—</b></span></div>
-        <div class="gr-tags" id="grTags"></div><div class="gr-step" id="grStep"></div>`;
+      R.body.innerHTML = `<div class="gr-play"><p class="tg-goal">${L("The house is still warm. Read the gauges and pick what's wrong.", "La casa sigue caliente. Lee los manómetros y elige qué está mal.")}</p>
+        <div class="gr-stage"><div class="gr-man real compact"><div class="gr-g"><div class="gr-dial" id="grDL"></div><b id="grLo"></b><small>psig</small></div><div class="gr-g"><div class="gr-dial" id="grDH"></div><b id="grHi"></b><small>psig</small></div><div class="gr-body"><span class="gr-sight"></span><div class="gr-mid"><span class="gr-ref" id="grRef"><span>${c.refrigerant}</span><small>${c.metering}</small></span></div><span class="gr-sight"></span><i class="gr-port lo"></i><i class="gr-port mid"></i><i class="gr-port hi"></i></div></div></div>
+        <div class="gr-facts"><div class="gr-readout" id="grRead"><span>${L("Superheat", "Sobrecalentamiento")}<b id="grSH">—</b></span><span>${L("Subcooling", "Subenfriamiento")}<b id="grSC">—</b></span></div><button type="button" class="gr-more" id="grMore">${L("Details", "Detalles")}</button></div>
+        <div class="gr-step" id="grStep"></div>
+        <div class="gr-drawer" id="grDraw" hidden><div class="gr-draw-in"><div class="row between"><b id="grRefD">${c.refrigerant}</b><span class="sm muted">${c.metering}</span></div><div class="gr-tags" id="grTags"></div><div id="grLeg"></div><button type="button" class="btn sm full" id="grPT">${ico("gauge", 15)} ${L("PT Chart", "Tabla PT")}</button><button type="button" class="btn full" id="grDrawX">${L("Close", "Cerrar")}</button></div></div></div>`;
       const gLo = A.Gauge.mount($("#grDL"), { side: "low", value: 0, legend: false, required: c.refrigerant }), gHi = A.Gauge.mount($("#grDH"), { side: "high", value: 0, legend: false, required: c.refrigerant }), gLeg = A.Gauge.group($("#grLeg"), [gLo, gHi], c.refrigerant);
       R.stops.push(() => { gLo.destroy(); gHi.destroy(); });
       const needle = (sel, p) => { const g = sel === "lo" ? gLo : gHi; g.setRequired(c.refrigerant); g.set(p); }; gLeg.setRequired(c.refrigerant);
-      const paint = () => { R.body.querySelector("#grRef span").textContent = c.refrigerant; $("#grLo").textContent = c.suctionPsig.toFixed(1); $("#grHi").textContent = c.liquidPsig.toFixed(1);
+      const paint = () => { const ref = R.body.querySelector("#grRef span"); if (ref) ref.textContent = c.refrigerant; const rd = $("#grRefD"); if (rd) rd.textContent = c.refrigerant; $("#grLo").textContent = c.suctionPsig.toFixed(1); $("#grHi").textContent = c.liquidPsig.toFixed(1);
         gLeg.setRequired(c.refrigerant); requestAnimationFrame(() => { needle("lo", c.suctionPsig); needle("hi", c.liquidPsig); }); Sound.sfx("gauge");
         const shEl = $("#grSH"), scEl = $("#grSC"); if (shEl) shEl.textContent = c.superheatF + "°F"; if (scEl) scEl.textContent = c.subcoolingF + "°F";
         const ex = c.extra || {}; $("#grTags").innerHTML = `<span class="gr-tag">${ico("sun", 13)} ${esc(tx(GR.conditionsText))}</span><span class="gr-tag clamp">${L("Suction line", "Línea succión")} <b>${c.suctionLineF}°F</b></span><span class="gr-tag clamp">${L("Liquid line", "Línea líquido")} <b>${c.liquidLineF}°F</b></span>
@@ -252,9 +256,12 @@
           ${ex.dropAcrossDrierF ? `<span class="gr-tag warn">${L("Drop across drier", "Caída en el filtro")} <b>${ex.dropAcrossDrierF}°F</b></span>` : ""}${ex.CTOA_F ? `<span class="gr-tag warn">${L("Condensing over ambient", "Condensación sobre ambiente")} <b>${ex.CTOA_F}°F</b></span>` : ""}
           ${ex.filter ? `<span class="gr-tag warn">${L("Filter", "Filtro")}: ${L("clogged", "tapado")}</span>` : ""}${ex.offCycleStandingPsig ? `<span class="gr-tag warn">${L("Off-cycle standing", "En reposo")} <b>${ex.offCycleStandingPsig}</b> psig @ ${ex.ambientF}°F</span>` : ""}`; };
       paint();
-      $("#grRef").onclick = () => { /* refrigerant is part of the case; no swap puzzle */ Sound.sfx("tap"); };
-      const ptBtn = `<button class="btn sm gr-pt" id="grPT">${ico("gauge", 15)} ${L("PT Chart", "Tabla PT")}</button>`;
+      const openDraw = on => { const d = $("#grDraw"); if (!d) return; d.hidden = !on; d.classList.toggle("open", on); };
+      $("#grMore").onclick = () => { Sound.sfx("tap"); openDraw(true); };
+      $("#grDrawX").onclick = () => { Sound.sfx("tap"); openDraw(false); };
+      const ptBtn = "";
       const bindPT = () => { const b = $("#grPT"); if (b) b.onclick = () => { A.ptMount && A.ptMount(c.refrigerant); A.ptOpen && A.ptOpen(); }; };
+      bindPT();
       /* step 1: saturation temps */
       const satStep = async (side) => { stepN = 1; const isLo = side === "lo", want = isLo ? c.evapSatF_dew : c.condSatF_bubble, p = isLo ? c.suctionPsig : c.liquidPsig;
         const trap = blend() ? Math.round(tAt(c.refrigerant, p, isLo ? "bubble" : "dew")) : null;
@@ -278,10 +285,13 @@
           $("#gsR").classList.add("bad"); await R.miss({ did: L(`You built ${kind} = ${chips.find(x => x[0] === slot[0])[2]} − ${chips.find(x => x[0] === slot[1])[2]}.`, `Armaste ${kind} = ${chips.find(x => x[0] === slot[0])[2]} − ${chips.find(x => x[0] === slot[1])[2]}.`),
             why: isSH ? GR.formulas.superheat : GR.formulas.subcooling, rule: L(`Here ${kind} = ${isSH ? c.superheatF : c.subcoolingF}°F.`, `Aquí ${kind} = ${isSH ? c.superheatF : c.subcoolingF}°F.`) + " " + tx(GR.blendNote), sources: GR.blendSources.concat(["icp_421015103"]), q: grQ("gr:blend") }); res(); })); };
       /* step 3: diagnose */
-      const diagStep = () => { stepN = 3; $("#grStep").innerHTML = `<div class="row between"><b>${L("Your call", "Tu diagnóstico")}</b><span class="sm muted">SH ${c.superheatF}° · SC ${c.subcoolingF}°</span> ${ptBtn}</div>${TG.choiceGrid(DIAG.map(d => esc(tx(d.name))), "two diag")}`; bindPT();
-        $("#grStep").querySelectorAll(".tg-choice").forEach(b => b.onclick = async () => { TG.clearHighlights(R.body); const d = DIAG[+b.dataset.i]; $("#grStep").querySelectorAll(".tg-choice").forEach(x => x.disabled = true);
+      const diagStep = () => { stepN = 3;
+        const opts = TG.shuffle([DIAG.find(d => d.id === c.diag), ...TG.shuffle(DIAG.filter(d => d.id !== c.diag)).slice(0, 3)]);
+        TG.qaCur = { kind: "gr", get c() { return c; }, diagI: () => opts.findIndex(d => d.id === c.diag) };
+        $("#grStep").innerHTML = TG.choiceGrid(opts.map(d => esc(tx(d.name))), "two diag");
+        $("#grStep").querySelectorAll(".tg-choice").forEach(b => b.onclick = async () => { TG.clearHighlights(R.body); const d = opts[+b.dataset.i]; $("#grStep").querySelectorAll(".tg-choice").forEach(x => x.disabled = true);
           if (d.id === c.diag) { b.classList.add("right"); R.hit({ pts: 200, label: L("diagnosis", "diagnóstico") }); TG.flash(R, `<b>${esc(dName(c.diag))}</b><p>${esc(tx(c.explain))}</p>`, "explain", 2600); await wait(2300); }
-          else { b.classList.add("wrong"); R.body.querySelector(`.tg-choice[data-i="${DIAG.findIndex(x => x.id === c.diag)}"]`).classList.add("right");
+          else { b.classList.add("wrong"); const ri = opts.findIndex(x => x.id === c.diag); const right = R.body.querySelector(`.tg-choice[data-i="${ri}"]`); if (right) right.classList.add("right");
             await R.miss({ did: L(`You called it ${dName(d.id)}. It's ${dName(c.diag)}.`, `Dijiste ${dName(d.id)}. Es ${dName(c.diag)}.`), why: tx(c.explain), rule: patRow(c.diag) + " · " + tx(GR.targets[c.metering === "TXV" ? "TXV" : "piston"]) + (blend() ? " " + tx(GR.blendNote) : ""), oem: true, sources: c.sources, q: grQ(`gr:${c.id}`) }); }
           R.boardEnd(); if (R.combo >= 5 && R.combo % 5 === 0) R.bonus(250, L("Sharp Eye", "Buen ojo")); ci++; setTimeout(next, 500); }); };
       if (guided) { R.pause("guide"); ["grDL","grDH","grRead"].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("tg-hl"); }); setTimeout(() => { TG.clearHighlights(R.body); const step = $("#grStep"); if (step) step.classList.add("tg-hl"); R.resume("guide"); }, 1600); }

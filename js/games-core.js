@@ -194,7 +194,7 @@
       A.log("game", "tg:" + R.id, g.name, R.score); A.save(); const xp = Math.round(R.score / 100 * XP_RULES.gamePer100 + 10);
       Sound.stopMusic(); if (!win) setTimeout(() => Sound.sfx("wahwah"), 250);
       const acc = R.boards ? Math.round(100 * rate) : 0;
-      $("#stage").innerHTML = `<div class="tg-result ${win ? "win" : "fail"}"><div class="tg-res-av">${avatarSVG(S.avatar, 116, { cls: win ? "av-cheer" : "" })}</div>
+      $("#stage").innerHTML = `<div class="tg-result go-plate ${win ? "win" : "fail"}"><div class="tg-res-av">${avatarSVG(S.avatar, 116, { cls: win ? "av-cheer" : "" })}</div>
         <div class="eyebrow">${esc(tx(g.name))}</div><h2>${esc(why || (win ? L("Round complete", "Ronda completa") : L("Round over", "Fin de la ronda")))}</h2>
         <div class="tg-res-score">${R.score}</div>${nh ? `<div class="pill gold">${ico("trophy", 16)} ${t("newHigh")}</div>` : `<div class="muted sm">${t("highScore")}: ${Math.max(prev, R.score)}</div>`}
         <div class="tg-res-stats"><div><b>${R.clean}/${R.boards}</b><span>${L("clean", "limpios")}</span></div><div><b>×${MULT(R.best)}</b><span>${L("best combo", "mejor combo")} (${R.best})</span></div><div><b>${acc}%</b><span>${L("accuracy", "precisión")}</span></div></div>

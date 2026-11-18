@@ -93,4 +93,28 @@
   const GT = { markup, paint, start, stageOf, colorFor };
   window.GameTimer = GT;
   if (A) A.GameTimer = GT;
+
+  /* Shared hit / miss feel for the five arcade games. Uses existing spark + recorded sfx only. */
+  const feel = {
+    hit(el, n) { if (el && A && A.sparkAt && !(A.reduced && A.reduced())) A.sparkAt(el, n || 12); },
+    miss(root) {
+      const el = typeof root === "string" ? document.querySelector(root) : root;
+      if (!el) return;
+      el.classList.remove("tg-shake-big"); void el.offsetWidth; el.classList.add("tg-shake-big");
+      setTimeout(() => el.classList.remove("tg-shake-big"), 420);
+      if (A && A.reduced && A.reduced()) return;
+      const flash = document.createElement("div"); flash.className = "feel-flash"; flash.setAttribute("aria-hidden", "true");
+      el.appendChild(flash); setTimeout(() => flash.remove(), 320);
+    },
+    combo(host, n) {
+      if (!host || n < 3 || (A && A.reduced && A.reduced())) return;
+      host.querySelectorAll(".feel-combo").forEach(x => x.remove());
+      const d = document.createElement("em"); d.className = "feel-combo"; d.textContent = "×" + n;
+      host.style.position = host.style.position || "relative";
+      host.appendChild(d); setTimeout(() => d.remove(), 700);
+    }
+  };
+  if (A) A.feel = feel;
+  window.GameFeel = feel;
+
 })();

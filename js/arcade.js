@@ -15,7 +15,7 @@
   const hi = g => S.high[g] || 0;
   function finish(game, score, title, extra = "") {
     A.arcadeStop(); Sound.stopMusic(); if (extra === t("frozen")) setTimeout(() => Sound.sfx("wahwah"), 350); S.games++; const nh = score > hi(game); if (nh) S.high[game] = score; A.addXP(score / 100 * XP_RULES.gamePer100 + 10); A.log("game", game, title, score); A.save();
-    $("#stage").innerHTML = `<div class="game-over"><div class="go-av">${avatarSVG(S.avatar, 120, { frozen: extra === t("frozen"), cls: extra === t("frozen") ? "" : "av-cheer" })}</div><h2>${extra || title}</h2><div class="go-score">${score}</div>${nh ? `<div class="pill gold">${ico("trophy", 16)} ${t("newHigh")}</div>` : `<div class="muted">${t("highScore")}: ${hi(game)}</div>`}${extra === t("frozen") ? (nh ? A.saying("highscore") || A.saying("gameover") : A.saying("gameover")) : ""}
+    $("#stage").innerHTML = `<div class="game-over go-plate"><div class="go-av">${avatarSVG(S.avatar, 120, { frozen: extra === t("frozen"), cls: extra === t("frozen") ? "" : "av-cheer" })}</div><h2>${extra || title}</h2><div class="go-score">${score}</div>${nh ? `<div class="pill gold">${ico("trophy", 16)} ${t("newHigh")}</div>` : `<div class="muted">${t("highScore")}: ${hi(game)}</div>`}${extra === t("frozen") ? (nh ? A.saying("highscore") || A.saying("gameover") : A.saying("gameover")) : ""}
       <button class="btn primary big full" id="again">${t("playAgain")}</button><a class="btn full" href="#/arcade">${t("arcade")}</a></div>`;
     $("#again").onclick = () => A.render();
     setTimeout(() => A.celebrate({ title, sub: `${score} ${t("points").toLowerCase()}${nh ? " · " + t("newHigh") : ""}`, showBoard: false }), 500);
@@ -40,8 +40,20 @@
       return `<main class="page">${A.head(t("arcade"))}<p class="muted">${t("arcadeSub")}</p>${A.arcQuip ?? (A.arcQuip = A.saying("arcade"))}
         <div class="game-grid arcade-lineup">${(A.homeArcade ? A.homeArcade(GAMES) : GAMES).map(([id, i, n, sub]) => {
           const def = A.TG && A.TG.bySlug[id], locked = def && !(A.TG.isUnlocked(def.id));
-          const title = gameTitle(id, n), subT = def ? esc(tx(def.tag)) : (gameTitle(id, sub));
-          const inner = `<img class="g-art" src="img/illust/${ART[id] || "thermostat"}.webp" alt="" aria-hidden="true"><span class="g-ico">${ico(i, 34)}</span><b>${esc(title)}${id === "match" ? ` <span class="tg-starter">${S.lang === "es" ? "Inicio" : "Starter"}</span>` : ""}</b><small>${subT}</small>${locked ? `<span class="tg-lock">${ico("lock", 14)}</span><span class="g-hi sm">${esc(A.TG.unlockText(def.id))}</span>` : `<span class="g-hi">${ico("trophy", 14)} ${hi(def ? "tg:" + def.id : id)}</span>`}`;
+          const title = gameTitle(id, n);
+          const BLURB = {
+            match: { en: "Tap a picture, then its name", es: "Toca una foto, luego su nombre" },
+            freeze: { en: "Hop up before the water rises", es: "Sube antes de que suba el agua" },
+            braze: { en: "Heat the tube, then feed the rod", es: "Calienta el tubo, luego aplica" },
+            gauges: { en: "Read the gauges, make the call", es: "Lee los manómetros y diagnostica" },
+            thermostat: { en: "Land the wires, then power on", es: "Conecta los cables y enciende" }
+          };
+          const line = locked ? A.TG.unlockText(def.id) : ((BLURB[id] && BLURB[id][S.lang === "es" ? "es" : "en"]) || (def ? tx(def.tag) : gameTitle(id, sub)));
+          const score = hi(def ? "tg:" + def.id : id);
+          const meta = locked
+            ? `<span class="g-lock" aria-hidden="true">${ico("lock", 16)}</span>`
+            : (score > 0 ? `<span class="g-hi g-best">${ico("trophy", 13)}<b>${score.toLocaleString()}</b></span>` : "");
+          const inner = `<img class="g-art" src="img/illust/${ART[id] || "thermostat"}.webp" alt="" aria-hidden="true"><span class="g-shade" aria-hidden="true"></span><span class="g-ico">${ico(i, 28)}</span><div class="g-copy"><b>${esc(title)}${id === "match" ? ` <span class="tg-starter">${S.lang === "es" ? "Inicio" : "Starter"}</span>` : ""}</b><small>${esc(line)}</small></div>${meta}`;
           return locked ? `<div class="game-card g-${id} locked" aria-disabled="true">${inner}</div>` : `<a class="game-card g-${id}" href="#/arcade/${id}">${inner}</a>`;
         }).join("")}</div>
         <a class="list-card mt" href="#/sim"><span class="lc-ico">${ico("wrench")}</span><span class="grow"><b>${S.lang === "es" ? "Simulador de diagnóstico" : "Troubleshooting Simulator"}</b><span class="sm muted block">${S.lang === "es" ? "Llamadas reales: elige pruebas, lee lecturas y decide" : "Real calls: pick tests, read the numbers, make the call"}</span></span>${ico("arrow", 18)}</a>
@@ -63,7 +75,7 @@
   function freeze() {
     const N = 10, qs = sh(pool(A.arcTopic)).slice(0, N); let i = 0, water = 0, score = 0, streak = 0, tm;
     const MAXW = 3;
-    $("#stage").innerHTML = `<div class="freeze"><div class="fz-scene" id="fz"><div class="fz-sky"></div>${[...Array(N + 1)].map((_, k) => `<div class="fz-block" style="--k:${k}"></div>`).join("")}<div class="fz-av" id="fzav">${avatarSVG(S.avatar, 66)}</div><div class="fz-water" id="fzw"></div></div>
+    $("#stage").innerHTML = `<div class="freeze"><div class="fz-scene" id="fz"><div class="fz-sky"></div><div class="fz-moon" aria-hidden="true"></div><div class="fz-ridge fz-ridge-2" aria-hidden="true"></div><div class="fz-ridge fz-ridge-1" aria-hidden="true"></div><div class="fz-snow" aria-hidden="true"></div>${[...Array(N + 1)].map((_, k) => `<div class="fz-block" style="--k:${k}"><i></i></div>`).join("")}<div class="fz-av" id="fzav">${avatarSVG(S.avatar, 66)}</div><div class="fz-water" id="fzw"><i class="fz-foam"></i><i class="fz-icebit a"></i><i class="fz-icebit b"></i></div><div class="fz-mist" aria-hidden="true"></div><div class="fz-vignette" aria-hidden="true"></div></div>
       <div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} <b id="fzs">0</b></span><span class="hud-streak" id="fzk"></span><span id="fzt">${GameTimer.markup(15, "gtimer-lg")}</span></div><div id="fzq"></div></div>`;
     const upd = () => { $("#fzav").style.setProperty("--k", i); $("#fzw").style.height = (14 + water * 22) + "%"; $("#fz").style.setProperty("--ice", water / MAXW); $("#fzs").textContent = score; $("#fzk").innerHTML = streak > 1 ? ico("fire", 14) + " ×" + streak : ""; };
     const ask = () => {
@@ -73,8 +85,8 @@
       $("#fzq").innerHTML = `<h3 class="qtext sm">${qText(q)}</h3><div class="answers compact">${order.map((oi, k) => `<button class="ans a${k}" data-k="${oi}"><span class="ans-shape">${["▲", "◆", "●", "■"][k]}</span><span>${esc(tx(q.a[oi]))}</span></button>`).join("")}</div>`;
       const res = ok => { if (done) return; done = true; tm && tm.stop && tm.stop();
         document.querySelectorAll("#fzq .ans").forEach(b => { b.disabled = true; if (+b.dataset.k === q.c) b.classList.add("right"); });
-        if (ok) { streak++; score += 300 + left * 20 + streak * 40; i++; Sound.sfx("jump"); $("#fzav").classList.remove("jump"); void $("#fzav").offsetWidth; $("#fzav").classList.add("jump"); if (water > 0 && streak % 3 === 0) water--; }
-        else { streak = 0; water++; Sound.sfx("splash"); const av = $("#fzav"); av.classList.remove("shiver"); void av.offsetWidth; av.classList.add("shiver"); $("#fz").classList.add("shake"); setTimeout(() => $("#fz") && $("#fz").classList.remove("shake"), 400); i++; }
+        if (ok) { streak++; score += 300 + left * 20 + streak * 40; i++; Sound.sfx("jump"); $("#fzav").classList.remove("jump"); void $("#fzav").offsetWidth; $("#fzav").classList.add("jump"); A.sparkAt && A.sparkAt($("#fzav"), 14); A.feel && A.feel.combo($("#fzk") || $("#stage"), streak); if (water > 0 && streak % 3 === 0) water--; }
+        else { streak = 0; water++; Sound.sfx("splash"); const av = $("#fzav"); av.classList.remove("shiver"); void av.offsetWidth; av.classList.add("shiver"); A.feel && A.feel.miss($(".freeze") || $("#fz")); i++; }
         setTimeout(() => $("#fzq") && ask(), ok ? 650 : 1100); };
       A.bindTap(document.querySelectorAll("#fzq .ans"), b => res(+b.dataset.k === q.c));
       const slot = $("#fzt"); if (slot) slot.innerHTML = GameTimer.markup(15, "gtimer-lg");
@@ -102,8 +114,8 @@
       if (round >= 3) { if (clock) clock.stop(); const secs = Math.round((Date.now() - t0) / 1000); return finish("match", Math.max(100, score + 1500 - secs * 10), t("compMatch"), t("matched")); }
       const set = items.slice(round * 4, round * 4 + 4); let sel = null, left = set.length, busy = false;
       const hint = S.lang === "es"
-        ? (round === 0 ? "Estás en la camioneta. Toca una foto, luego el nombre que le va. Un par a la vez — sin trucos." : `${t("round")} ${round + 1}/3`)
-        : (round === 0 ? "You're at the truck. Tap a picture, then the name that goes with it. One pair at a time — no trick questions." : `${t("round")} ${round + 1}/3`);
+        ? (round === 0 ? "Estás en la camioneta. Toca una foto, luego el nombre que le va." : `${t("round")} ${round + 1}/3`)
+        : (round === 0 ? "You're at the truck. Tap a picture, then the name that goes with it." : `${t("round")} ${round + 1}/3`);
       $("#stage").innerHTML = `<div class="matchg"><div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} <b id="mzs">${score}</b></span><span id="mzt">${GameTimer.markup(30, "gtimer-lg")}</span></div><p class="tg-goal">${hint}</p><div class="m-cols"><div>${sh(set).map(x => `<button type="button" class="m-pic" data-col="pic" data-id="${x.id}">${x.svg}</button>`).join("")}</div><div>${sh(set).map(x => `<button type="button" class="m-name" data-col="name" data-id="${x.id}">${esc(tx(x.name))}</button>`).join("")}</div></div></div>`;
       if (clock) clock.stop();
       clock = GameTimer.start({ el: "#mzt .gtimer", total: 30, onDone: () => { if (busy) return; finish("match", Math.max(100, score), t("compMatch")); } });
@@ -125,7 +137,7 @@
         } else {
           streak = 0; score = Math.max(0, score - 50);
           [a, b].forEach(x => { x.classList.remove("sel"); x.classList.add("nope"); });
-          Sound.sfx("wrong");
+          Sound.sfx("wrong"); A.feel && A.feel.miss(document.querySelector(".matchg"));
           const hp = document.querySelector("#mzs"); if (hp) hp.textContent = score;
           setTimeout(() => { [a, b].forEach(x => x.classList.remove("nope", "sel")); sel = null; busy = false; }, 450);
         }
