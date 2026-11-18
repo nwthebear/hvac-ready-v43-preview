@@ -197,8 +197,13 @@
 
   const es = () => { try { return JSON.parse(localStorage.getItem("hvac.state.v1") || "{}").lang === "es"; } catch (e) { return false; } };
 
+  function armFailsafe(ms) {
+    clearTimeout(finish.timer);
+    finish.timer = setTimeout(() => { try { finish(); } catch (e) {} }, ms);
+  }
   function finish() {
     if (finish.done) return; finish.done = true;
+    clearTimeout(finish.timer);
     cancelAnimationFrame(logoTick.raf);
     const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid");
     try { if (vid) { vid.pause(); vid.removeAttribute("src"); vid.load(); } } catch (e) {}
@@ -234,6 +239,7 @@
     play.started = true;
     const vid = document.getElementById("intro-vid");
     hideGate(); /* hide immediately — do not wait on play() */
+    armFailsafe(12000); /* hard cap: drop intro layers even if video/emblem never end */
     logoTick.t0 = performance.now();
     cancelAnimationFrame(logoTick.raf);
     logoTick.raf = requestAnimationFrame(logoTick);
@@ -296,7 +302,16 @@
     ov.addEventListener("click", start);
     document.getElementById("intro-start").addEventListener("click", ev => { ev.stopPropagation(); play(); });
     ov.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") start(ev); });
+    const maybeEnd = () => {
+      try {
+        if (vid.ended) return finish();
+        const d = vid.duration;
+        if (d && isFinite(d) && d > 0 && vid.currentTime >= d - 0.08) finish();
+      } catch (e) {}
+    };
     vid.addEventListener("ended", finish);
+    vid.addEventListener("error", () => { if (play.started) finish(); });
+    vid.addEventListener("timeupdate", maybeEnd);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
