@@ -19,7 +19,8 @@
     bottles: YT("dDwI3CQp84Q", "HVAC Training on Refrigerant Bottles! R-32, R-454B, R-410A, R-22 Disposable Types, Recovery Bottles!", "AC Service Tech LLC"),
     gauges: YT("xTctTHhOgaw", "Connect & Disconnect Refrigerant Gauges! Low Loss Fittings!", "AC Service Tech LLC"),
     t1recover: YT("yXJNuMmEPog", "Recovering Refrigerant! Use the System's Compressor or Recovery Machine? Explained!", "AC Service Tech LLC"),
-    chiller: YT("0rzQhSXVq60", "Chiller Basics - How they work", "The Engineering Mindset")
+    chiller: YT("0rzQhSXVq60", "Chiller Basics - How they work", "The Engineering Mindset"),
+    ohm: YT("HsLLq6Rm5tU", "Ohms Law Explained - The basics circuit theory", "The Engineering Mindset")
   };
 
   function attach(id, teach) {
@@ -713,6 +714,113 @@
       { q: T("What recovery level does the law require on a low-pressure appliance, and what else do you have to watch?", "¿Qué nivel de recuperación exige la ley en un aparato de baja presión, y qué más tienes que cuidar?"),
         a: [T("25 mm Hg absolute, and keep water circulating so the tubes don't freeze", "25 mm Hg absolutos, y mantén el agua circulando para que los tubos no se congelen"), T("4 inches of mercury vacuum, same as a window unit", "4 pulgadas de vacío de mercurio, igual que un aire de ventana"), T("0 inches of vacuum, same as a small high-pressure split", "0 pulgadas de vacío, igual que un split pequeño de alta presión"), T("25 inches of mercury vacuum — it's the same as 25 mm Hg absolute", "25 pulgadas de vacío de mercurio: es lo mismo que 25 mm Hg absolutos")],
         c: 0, why: T("Low-pressure appliances must be recovered to 25 mm Hg absolute, which is a deep vacuum, not 25 inches of vacuum and not the Type I or Type II inch numbers. Circulating water protects the tubes. Charge vapor first, then liquid, for the same reason.", "Los aparatos de baja presión deben recuperarse a 25 mm Hg absolutos, un vacío profundo, no 25 pulgadas de vacío ni los números en pulgadas del Tipo I o II. El agua circulando protege los tubos. Carga vapor primero y luego líquido, por la misma razón.") }
+    ]
+  });
+
+  /* ---------------- Ready-to-Work ---------------- */
+  attach("nate-rtw", {
+    minutes: 16,
+    steps: [
+      { kicker: T("Ready-to-Work", "Listo para trabajar"),
+        title: T("What a shop expects you to know on day one", "Lo que un taller espera que sepas el primer día"),
+        body: [
+          T("Nobody expects a brand-new helper to diagnose a compressor. They do expect you to stay safe, know the basic tools by name, understand how electricity and heat move, and know what the parts of a duct and piping system are for. That is what this lesson covers.",
+            "Nadie espera que un ayudante nuevo diagnostique un compresor. Sí esperan que te mantengas seguro, conozcas las herramientas básicas por su nombre, entiendas cómo se mueven la electricidad y el calor, y sepas para qué sirven las partes de un sistema de ductos y tubería. Eso cubre esta lección."),
+          T("Each idea below is something you will hear on your first week of ride-alongs. Learn the 'why' and the words will stick.",
+            "Cada idea de abajo es algo que vas a oír en tu primera semana acompañando a un técnico. Aprende el 'por qué' y las palabras se quedan.")
+        ]
+      },
+      { title: T("Safety comes first, every single call", "La seguridad va primero, en cada llamada"),
+        body: [
+          T("Lock out and tag out the power, then prove it's dead with a meter (live–dead–live). Wear glasses and gloves around refrigerant. Use only dry nitrogen to pressure-test — never oxygen or shop air. On a ladder, keep three points of contact. Around anything that burns gas, carry a CO detector.",
+            "Bloquea y etiqueta la energía, y comprueba que está muerta con un medidor (vivo–muerto–vivo). Usa lentes y guantes con refrigerante. Solo nitrógeno seco para pruebas de presión, nunca oxígeno ni aire de taller. En una escalera, tres puntos de contacto. Cerca de lo que quema gas, lleva un detector de CO.")
+        ],
+        visual: "loto",
+        video: V.safety,
+        call: T("Your lead tech asks you to 'grab the disconnect.' That means pull it, lock it, and tag it — then test before anyone touches a wire.",
+          "Tu técnico líder te pide 'agarra el desconectador.' Eso significa quitarlo, ponerle candado y etiqueta, y probar antes de que alguien toque un cable.")
+      },
+      { title: T("Electricity is water in a hose", "La electricidad es agua en una manguera"),
+        body: [
+          T("Voltage is the push, like water pressure. Current, measured in amps, is how much actually flows. Resistance, measured in ohms, is anything that slows it down, like a kink in the hose.",
+            "El voltaje es el empuje, como la presión del agua. La corriente, en amperes, es cuánto fluye de verdad. La resistencia, en ohms, es lo que la frena, como un doblez en la manguera."),
+          T("Ohm's law ties them together: voltage equals current times resistance, V = I × R. Know any two and you can find the third. A 240-volt motor drawing 5 amps acts like about 48 ohms, because 240 ÷ 5 = 48.",
+            "La ley de Ohm los une: voltaje es igual a corriente por resistencia, V = I × R. Si sabes dos, encuentras el tercero. Un motor de 240 voltios que jala 5 amperes se comporta como unos 48 ohms, porque 240 ÷ 5 = 48.")
+        ],
+        video: V.ohm,
+        analogy: T("Turn the faucet up (more voltage) and more water flows. Step on the hose (more resistance) and less flows, even with the same pressure.",
+          "Abre más la llave (más voltaje) y fluye más agua. Pisa la manguera (más resistencia) y fluye menos, aunque la presión sea la misma.")
+      },
+      { title: T("Switches go in a line; loads sit side by side", "Los interruptores van en fila; las cargas van lado a lado"),
+        body: [
+          T("A load is anything that does work: a motor, a heater, a light. Loads are wired in parallel — each on its own branch — so every one gets the full voltage and one burning out doesn't kill the rest.",
+            "Una carga es lo que hace trabajo: un motor, una resistencia, un foco. Las cargas se conectan en paralelo, cada una en su propia rama, para que todas reciban el voltaje completo y si una se quema no apague a las demás."),
+          T("Switches and safeties are wired in series with the load they control — in the same single path. Open any one and the whole path stops. That is how a high-pressure switch can shut a compressor off.",
+            "Los interruptores y las seguridades se conectan en serie con la carga que controlan, en el mismo camino. Si abres uno, todo el camino se detiene. Así es como un interruptor de alta presión puede apagar un compresor.")
+        ],
+        analogy: T("Series is a single-lane bridge: close it anywhere and nobody crosses. Parallel is a highway with several lanes: one lane closing doesn't stop the others.",
+          "En serie es un puente de un solo carril: si lo cierras en cualquier punto, nadie cruza. En paralelo es una autopista de varios carriles: si se cierra uno, los demás siguen."),
+        call: T("A condenser won't start. The tech finds the high-pressure switch open. Because it's in series with the contactor coil, the call to run never reaches the compressor. The switch is doing its job — now find out why pressure got high.",
+          "Un condensador no arranca. El técnico encuentra abierto el interruptor de alta presión. Como está en serie con la bobina del contactor, la orden de arrancar nunca llega al compresor. El interruptor hace su trabajo; ahora hay que averiguar por qué subió la presión.")
+      },
+      { title: T("Heat moves three ways", "El calor se mueve de tres formas"),
+        body: [
+          T("Conduction is heat moving through something solid, like the copper wall of a tube. Convection is heat carried by moving air or water, like a blower pushing air across a coil. Radiation is heat that travels as infrared, like sun on a roof.",
+            "La conducción es el calor que pasa por algo sólido, como la pared de cobre de un tubo. La convección es el calor que lleva el aire o el agua en movimiento, como un ventilador que empuja aire por un serpentín. La radiación es calor que viaja como infrarrojo, como el sol en un techo."),
+          T("Insulation slows conduction. Fans speed up convection. Heat always moves from warmer to cooler — an air conditioner doesn't make cold, it moves heat out.",
+            "El aislamiento frena la conducción. Los ventiladores aceleran la convección. El calor siempre va de lo más caliente a lo más frío: un aire acondicionado no hace frío, saca el calor.")
+        ],
+        visual: "heat",
+        analogy: T("Hold a hot mug: that's conduction. Blow on your soup: convection. Feel a campfire from across the yard: radiation.",
+          "Agarra una taza caliente: eso es conducción. Sopla tu sopa: convección. Siente una fogata desde el otro lado del patio: radiación.")
+      },
+      { title: T("Air needs a path in and a path out", "El aire necesita un camino de entrada y uno de salida"),
+        body: [
+          T("Return ducts pull room air back to the equipment through a filter. Supply ducts carry conditioned air back out to the registers. The plenum is the box where ducts connect to the unit.",
+            "Los ductos de retorno regresan el aire del cuarto al equipo a través de un filtro. Los ductos de suministro llevan el aire acondicionado a las rejillas. El plenum es la caja donde los ductos se conectan a la unidad."),
+          T("If the ducts are too small, leaky, or the filter is clogged, the blower fights resistance. Techs measure that with static pressure. High static means weak airflow, cold coils that can freeze, and unhappy customers.",
+            "Si los ductos son muy chicos, fugan o el filtro está tapado, el ventilador pelea contra la resistencia. Los técnicos lo miden con la presión estática. Una estática alta significa poco aire, serpentines que se pueden congelar y clientes molestos.")
+        ],
+        video: V.ducts,
+        call: T("A customer says the upstairs never cools. Before blaming the unit, the tech checks the filter and measures static. A filter that looks like a rug is the cheapest fix there is.",
+          "Un cliente dice que arriba nunca enfría. Antes de culpar a la unidad, el técnico revisa el filtro y mide la estática. Un filtro que parece tapete es la reparación más barata que existe.")
+      },
+      { title: T("Copper, joints, and water that has to leave", "Cobre, uniones y el agua que tiene que salir"),
+        body: [
+          T("The two copper lines between the indoor and outdoor units are the line set. They get joined by brazing (melting filler metal into the joint with a torch, while nitrogen flows inside), by flaring (shaping the tube end to seal on a fitting), or by approved press fittings.",
+            "Las dos líneas de cobre entre la unidad de adentro y la de afuera son el line set. Se unen soldando (derritiendo metal de aporte en la unión con soplete, mientras fluye nitrógeno por dentro), con flare (dando forma al extremo para sellar en un fitting), o con fittings de presión aprobados."),
+          T("Cooling pulls water out of the air. That condensate drains through a pipe that needs a downhill slope and a trap — a U-bend that holds water so the blower can't suck air back up the drain.",
+            "Enfriar saca agua del aire. Esa condensación se drena por un tubo que necesita pendiente hacia abajo y una trampa, una curva en U que guarda agua para que el ventilador no jale aire por el desagüe.")
+        ],
+        analogy: T("A condensate trap works like the U-bend under your kitchen sink: a little water sits in the bend and blocks air from coming the wrong way.",
+          "Una trampa de condensado funciona como la curva en U bajo el fregadero: un poco de agua se queda en la curva y bloquea el aire que viene al revés."),
+        call: T("Water on the ceiling under an attic unit? First look at the drain: a missing trap, a flat run, or a clog will overflow the pan.",
+          "¿Agua en el techo bajo una unidad en el ático? Mira primero el desagüe: una trampa que falta, un tramo sin pendiente o un tapón hacen que la charola se desborde.")
+      }
+    ],
+    recap: [
+      T("Lock out, tag out, live–dead–live. Nitrogen only for pressure tests. CO detector around gas equipment.", "Bloquea, etiqueta, vivo–muerto–vivo. Solo nitrógeno para pruebas de presión. Detector de CO cerca de equipo de gas."),
+      T("Voltage pushes, current flows, resistance slows it: V = I × R.", "El voltaje empuja, la corriente fluye, la resistencia frena: V = I × R."),
+      T("Loads in parallel; switches and safeties in series with the load they control.", "Cargas en paralelo; interruptores y seguridades en serie con la carga que controlan."),
+      T("Heat moves by conduction, convection, and radiation — always from warmer to cooler.", "El calor se mueve por conducción, convección y radiación, siempre de lo caliente a lo frío."),
+      T("Return brings air back through the filter, supply sends it out. Condensate drains need slope and a trap.", "El retorno trae el aire por el filtro, el suministro lo manda afuera. Los desagües de condensado necesitan pendiente y trampa.")
+    ],
+    check: [
+      { q: T("A 240-volt motor draws 5 amps. About how much resistance is it acting like?", "Un motor de 240 voltios jala 5 amperes. ¿Más o menos qué resistencia está mostrando?"),
+        a: [T("48 ohms", "48 ohms"), T("1,200 ohms", "1,200 ohms"), T("5 ohms", "5 ohms"), T("245 ohms", "245 ohms")],
+        c: 0, why: T("R = V ÷ I, so 240 ÷ 5 = 48 ohms.", "R = V ÷ I, así que 240 ÷ 5 = 48 ohms.") },
+      { q: T("How is a high-pressure safety switch wired relative to the compressor's control circuit?", "¿Cómo se conecta un interruptor de seguridad de alta presión respecto al circuito de control del compresor?"),
+        a: [T("In series, so opening it stops the compressor", "En serie, para que al abrirse se detenga el compresor"), T("In parallel, so it adds a second path", "En paralelo, para dar un segundo camino"), T("Only to ground", "Solo a tierra"), T("It isn't connected to anything", "No está conectado a nada")],
+        c: 0, why: T("Safeties sit in series with what they protect. Open the switch and the single path breaks.", "Las seguridades van en serie con lo que protegen. Al abrir el interruptor, se rompe el único camino.") },
+      { q: T("Heat moving through the copper wall of a tube is:", "El calor que pasa por la pared de cobre de un tubo es:"),
+        a: [T("Conduction", "Conducción"), T("Convection", "Convección"), T("Radiation", "Radiación"), T("Evaporation", "Evaporación")],
+        c: 0, why: T("Conduction is heat moving through a solid.", "La conducción es el calor que pasa por un sólido.") },
+      { q: T("What does the trap on a condensate drain do?", "¿Qué hace la trampa en un desagüe de condensado?"),
+        a: [T("Holds a little water so the blower can't pull air back through the drain", "Guarda un poco de agua para que el ventilador no jale aire por el desagüe"), T("Stores refrigerant", "Guarda refrigerante"), T("Speeds up the blower", "Acelera el ventilador"), T("Replaces the need for slope", "Reemplaza la necesidad de pendiente")],
+        c: 0, why: T("The water in the U-bend seals the drain against air. You still need a downhill slope.", "El agua en la curva en U sella el desagüe contra el aire. Igual necesitas pendiente hacia abajo.") },
+      { q: T("The upstairs won't cool and the filter is packed with dust. What is happening to the system?", "Arriba no enfría y el filtro está lleno de polvo. ¿Qué le pasa al sistema?"),
+        a: [T("Static pressure is high, so airflow drops and the coil can get too cold", "La presión estática está alta, el aire baja y el serpentín se puede enfriar de más"), T("Nothing — filters don't affect airflow", "Nada: los filtros no afectan el aire"), T("The refrigerant turned into water", "El refrigerante se volvió agua"), T("Voltage doubled", "El voltaje se duplicó")],
+        c: 0, why: T("A clogged filter adds resistance to airflow. The blower moves less air, rooms don't cool, and the coil can freeze.", "Un filtro tapado agrega resistencia al aire. El ventilador mueve menos aire, los cuartos no enfrían y el serpentín se puede congelar.") }
     ]
   });
 })();
