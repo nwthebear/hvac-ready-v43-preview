@@ -32,245 +32,389 @@
     g.rewritten = true;
   }
 
-  /* ---------------- Safety ---------------- */
+  /* ---------------- Safety (v66 quality pass) ---------------- */
   attach("safety", {
-    minutes: 10,
-    steps: [
-      { kicker: T("Safety first", "La seguridad primero"),
-        title: T("This work can hurt you if you rush", "Este trabajo puede lastimarte si tienes prisa"),
-        body: [
-          T("HVAC mixes electricity, pressure, heat, chemicals, and ladders. None of that is trying to be dramatic — those are just the tools of the job. The techs who last are the ones who slow down for thirty seconds and make the equipment safe before they touch it.",
-            "El HVAC mezcla electricidad, presión, calor, químicos y escaleras. No es drama: son las herramientas del oficio. Los técnicos que duran son los que se detienen treinta segundos y dejan el equipo seguro antes de tocarlo.")
-        ],
-        call: T("You pull up to a no-cool call. The outdoor unit is humming, the homeowner is standing right there, and you want to look fast. That's exactly when people skip the disconnect and get bit.",
-          "Llegas a una llamada de 'no enfría'. La unidad de afuera zumba, el cliente está al lado y quieres verte rápido. Ahí es cuando alguien se salta el desconectador y recibe un golpe.")
-      },
-      { title: T("Electricity: kill it, lock it, then prove it's dead", "Electricidad: córtala, bloquéala y comprueba que está muerta"),
-        body: [
-          T("Turn the power off at the disconnect — the metal box beside the outdoor unit, or the breaker that feeds the furnace. Then lock it and tag it so nobody 'helps' you by flipping it back on.",
-            "Corta la energía en el desconectador — la caja de metal junto a la unidad de afuera, o el breaker del horno. Luego pon candado y etiqueta para que nadie 'ayude' encendiéndolo."),
-          T("A switch being off is not proof. Test your meter on something you know is live, test the circuit you just locked out, then test the meter on live again. That's live–dead–live. If you skip the last check, a dead meter can talk you into grabbing a live wire.",
-            "Que el switch esté apagado no es prueba. Prueba el medidor en algo que sabes que tiene energía, mide el circuito que bloqueaste, y vuelve a probar el medidor en uno con energía. Eso es vivo–muerto–vivo. Si te saltas el último paso, un medidor muerto te puede hacer agarrar un cable vivo.")
-        ],
-        visual: "loto",
-        analogy: T("A charged capacitor is a stretched rubber band. The motor is off, but the energy is still waiting to snap. Discharge capacitors before you touch the terminals.",
-          "Un capacitor cargado es una liga estirada. El motor está apagado, pero la energía sigue lista para soltarse. Descarga los capacitores antes de tocar las terminales.")
-      },
-      { title: T("Watch a tech walk through real jobsite safety", "Mira a un técnico recorrer la seguridad real en obra"),
-        body: [
-          T("Bryan Orr at HVAC School covers ladders, PPE, lockout/tagout, and the habits that keep you working. Tap play when you're ready — it won't start by itself.",
-            "Bryan Orr de HVAC School cubre escaleras, EPP, bloqueo/etiquetado y los hábitos que te mantienen trabajando. Toca para reproducir: no empieza solo.")
-        ],
-        video: V.safety
-      },
-      { title: T("Refrigerant and the jobsite itself", "El refrigerante y la obra"),
-        body: [
-          T("Liquid refrigerant can frostbite skin and eyes in a blink. Wear glasses and gloves. Most refrigerants are heavier than air, so they can pool in a basement or a closet and push the oxygen out. If you ever feel dizzy in a tight space, get out.",
-            "El refrigerante líquido puede quemar la piel y los ojos en un segundo. Usa lentes y guantes. La mayoría son más pesados que el aire, así que se juntan en un sótano o un closet y desplazan el oxígeno. Si te mareas en un espacio cerrado, sal."),
-          T("Never pressurize a system with oxygen or compressed air — use dry nitrogen through a regulator. And on roofs and ladders: three points of contact, inspect the ladder, watch the edge. On anything that burns fuel, know where the gas shutoff is and bring a CO detector.",
-            "Nunca presurices un sistema con oxígeno o aire comprimido: usa nitrógeno seco con regulador. En techos y escaleras: tres puntos de contacto, revisa la escalera, cuida el borde. Si el equipo quema combustible, ubica la llave de gas y lleva un detector de CO.")
-        ],
-        call: T("A helper once used shop air to 'see if it holds.' Oil plus air plus pressure is a recipe for a compressor turning into a bomb. Nitrogen only.",
-          "Un ayudante usó aire del taller para 'ver si aguanta.' Aceite más aire más presión puede convertir el compresor en una bomba. Solo nitrógeno.")
-      }
-    ],
-    recap: [
-      T("Lock out, tag out, then prove it's dead with live–dead–live.", "Bloquea, etiqueta y comprueba que está muerto con vivo–muerto–vivo."),
-      T("Capacitors can still bite after the power is off. Discharge them.", "Los capacitores pueden golpear aun sin energía. Descárgalos."),
-      T("Glasses and gloves for refrigerant. Nitrogen only for pressure tests — never oxygen or air.", "Lentes y guantes con refrigerante. Solo nitrógeno para pruebas de presión, nunca oxígeno ni aire."),
-      T("Refrigerant can displace oxygen in low, tight spaces. Fuel equipment needs a CO detector.", "El refrigerante puede desplazar oxígeno en espacios bajos. El equipo de combustión pide un detector de CO.")
-    ],
-    check: [
-      { q: T("You're about to open an electrical panel on a no-cool call. What's the right order?", "Vas a abrir un panel eléctrico en una llamada de 'no enfría'. ¿Cuál es el orden correcto?"),
-        a: [T("Lock the disconnect, tag it, then live–dead–live on your meter", "Bloquea el desconectador, etiquétalo y haz vivo–muerto–vivo con el medidor"), T("Flip the thermostat off and start probing", "Apaga el termostato y empieza a medir"), T("Shut the disconnect but skip the meter — it's obviously off", "Cierra el desconectador y sáltate el medidor, se ve apagado"), T("Leave it running so you can see the voltages", "Déjalo encendido para ver los voltajes")],
-        c: 0, why: T("The disconnect can fail, and a dead meter can lie. Live–dead–live is how you prove the circuit is safe.", "El desconectador puede fallar y un medidor muerto puede mentir. Vivo–muerto–vivo es cómo pruebas que el circuito es seguro.") },
-      { q: T("A helper wants to pressurize a system with shop air to find a leak. You should:", "Un ayudante quiere presurizar el sistema con aire del taller para buscar una fuga. Tú debes:"),
-        a: [T("Stop them. Use dry nitrogen through a regulator.", "Detenerlo. Usa nitrógeno seco con regulador."), T("Let them, but only to 20 psig", "Dejarlo, pero solo a 20 psig"), T("Use oxygen — it's cleaner", "Usar oxígeno, está más limpio"), T("Add a little refrigerant so the air mixes", "Meter un poco de refrigerante para que se mezcle")],
-        c: 0, why: T("Air or oxygen mixed with oil under pressure can explode. Dry nitrogen is the only safe pressure-test gas.", "Aire u oxígeno con aceite bajo presión puede explotar. El nitrógeno seco es el único gas seguro para esa prueba.") },
-      { q: T("Why do we worry about refrigerant in a basement or crawlspace?", "¿Por qué nos preocupa el refrigerante en un sótano o un crawlspace?"),
-        a: [T("It's usually heavier than air and can push oxygen out of a low space", "Suele ser más pesado que el aire y puede desplazar el oxígeno en un espacio bajo"), T("It always explodes if it touches water", "Siempre explota si toca agua"), T("It makes the space too cold to work", "Deja el espacio demasiado frío para trabajar"), T("It trips every smoke detector", "Hace saltar todos los detectores de humo")],
-        c: 0, why: T("Most refrigerants sink and can asphyxiate you in a tight, low area. If you feel off, leave.", "La mayoría de los refrigerantes se hunden y pueden asfixiarte en un área baja y cerrada. Si te sientes mal, sal.") }
-    ]
-  });
-
-  /* ---------------- Cycle ---------------- */
-  attach("cycle", {
     minutes: 12,
     steps: [
-      { kicker: T("The big idea", "La idea grande"),
-        title: T("Your air conditioner is a heat mover, not a 'cold maker'", "El aire acondicionado mueve calor; no 'fabrica frío'"),
+      { kicker: T("Safety first", "La seguridad primero"),
+        title: T("Four things on every job can hurt you", "Cuatro cosas en cada trabajo pueden lastimarte"),
         body: [
-          T("Cooling feels like magic until you see the trick. The system doesn't create cold. It grabs heat from the air inside the house and dumps that heat outside. What's left behind feels cool.",
-            "Enfriar parece magia hasta que ves el truco. El sistema no crea frío. Toma calor del aire de adentro de la casa y lo tira afuera. Lo que queda se siente fresco."),
-          T("The same idea as sweat: when sweat evaporates off your skin, it takes heat with it and you feel cooler. Refrigerant does that evaporating job on purpose, inside a coil, over and over.",
-            "Es la misma idea que el sudor: cuando el sudor se evapora de tu piel, se lleva calor y te sientes más fresco. El refrigerante hace esa evaporación a propósito, dentro de un serpentín, una y otra vez.")
+          T("Heating and cooling equipment mixes electricity, gas under pressure, open flame, and heights. None of it is dangerous when you respect it. All of it is dangerous when you rush.",
+            "El equipo de calefacción y aire mezcla electricidad, gas a presión, flama y alturas. Nada es peligroso si lo respetas. Todo es peligroso si te apuras."),
+          T("Good techs build a habit: before touching anything, they spend thirty seconds making it safe. This lesson is that habit, one hazard at a time.",
+            "Los buenos técnicos tienen un hábito: antes de tocar algo, dedican treinta segundos a dejarlo seguro. Esta lección es ese hábito, un peligro a la vez.")
         ],
-        analogy: T("A sponge doesn't 'make dry.' It soaks up water in one place and you wring it out somewhere else. The refrigeration cycle soaks up heat indoors and wrings it out outdoors.",
-          "Una esponja no 'fabrica sequedad.' Absorbe agua en un sitio y la exprime en otro. El ciclo absorbe calor adentro y lo exprime afuera.")
+        call: T("You pull up to a 'no cooling' call on a 98° afternoon. The homeowner is watching and you want to look fast. That moment is exactly when people skip a step.",
+          "Llegas a una llamada de 'no enfría' una tarde de 98°. El cliente te mira y quieres verte rápido. Justo en ese momento la gente se salta un paso.")
       },
-      { title: T("Four parts, one loop", "Cuatro partes, un circuito"),
+      { title: T("Turn the power off — and make sure it stays off", "Apaga la energía y asegúrate de que siga apagada"),
         body: [
-          T("Refrigerant rides a loop through four parts. The compressor is the pump. The condenser (the outdoor coil) dumps heat and turns the refrigerant into a high-pressure liquid. A metering device (a TXV or a piston) drops the pressure. The evaporator (the indoor coil) lets that cold, low-pressure refrigerant boil and soak up heat from the house air.",
-            "El refrigerante recorre un circuito de cuatro partes. El compresor es la bomba. El condensador (el serpentín de afuera) suelta calor y convierte el refrigerante en líquido de alta presión. Un dispositivo de expansión (TXV o pistón) baja la presión. El evaporador (el serpentín de adentro) deja que ese refrigerante frío y de baja presión hierva y absorba el calor del aire de la casa.")
+          T("Outdoor units have a metal shutoff box on the wall called the disconnect. Furnaces have a switch or a breaker. Turn it off, then put a padlock and a tag on it. That's called lockout/tagout.",
+            "Las unidades de afuera tienen una caja metálica en la pared llamada desconectador. Los hornos tienen un switch o un breaker. Apágalo y ponle candado y etiqueta. Eso se llama bloqueo/etiquetado."),
+          T("Why the lock? Because someone inside the house might flip it back on while your hands are in the unit. The lock means only you can turn it back on.",
+            "¿Por qué el candado? Porque alguien en la casa podría volver a encenderlo mientras tus manos están en la unidad. El candado significa que solo tú puedes encenderlo.")
         ],
-        visual: "cycle"
+        visual: "loto",
+        analogy: T("It's like taking the car keys with you before crawling under the car. Nobody can start it while you're down there.",
+          "Es como llevarte las llaves del carro antes de meterte debajo. Nadie lo puede arrancar mientras estás ahí.")
       },
-      { title: T("Watch the cycle in 3D", "Mira el ciclo en 3D"),
+      { title: T("Off isn't proof. Test it.", "Apagado no es prueba. Mídelo."),
         body: [
-          T("This HVAC School animation walks the refrigerant through the parts so you can see pressure, temperature, and the vapor-to-liquid change. Tap when you want it — it stays off until you do.",
-            "Esta animación de HVAC School recorre las partes para que veas presión, temperatura y el cambio de vapor a líquido. Toca cuando quieras: no arranca solo.")
+          T("Breakers get mislabeled. Switches fail. So techs prove the power is gone with a meter, in three moves: test the meter on something known to be live, test the wires you just shut off, then test the meter on live again.",
+            "Los breakers se etiquetan mal. Los switches fallan. Por eso los técnicos comprueban con un medidor que no hay energía, en tres pasos: prueban el medidor en algo que sí tiene energía, miden los cables que apagaron, y vuelven a probar el medidor en algo con energía."),
+          T("That's called live–dead–live. The last step matters: if your meter died in the middle, it would happily read 'zero' on a live wire.",
+            "Eso se llama vivo–muerto–vivo. El último paso importa: si tu medidor se murió a la mitad, marcaría 'cero' en un cable vivo sin problema.")
         ],
-        video: V.cycle3d
+        analogy: T("It's like checking a smoke detector's test button before trusting the silence. A dead detector is quiet too.",
+          "Es como apretar el botón de prueba del detector de humo antes de confiar en el silencio. Un detector muerto también está callado."),
+        call: T("A breaker labeled 'AC' turns out to feed the dryer. The tech who tested found it. The tech who trusted the label got shocked.",
+          "Un breaker marcado 'AC' resulta que alimenta la secadora. El técnico que midió lo descubrió. El que confió en la etiqueta recibió una descarga.")
       },
-      { title: T("Why the pressure change matters", "Por qué importa el cambio de presión"),
+      { title: T("Some parts hold a charge after the power is off", "Algunas piezas guardan carga aunque apagues la energía"),
         body: [
-          T("Raise the pressure and a liquid boils at a higher temperature. Lower the pressure and it boils colder. That's the whole game. We keep evaporator pressure low so the refrigerant boils colder than the room. We keep condenser pressure high so it condenses hotter than the outdoor air — otherwise it couldn't dump heat outside on a 95° day.",
-            "Si subes la presión, un líquido hierve a más temperatura. Si la bajas, hierve más frío. Ese es todo el juego. Mantenemos baja la presión del evaporador para que hierva más frío que el cuarto. Mantenemos alta la del condensador para que condense más caliente que el aire de afuera: si no, no podría tirar calor un día de 95 °F.")
+          T("Motors in these units get a starting kick from a part called a capacitor — a metal can that stores electricity. It can stay charged for a while after you shut the power off.",
+            "Los motores de estas unidades reciben un empujón de arranque de una pieza llamada capacitor, una lata de metal que guarda electricidad. Puede seguir cargada un rato después de apagar la energía."),
+          T("Techs safely discharge it with an insulated tool before touching its terminals.",
+            "Los técnicos la descargan con seguridad usando una herramienta aislada antes de tocar sus terminales.")
         ],
-        call: T("On a 95° afternoon the outdoor coil has to be warmer than 95° or heat won't leave. That's why the high side runs hot. If the outdoor fan is dead, that heat has nowhere to go and pressures climb.",
-          "En una tarde de 95 °F el serpentín de afuera tiene que estar más caliente que 95, o el calor no sale. Por eso el lado alto corre caliente. Si el ventilador de afuera está muerto, ese calor no tiene a dónde ir y las presiones suben.")
+        analogy: T("A charged capacitor is a stretched rubber band. The motor is off, but the energy is still waiting to snap.",
+          "Un capacitor cargado es una liga estirada. El motor está apagado, pero la energía sigue lista para soltarse.")
+      },
+      { title: T("Refrigerant is cold enough to burn and heavy enough to smother", "El refrigerante es tan frío que quema y tan pesado que asfixia"),
+        body: [
+          T("The refrigerant inside an AC can drop far below freezing the instant it escapes. A spray on bare skin or an eye causes frostbite in a second, so techs wear safety glasses and gloves when hooking up.",
+            "El refrigerante de un aire puede bajar muy por debajo de congelación en cuanto se escapa. Un chorro en la piel o en un ojo causa congelación en un segundo, por eso los técnicos usan lentes y guantes al conectar."),
+          T("Most refrigerants are heavier than air. In a basement or a closet, a big leak can sink and push out the oxygen you breathe. If you feel dizzy in a tight space, get out first and figure it out second.",
+            "La mayoría de los refrigerantes pesan más que el aire. En un sótano o un closet, una fuga grande puede bajar y desplazar el oxígeno que respiras. Si te mareas en un lugar cerrado, sal primero y averigua después.")
+        ],
+        analogy: T("A leak in a closed room acts like water filling a bathtub: it fills from the floor up, and your nose is the last thing to know.",
+          "Una fuga en un cuarto cerrado actúa como agua llenando una tina: se llena desde el piso, y tu nariz es lo último en enterarse.")
+      },
+      { title: T("Nitrogen only, ladders right, and a CO detector near flame", "Solo nitrógeno, escaleras bien y detector de CO cerca de la flama"),
+        body: [
+          T("To check a system for leaks, techs fill it with pressure. They use dry nitrogen — never oxygen or shop air. Oxygen and oil under pressure can explode.",
+            "Para buscar fugas, los técnicos llenan el sistema de presión. Usan nitrógeno seco, nunca oxígeno ni aire del taller. El oxígeno y el aceite a presión pueden explotar."),
+          T("On ladders and roofs: keep three points of contact and watch the edge. Around a furnace or water heater, carry a carbon monoxide (CO) detector — CO has no smell and no color.",
+            "En escaleras y techos: tres puntos de contacto y cuidado con el borde. Cerca de un horno o calentador, lleva un detector de monóxido de carbono (CO): el CO no tiene olor ni color.")
+        ],
+        video: V.safety,
+        call: T("A helper once grabbed the shop air hose 'just to see if it holds.' Oil plus air plus pressure is how a compressor turns into a bomb. Nitrogen only.",
+          "Un ayudante una vez agarró la manguera de aire 'solo para ver si aguanta.' Aceite más aire más presión es como un compresor se vuelve bomba. Solo nitrógeno.")
       }
     ],
     recap: [
-      T("AC moves heat from inside to outside. It doesn't manufacture cold.", "El AC mueve calor de adentro hacia afuera. No fabrica frío."),
-      T("Four parts: compressor, condenser, metering device, evaporator.", "Cuatro partes: compresor, condensador, dispositivo de expansión, evaporador."),
-      T("Low pressure in the evaporator = boils cold and soaks up indoor heat.", "Baja presión en el evaporador = hierve frío y absorbe el calor de adentro."),
-      T("High pressure in the condenser = condenses hot and dumps heat outside.", "Alta presión en el condensador = condensa caliente y tira el calor afuera.")
+      T("Turn it off, then lock and tag it so only you can turn it back on.", "Apágalo y ponle candado y etiqueta para que solo tú lo enciendas."),
+      T("Prove it's dead with live–dead–live. A label is not proof.", "Comprueba que está muerto con vivo–muerto–vivo. Una etiqueta no es prueba."),
+      T("Capacitors can hold a charge after the power is off. Discharge them first.", "Los capacitores guardan carga sin energía. Descárgalos primero."),
+      T("Glasses and gloves around refrigerant. Get out of a tight space if you feel dizzy.", "Lentes y guantes con refrigerante. Sal de un lugar cerrado si te mareas."),
+      T("Nitrogen only for pressure tests. Three points on ladders. CO detector near anything that burns fuel.", "Solo nitrógeno para pruebas de presión. Tres puntos en escaleras. Detector de CO cerca de lo que quema combustible.")
     ],
     check: [
-      { q: T("A homeowner says 'the AC is making cold air.' The more accurate way to say it is:", "El cliente dice 'el AC está fabricando aire frío.' La forma más precisa es:"),
-        a: [T("It's moving heat out of the house and dumping it outside", "Está sacando calor de la casa y tirándolo afuera"), T("It's creating extra cold particles in the supply vents", "Está creando partículas frías extra en las rejillas"), T("The compressor manufactures liquid ice", "El compresor fabrica hielo líquido"), T("The filter turns warm air into cold air", "El filtro convierte el aire caliente en frío")],
-        c: 0, why: T("The cycle is a heat mover. Indoor air feels cooler because heat was carried away by boiling refrigerant.", "El ciclo es un movedor de calor. El aire de adentro se siente más fresco porque el refrigerante hirviendo se llevó el calor.") },
-      { q: T("Which part drops the refrigerant's pressure so it can boil cold indoors?", "¿Qué parte baja la presión del refrigerante para que pueda hervir frío adentro?"),
-        a: [T("The metering device (TXV or piston)", "El dispositivo de expansión (TXV o pistón)"), T("The filter drier", "El filtro deshidratador"), T("The condenser fan", "El ventilador del condensador"), T("The thermostat", "El termostato")],
-        c: 0, why: T("The metering device is the pressure drop. After it, refrigerant is cold enough to boil in the evaporator and absorb heat.", "El dispositivo de expansión es la caída de presión. Después, el refrigerante está lo bastante frío para hervir en el evaporador y absorber calor.") },
-      { q: T("It's 95°F outside and the outdoor fan isn't running. What happens?", "Hace 95 °F afuera y el ventilador exterior no corre. ¿Qué pasa?"),
-        a: [T("Heat can't leave the condenser, so high-side pressure climbs", "El calor no puede salir del condensador, y sube la presión del lado alto"), T("The evaporator automatically makes more cold", "El evaporador automáticamente hace más frío"), T("Nothing — the compressor doesn't need a fan", "Nada: el compresor no necesita ventilador"), T("Only the indoor humidity changes", "Solo cambia la humedad de adentro")],
-        c: 0, why: T("The condenser has to be hotter than outdoor air to dump heat. No fan means that heat stacks up as pressure.", "El condensador debe estar más caliente que el aire de afuera para tirar calor. Sin ventilador, ese calor se acumula como presión.") }
+      { q: T("Why put a padlock on a disconnect you already switched off?", "¿Por qué poner candado a un desconectador que ya apagaste?"),
+        a: [T("So nobody can turn it back on while you're working", "Para que nadie lo vuelva a encender mientras trabajas"), T("So the homeowner knows you were there", "Para que el cliente sepa que estuviste ahí"), T("Locks make the power flow faster", "El candado hace que la energía fluya más rápido"), T("It's only needed on rainy days", "Solo se necesita cuando llueve")],
+        c: 0, why: T("Lockout/tagout means only the person holding the key can restore power.", "El bloqueo/etiquetado significa que solo quien tiene la llave puede devolver la energía.") },
+      { q: T("In live–dead–live, why test the meter on a live source again at the end?", "En vivo–muerto–vivo, ¿por qué probar el medidor en algo con energía al final?"),
+        a: [T("To make sure the meter didn't die and give a false 'zero'", "Para asegurarte de que el medidor no se murió y dio un 'cero' falso"), T("To charge the meter's battery", "Para cargar la batería del medidor"), T("Because the rules want three readings for paperwork", "Porque las reglas piden tres lecturas para el papeleo"), T("It isn't needed", "No hace falta")],
+        c: 0, why: T("A broken meter reads zero on everything. The final check proves the 'dead' reading was real.", "Un medidor descompuesto marca cero en todo. La última prueba confirma que la lectura 'muerta' era real.") },
+      { q: T("The power is off. Can you grab the capacitor terminals?", "La energía está apagada. ¿Puedes agarrar las terminales del capacitor?"),
+        a: [T("Not yet — discharge it first, because it can still hold a charge", "Todavía no: descárgalo primero, porque puede seguir cargado"), T("Yes, off means safe", "Sí, apagado significa seguro"), T("Only if it's sunny", "Solo si hace sol"), T("Yes, capacitors never store energy", "Sí, los capacitores nunca guardan energía")],
+        c: 0, why: T("Capacitors store electricity like a stretched rubber band. Discharge them safely before touching.", "Los capacitores guardan electricidad como una liga estirada. Descárgalos con seguridad antes de tocar.") },
+      { q: T("You're working in a small basement and start feeling light-headed near a leaking unit. What first?", "Trabajas en un sótano pequeño y empiezas a marearte cerca de una unidad con fuga. ¿Qué haces primero?"),
+        a: [T("Get out to fresh air", "Salir al aire fresco"), T("Finish the repair quickly", "Terminar la reparación rápido"), T("Sit down on the floor and rest", "Sentarte en el piso a descansar"), T("Light a match to see better", "Prender un cerillo para ver mejor")],
+        c: 0, why: T("Refrigerant is heavier than air and can push oxygen out of low spaces. The floor is the worst place to rest.", "El refrigerante pesa más que el aire y desplaza el oxígeno en lugares bajos. El piso es el peor lugar para descansar.") },
+      { q: T("What gas is used to pressure-test a system for leaks?", "¿Qué gas se usa para probar fugas con presión?"),
+        a: [T("Dry nitrogen", "Nitrógeno seco"), T("Oxygen", "Oxígeno"), T("Shop compressed air", "Aire comprimido del taller"), T("Propane", "Propano")],
+        c: 0, why: T("Nitrogen is dry and won't burn. Oxygen or air with oil under pressure can explode.", "El nitrógeno es seco y no arde. El oxígeno o el aire con aceite a presión pueden explotar.") }
     ]
   });
 
+  /* ---------------- Cycle (v66 quality pass) ---------------- */
+  attach("cycle", {
+    minutes: 14,
+    steps: [
+      { kicker: T("The big idea", "La idea grande"),
+        title: T("An air conditioner doesn't make cold. It moves heat.", "Un aire acondicionado no fabrica frío. Mueve calor."),
+        body: [
+          T("Cold isn't a thing you can add. It's just less heat. So an air conditioner works by picking up heat inside your house and carrying it outside. The air it leaves behind feels cool.",
+            "El frío no es algo que se pueda agregar. Es solo menos calor. Así que un aire acondicionado funciona recogiendo calor dentro de la casa y llevándolo afuera. El aire que deja se siente fresco."),
+          T("That's why the fan on the outdoor unit blows warm air on a summer day. That warm air is heat that used to be in your living room.",
+            "Por eso el ventilador de la unidad de afuera echa aire caliente en verano. Ese aire caliente es calor que antes estaba en tu sala.")
+        ],
+        analogy: T("A sponge doesn't 'make dry.' It soaks up water in one spot and you wring it out somewhere else. The AC soaks up heat inside and wrings it out outside.",
+          "Una esponja no 'fabrica seco.' Absorbe agua en un lugar y la exprimes en otro. El aire absorbe calor adentro y lo exprime afuera.")
+      },
+      { title: T("Evaporating liquid pulls heat — you already know this", "Un líquido que se evapora jala calor: ya lo sabes"),
+        body: [
+          T("Step out of a pool on a breezy day and you shiver, even in the sun. The water drying off your skin is turning into vapor, and that change takes heat from your body.",
+            "Sal de una alberca con viento y tiemblas, aun con sol. El agua que se seca en tu piel se convierte en vapor, y ese cambio le quita calor a tu cuerpo."),
+          T("An AC uses a special fluid called refrigerant that does the same thing on purpose. Inside the indoor coil, it boils into vapor and soaks up heat from the house air blowing across it.",
+            "Un aire usa un líquido especial llamado refrigerante que hace lo mismo a propósito. Dentro del serpentín de adentro, hierve hasta volverse vapor y absorbe el calor del aire de la casa que pasa por encima.")
+        ],
+        analogy: T("Rubbing alcohol on your arm feels icy for the same reason: it evaporates fast and takes your heat with it.",
+          "El alcohol en el brazo se siente helado por la misma razón: se evapora rápido y se lleva tu calor.")
+      },
+      { title: T("Pressure decides when a liquid boils", "La presión decide cuándo hierve un líquido"),
+        body: [
+          T("Water boils at 212°F at sea level, but at a lower temperature up a mountain where the air pressure is lower. Squeeze a liquid and it boils hotter. Release the pressure and it boils colder.",
+            "El agua hierve a 212°F al nivel del mar, pero a menos temperatura en una montaña, donde la presión del aire es menor. Si aprietas un líquido, hierve más caliente. Si quitas presión, hierve más frío."),
+          T("The AC uses this. Low pressure inside the house lets refrigerant boil cold enough to pull heat from 75° room air. High pressure outside makes it hot enough to dump that heat into 95° outdoor air.",
+            "El aire usa esto. Presión baja adentro deja que el refrigerante hierva lo bastante frío para sacar calor de aire a 75°. Presión alta afuera lo pone lo bastante caliente para tirar ese calor a aire de 95°.")
+        ],
+        visual: "pt",
+        analogy: T("A pressure cooker cooks faster because squeezing the water lets it get hotter than 212° before it boils. The AC's outdoor side works like a pressure cooker.",
+          "Una olla exprés cocina más rápido porque, al apretar el agua, se calienta más de 212° antes de hervir. El lado de afuera del aire funciona como una olla exprés.")
+      },
+      { title: T("Four parts make the loop", "Cuatro partes forman el circuito"),
+        body: [
+          T("Compressor: the pump in the outdoor unit. It squeezes the refrigerant vapor into a hot, high-pressure gas. Condenser: the outdoor coil. The fan blows across it, heat leaves, and the refrigerant turns back into liquid.",
+            "Compresor: la bomba en la unidad de afuera. Aprieta el vapor del refrigerante y lo convierte en gas caliente de alta presión. Condensador: el serpentín de afuera. El ventilador sopla por encima, el calor se va y el refrigerante vuelve a ser líquido."),
+          T("Metering device: a small valve that lets the liquid through a tiny opening so its pressure drops. Evaporator: the indoor coil, where that cold, low-pressure liquid boils and soaks up house heat. Then it goes back to the compressor and starts over.",
+            "Dispositivo de expansión: una válvula pequeña que deja pasar el líquido por un hoyo chiquito para que baje su presión. Evaporador: el serpentín de adentro, donde ese líquido frío de baja presión hierve y absorbe el calor de la casa. Luego regresa al compresor y empieza otra vez.")
+        ],
+        visual: "cycle",
+        video: V.cycle3d
+      },
+      { title: T("The two copper lines tell the whole story", "Las dos líneas de cobre cuentan toda la historia"),
+        body: [
+          T("Look at an outdoor unit and you'll see two copper pipes going into the house. The fat, insulated one is the suction line. It carries cool vapor back from the indoor coil and feels cold and sweaty when the system is working.",
+            "Mira una unidad de afuera y verás dos tubos de cobre que entran a la casa. El grueso y aislado es la línea de succión. Regresa vapor frío desde el serpentín de adentro y se siente frío y sudado cuando el sistema funciona."),
+          T("The thin one is the liquid line. It carries warm liquid from the outdoor coil toward the indoor coil. Feeling both lines is one of the first things a tech does on arrival.",
+            "El delgado es la línea de líquido. Lleva líquido tibio del serpentín de afuera hacia el de adentro. Tocar las dos líneas es de lo primero que hace un técnico al llegar.")
+        ],
+        call: T("A customer says the AC runs but the house stays warm. The tech touches the fat line: it's warm and dry instead of cold and sweaty. That one touch says the refrigerant isn't picking up heat inside — so the hunt starts there.",
+          "Un cliente dice que el aire corre pero la casa sigue caliente. El técnico toca la línea gruesa: está tibia y seca en vez de fría y sudada. Ese toque dice que el refrigerante no está recogiendo calor adentro, y por ahí empieza la búsqueda.")
+      },
+      { title: T("A heat pump is the same loop, run backward in winter", "Una bomba de calor es el mismo circuito, al revés en invierno"),
+        body: [
+          T("A heat pump has one extra valve that flips the direction of the refrigerant. In winter, the outdoor coil becomes the one that soaks up heat — even cold outdoor air has some — and the indoor coil releases it into the house.",
+            "Una bomba de calor tiene una válvula extra que voltea la dirección del refrigerante. En invierno, el serpentín de afuera es el que absorbe calor (aun el aire frío tiene algo) y el de adentro lo suelta en la casa."),
+          T("Same four parts, same physics. Just a different direction.",
+            "Las mismas cuatro partes, la misma física. Solo otra dirección.")
+        ],
+        video: V.heatPump,
+        analogy: T("It's a moving truck that can drive either way. Summer: haul heat out of the house. Winter: haul heat in.",
+          "Es un camión de mudanzas que maneja para los dos lados. Verano: saca calor de la casa. Invierno: lo mete.")
+      }
+    ],
+    recap: [
+      T("An AC moves heat from inside to outside. Cold is just less heat.", "Un aire mueve calor de adentro hacia afuera. El frío es solo menos calor."),
+      T("Evaporating liquid pulls heat, like water drying on your skin.", "Un líquido que se evapora jala calor, como el agua que se seca en tu piel."),
+      T("Low pressure makes refrigerant boil cold indoors; high pressure lets it dump heat outdoors.", "Presión baja hace que hierva frío adentro; presión alta deja que tire calor afuera."),
+      T("Compressor, condenser, metering device, evaporator — then around again.", "Compresor, condensador, dispositivo de expansión, evaporador, y otra vuelta."),
+      T("Fat line cold and sweaty, thin line warm. A heat pump runs the loop backward for heat.", "Línea gruesa fría y sudada, delgada tibia. Una bomba de calor corre el circuito al revés para calentar.")
+    ],
+    check: [
+      { q: T("Why does the outdoor unit blow warm air in summer?", "¿Por qué la unidad de afuera echa aire caliente en verano?"),
+        a: [T("It's releasing heat that was taken from inside the house", "Está soltando el calor que sacó de la casa"), T("It's broken", "Está descompuesta"), T("It has a heater inside for summer", "Tiene un calentador adentro para el verano"), T("The sun heats the fan blades", "El sol calienta las aspas")],
+        c: 0, why: T("The AC moves heat. What you feel outside is your living room's heat leaving.", "El aire mueve calor. Lo que sientes afuera es el calor de tu sala que se va.") },
+      { q: T("What makes the refrigerant boil cold enough to cool the house?", "¿Qué hace que el refrigerante hierva lo bastante frío para enfriar la casa?"),
+        a: [T("Low pressure in the indoor coil", "Presión baja en el serpentín de adentro"), T("Adding ice to it", "Echarle hielo"), T("High pressure in the indoor coil", "Presión alta en el serpentín de adentro"), T("A colder thermostat setting adds cold refrigerant", "Bajar el termostato agrega refrigerante frío")],
+        c: 0, why: T("Lower pressure means a lower boiling point. That's why the metering device drops the pressure before the indoor coil.", "Menos presión significa menor punto de ebullición. Por eso el dispositivo de expansión baja la presión antes del serpentín de adentro.") },
+      { q: T("Which part is the pump that squeezes refrigerant into hot, high-pressure gas?", "¿Cuál pieza es la bomba que aprieta el refrigerante en gas caliente de alta presión?"),
+        a: [T("Compressor", "Compresor"), T("Evaporator", "Evaporador"), T("Filter", "Filtro"), T("Thermostat", "Termostato")],
+        c: 0, why: T("The compressor raises the pressure so the refrigerant can dump heat outdoors.", "El compresor sube la presión para que el refrigerante pueda tirar calor afuera.") },
+      { q: T("The AC is running. The fat insulated copper line is warm and dry. What does that suggest?", "El aire está corriendo. La línea gruesa aislada está tibia y seca. ¿Qué sugiere?"),
+        a: [T("The refrigerant isn't picking up heat inside like it should", "El refrigerante no está recogiendo calor adentro como debería"), T("Everything is perfect", "Todo está perfecto"), T("The thin line is the suction line", "La línea delgada es la de succión"), T("The furnace is on", "El horno está prendido")],
+        c: 0, why: T("A working suction line is cold and sweaty. Warm and dry is a clue something is wrong.", "Una línea de succión que funciona está fría y sudada. Tibia y seca es pista de un problema.") },
+      { q: T("How does a heat pump heat a house in winter?", "¿Cómo calienta una casa una bomba de calor en invierno?"),
+        a: [T("It runs the refrigerant loop backward, pulling heat from outdoor air into the house", "Corre el circuito al revés, sacando calor del aire de afuera hacia la casa"), T("It burns gas in the outdoor unit", "Quema gas en la unidad de afuera"), T("It only blows the indoor fan", "Solo sopla el ventilador de adentro"), T("It can't heat at all", "No puede calentar")],
+        c: 0, why: T("A reversing valve flips the flow. Same parts, opposite direction.", "Una válvula reversible voltea el flujo. Mismas piezas, dirección contraria.") }
+    ]
+  });
 
-  /* ---------------- Science (heat, P/T, superheat) ---------------- */
+  /* ---------------- Science (v66 quality pass) ---------------- */
   attach("science", {
     minutes: 14,
     steps: [
-      { kicker: T("How heat moves", "Cómo se mueve el calor"),
-        title: T("Heat is a traveler. It always walks downhill.", "El calor es un viajero. Siempre camina cuesta abajo."),
+      { kicker: T("The science", "La ciencia"),
+        title: T("Heat always flows from warmer to cooler", "El calor siempre fluye de lo caliente a lo frío"),
         body: [
-          T("Heat goes from warmer to cooler. Always. It can walk through a solid (conduction), ride along with moving air or water (convection), or jump across space as infrared (radiation). Your coils use the first two every time they run: heat conducts through copper or aluminum, then airflow carries it away.",
-            "El calor va de lo más caliente a lo más frío. Siempre. Puede caminar por un sólido (conducción), irse con aire o agua en movimiento (convección) o saltar por el espacio como infrarrojo (radiación). Tus serpentines usan las dos primeras cada vez que corren: el calor conduce por el cobre o el aluminio y el flujo de aire se lo lleva.")
+          T("Put a hot mug in your hands and your hands warm up. Put ice in your drink and the drink cools. Heat never flows the other way on its own.",
+            "Agarra una taza caliente y tus manos se calientan. Pon hielo en tu bebida y la bebida se enfría. El calor nunca va al revés por sí solo."),
+          T("Every piece of heating and cooling equipment is built around that rule. To cool a room, you need something colder than the room for the heat to flow into. To heat a room, you need something hotter.",
+            "Todo equipo de calefacción y aire está hecho alrededor de esa regla. Para enfriar un cuarto necesitas algo más frío que el cuarto para que el calor fluya hacia ahí. Para calentar, algo más caliente.")
         ],
-        visual: "heat"
+        visual: "heat",
+        analogy: T("Heat is like water on a hill: it only rolls downhill, from hot to cold. A machine has to do work to push it back up.",
+          "El calor es como agua en una loma: solo rueda hacia abajo, de caliente a frío. Una máquina tiene que trabajar para subirlo.")
       },
-      { title: T("Sensible vs. latent — the heat you feel and the heat you don't", "Sensible vs. latente: el calor que sientes y el que no"),
+      { title: T("Heat travels three ways", "El calor viaja de tres formas"),
         body: [
-          T("Sensible heat changes the number on a thermometer. Latent heat changes a substance's state — liquid to vapor, or vapor to liquid — without changing its temperature. Boiling a pot of water at 212°F takes a huge amount of energy, and the pot stays at 212 until the water is gone.",
-            "El calor sensible cambia el número del termómetro. El calor latente cambia el estado — de líquido a vapor, o de vapor a líquido — sin cambiar la temperatura. Hervir una olla a 212 °F toma muchísima energía, y la olla se queda en 212 hasta que se acaba el agua."),
-          T("That's why refrigerant is so good at moving comfort. Most of the heat it carries is latent heat, absorbed while it boils in the evaporator and released while it condenses outside. Indoor AC also wrings moisture out of the air — that's latent cooling, and it's why the drain line drips.",
-            "Por eso el refrigerante es tan bueno moviendo confort. La mayor parte del calor que carga es latente: lo absorbe al hervir en el evaporador y lo suelta al condensar afuera. El AC también saca humedad del aire — eso es enfriamiento latente, y por eso gotea el drenaje.")
+          T("Conduction: through something solid you touch, like a hot pan handle. Convection: carried by moving air or water, like a fan blowing warm air. Radiation: straight through space as invisible light, like sunshine on your face.",
+            "Conducción: a través de algo sólido que tocas, como el mango de un sartén caliente. Convección: llevado por aire o agua en movimiento, como un ventilador que sopla aire tibio. Radiación: directo por el espacio como luz invisible, como el sol en tu cara."),
+          T("An AC coil uses all of them: heat conducts through the metal, and the fan's moving air carries it away by convection.",
+            "Un serpentín usa todas: el calor pasa por el metal por conducción, y el aire del ventilador se lo lleva por convección.")
+        ],
+        analogy: T("Hot mug in your hand: conduction. Blowing on soup: convection. Feeling a campfire from across the yard: radiation.",
+          "Taza caliente en la mano: conducción. Soplar la sopa: convección. Sentir una fogata desde el otro lado del patio: radiación.")
+      },
+      { title: T("The heat you feel, and the heat hiding in water", "El calor que sientes y el calor escondido en el agua"),
+        body: [
+          T("Sensible heat is heat you can feel and measure with a thermometer. Latent heat is heat that changes water between liquid and vapor without changing the temperature.",
+            "El calor sensible es el que sientes y mides con un termómetro. El calor latente es el que cambia el agua entre líquido y vapor sin cambiar la temperatura."),
+          T("This is why a humid 80° day feels worse than a dry 80° day. An AC has to cool the air and also pull water out of it. You can see that water: it's what drips out of the drain line all summer.",
+            "Por eso un día húmedo de 80° se siente peor que uno seco de 80°. Un aire tiene que enfriar el aire y además sacarle agua. Esa agua se ve: es la que gotea del desagüe todo el verano.")
         ],
         video: V.comfort,
-        analogy: T("Sweat cooling your skin is latent heat at work: the liquid leaves, and it takes energy with it. The evaporator is a professional sweater.",
-          "El sudor enfriando tu piel es calor latente: el líquido se va y se lleva energía. El evaporador es un sudor profesional.")
+        call: T("A homeowner says the house is 74° but feels sticky. The temperature is fine. The humidity isn't. A tech looks at airflow and run time, because the AC isn't pulling enough water out.",
+          "Un cliente dice que la casa está a 74° pero se siente pegajosa. La temperatura está bien; la humedad no. El técnico revisa el flujo de aire y el tiempo de funcionamiento, porque el aire no está sacando suficiente agua.")
       },
-      { title: T("Pressure and boiling point are dance partners", "La presión y el punto de ebullición bailan juntos"),
+      { title: T("Pressure and boiling point move together", "La presión y el punto de ebullición se mueven juntos"),
         body: [
-          T("A pressure cooker boils water hotter than 212°F because the lid raises the pressure. Lower the pressure — like at high altitude — and water boils cooler. Refrigerant is chosen so that, at the pressures we run, it boils around 40°F in the evaporator and condenses well above the outdoor temperature.",
-            "Una olla a presión hierve el agua a más de 212 °F porque la tapa sube la presión. Si bajas la presión — como en la montaña — el agua hierve más fria. El refrigerante se elige para que, a nuestras presiones, hierva cerca de 40 °F en el evaporador y condense por encima de la temperatura de afuera.")
+          T("Raise the pressure on a liquid and it boils at a higher temperature. Lower it and it boils at a lower temperature. When a liquid is boiling, its pressure and temperature are locked together.",
+            "Si subes la presión de un líquido, hierve a más temperatura. Si la bajas, hierve a menos. Cuando un líquido está hirviendo, su presión y su temperatura están amarradas."),
+          T("Techs carry a pressure–temperature chart for each refrigerant. Read the pressure on a gauge, look it up, and you know exactly what temperature the refrigerant is boiling at inside the pipe.",
+            "Los técnicos traen una tabla de presión–temperatura para cada refrigerante. Leen la presión en el manómetro, la buscan, y saben exactamente a qué temperatura hierve el refrigerante dentro del tubo.")
         ],
-        visual: "pt"
+        visual: "pt",
+        analogy: T("Up in the mountains, pasta takes longer to cook. Lower air pressure makes water boil at a lower temperature, so it isn't as hot.",
+          "En la montaña, la pasta tarda más en cocerse. Menos presión de aire hace que el agua hierva a menos temperatura, así que no está tan caliente.")
       },
-      { title: T("Superheat and subcooling are how you 'see' the refrigerant", "El sobrecalentamiento y el subenfriamiento son cómo 'ves' el refrigerante"),
+      { title: T("Superheat: how much the vapor warmed up after boiling", "Sobrecalentamiento: cuánto se calentó el vapor después de hervir"),
         body: [
-          T("When liquid and vapor sit together, pressure and temperature are locked — that's saturation. A P/T chart (or a digital gauge) turns your pressure reading into a saturation temperature.",
-            "Cuando hay líquido y vapor juntos, presión y temperatura están unidas — eso es saturación. Una tabla P/T (o un manómetro digital) convierte tu presión en temperatura de saturación."),
-          T("Once all the liquid has boiled off, any extra heat raises the vapor's temperature. That extra is superheat: suction line temperature minus evaporator saturation temperature. A little superheat means the compressor is getting vapor, not slugging liquid.",
-            "Cuando ya hirvió todo el líquido, el calor extra sube la temperatura del vapor. Eso es sobrecalentamiento: temperatura de la línea de succión menos la saturación del evaporador. Un poco de sobrecalentamiento significa que el compresor recibe vapor, no un golpe de líquido."),
-          T("Subcooling is the opposite on the high side: condenser saturation temperature minus liquid line temperature. It tells you a solid column of liquid is feeding the metering device — not flash gas.",
-            "El subenfriamiento es lo contrario en el lado alto: saturación del condensador menos temperatura de la línea de líquido. Te dice que una columna sólida de líquido alimenta el expansor, no gas flash.")
+          T("Inside the indoor coil, refrigerant boils until it's all vapor. If the vapor keeps picking up heat after that, it gets warmer than its boiling point. That extra is called superheat.",
+            "Dentro del serpentín de adentro, el refrigerante hierve hasta que todo es vapor. Si el vapor sigue agarrando calor, se calienta más que su punto de ebullición. Ese extra se llama sobrecalentamiento."),
+          T("Techs measure the pipe temperature and subtract the boiling temperature from the chart. Too much superheat means the coil is starved of refrigerant. Too little means liquid might be heading back to the compressor, which can damage it.",
+            "Los técnicos miden la temperatura del tubo y le restan la de ebullición de la tabla. Mucho sobrecalentamiento significa que al serpentín le falta refrigerante. Muy poco significa que podría regresar líquido al compresor y dañarlo.")
         ],
         video: V.shsc,
-        call: T("R-410A suction at about 118 psig is roughly 40°F saturation. Suction line reads 50°F. Superheat is 10°. Write it as: line temp minus sat temp.",
-          "R-410A a unos 118 psig es más o menos 40 °F de saturación. La succión lee 50 °F. El sobrecalentamiento es 10°. Escríbelo: temp de línea menos temp de saturación.")
+        analogy: T("A pot of water stays at 212° while it boils. Once it boils dry, the empty pot heats past 212° fast. Superheat is that 'past boiling' part.",
+          "Una olla con agua se queda en 212° mientras hierve. Cuando se seca, la olla vacía pasa de 212° rápido. El sobrecalentamiento es esa parte 'después de hervir'.")
+      },
+      { title: T("Subcooling: how much the liquid cooled after condensing", "Subenfriamiento: cuánto se enfrió el líquido después de condensarse"),
+        body: [
+          T("In the outdoor coil, the reverse happens. Hot vapor gives up heat and turns into liquid. If the liquid keeps cooling after that, it drops below its condensing temperature. That extra cooling is subcooling.",
+            "En el serpentín de afuera pasa lo contrario. El vapor caliente suelta calor y se vuelve líquido. Si el líquido se sigue enfriando, baja de su temperatura de condensación. Ese enfriamiento extra es el subenfriamiento."),
+          T("Together, superheat and subcooling let a tech see what's happening inside a sealed copper pipe without opening it.",
+            "Juntos, el sobrecalentamiento y el subenfriamiento dejan que el técnico vea lo que pasa dentro de un tubo de cobre sellado sin abrirlo.")
+        ],
+        call: T("On a 95° afternoon the tech reads high superheat and low subcooling. Both numbers point the same way: the system is low on refrigerant, probably from a leak. Next step is finding the leak, not just topping it off.",
+          "Una tarde de 95°, el técnico lee sobrecalentamiento alto y subenfriamiento bajo. Los dos números apuntan a lo mismo: al sistema le falta refrigerante, probablemente por una fuga. Lo siguiente es encontrar la fuga, no solo rellenar.")
       }
     ],
     recap: [
-      T("Heat always flows from hot to cold, by conduction, convection, or radiation.", "El calor siempre va de caliente a frío, por conducción, convección o radiación."),
-      T("Sensible heat changes temperature. Latent heat changes state — that's most of what refrigerant carries.", "El calor sensible cambia la temperatura. El latente cambia el estado — y es la mayor parte de lo que carga el refrigerante."),
-      T("Higher pressure = higher boiling point. That's why the two sides of the system run at different pressures.", "Más presión = más alto el punto de ebullición. Por eso los dos lados corren a presiones distintas."),
-      T("Superheat = suction line temp − sat temp. Subcooling = sat temp − liquid line temp.", "Sobrecalentamiento = temp de succión − temp de saturación. Subenfriamiento = temp de saturación − temp de líquido.")
+      T("Heat only flows from warmer to cooler on its own.", "El calor solo fluye de lo caliente a lo frío por sí solo."),
+      T("Three ways heat travels: conduction, convection, radiation.", "Tres formas de viajar: conducción, convección, radiación."),
+      T("Sensible heat changes temperature; latent heat moves water between liquid and vapor. ACs fight both.", "El calor sensible cambia la temperatura; el latente cambia el agua entre líquido y vapor. El aire combate los dos."),
+      T("While boiling, pressure and temperature are locked. A P–T chart turns a gauge reading into a temperature.", "Al hervir, presión y temperatura están amarradas. Una tabla P–T convierte una lectura en temperatura."),
+      T("Superheat = vapor warmer than boiling. Subcooling = liquid cooler than condensing. Together they show what's inside the pipe.", "Sobrecalentamiento = vapor más caliente que la ebullición. Subenfriamiento = líquido más frío que la condensación. Juntos muestran lo que hay dentro del tubo.")
     ],
     check: [
-      { q: T("A coil is sweating and the drain is dripping. That moisture leaving the air is mostly:", "El serpentín suda y el drenaje gotea. Esa humedad que sale del aire es sobre todo:"),
-        a: [T("Latent heat being removed as water vapor condenses", "Calor latente que se quita al condensar el vapor de agua"), T("Sensible heat only — the thermometer just dropped", "Solo calor sensible: bajó el termómetro"), T("Radiation from the thermostat", "Radiación del termostato"), T("The filter absorbing BTUs", "El filtro absorbiendo BTUs")],
-        c: 0, why: T("Condensing water out of the air is a state change, so it's latent cooling. The room also gets sensible cooling as the air temperature falls.", "Condensar agua del aire es un cambio de estado, así que es enfriamiento latente. El cuarto también recibe enfriamiento sensible cuando baja la temperatura del aire.") },
-      { q: T("Suction pressure is 118 psig on R-410A (about 40°F sat) and the suction line is 50°F. Superheat is:", "La succión es 118 psig en R-410A (unos 40 °F sat) y la línea está a 50 °F. El sobrecalentamiento es:"),
-        a: [T("10°F", "10 °F"), T("40°F", "40 °F"), T("90°F", "90 °F"), T("118°F", "118 °F")],
-        c: 0, why: T("Superheat is line temperature minus saturation temperature: 50 − 40 = 10°F.", "El sobrecalentamiento es temperatura de línea menos saturación: 50 − 40 = 10 °F.") },
-      { q: T("Why does the condenser need to run hotter than the outdoor air?", "¿Por qué el condensador tiene que estar más caliente que el aire de afuera?"),
-        a: [T("Heat only leaves if the coil is warmer than the air around it", "El calor solo sale si el serpentín está más caliente que el aire que lo rodea"), T("So the compressor has something to do", "Para que el compresor tenga algo que hacer"), T("To keep the evaporator from freezing, always", "Para que el evaporador no se congele, siempre"), T("It doesn't — colder is more efficient", "No hace falta: más frío es más eficiente")],
-        c: 0, why: T("Heat flows hot to cold. High-side pressure is raised so the refrigerant is hot enough to dump heat into 95° air.", "El calor va de caliente a frío. Se sube la presión del lado alto para que el refrigerante esté lo bastante caliente y suelte calor a un aire de 95 °F.") }
+      { q: T("You hold a cold soda can. Which way does heat move?", "Sostienes una lata de refresco fría. ¿Hacia dónde va el calor?"),
+        a: [T("From your hand into the can", "De tu mano a la lata"), T("From the can into your hand", "De la lata a tu mano"), T("It doesn't move", "No se mueve"), T("Cold flows into your hand", "El frío fluye a tu mano")],
+        c: 0, why: T("Heat flows from warmer to cooler. 'Cold' is just less heat.", "El calor va de lo caliente a lo frío. El 'frío' es solo menos calor.") },
+      { q: T("A fan blowing air across a hot coil carries the heat away. That's:", "Un ventilador que sopla aire por un serpentín caliente se lleva el calor. Eso es:"),
+        a: [T("Convection", "Convección"), T("Conduction", "Conducción"), T("Radiation", "Radiación"), T("Insulation", "Aislamiento")],
+        c: 0, why: T("Moving air or water carrying heat is convection.", "Aire o agua en movimiento llevando calor es convección.") },
+      { q: T("Why does a humid 80° day feel worse than a dry 80° day?", "¿Por qué un día húmedo de 80° se siente peor que uno seco de 80°?"),
+        a: [T("There's extra latent heat in the water vapor, and sweat can't evaporate as well", "Hay calor latente extra en el vapor de agua, y el sudor no se evapora igual"), T("The thermometer is wrong", "El termómetro está mal"), T("Humid air is colder", "El aire húmedo es más frío"), T("It doesn't", "No se siente peor")],
+        c: 0, why: T("Moisture carries hidden heat, and your sweat can't cool you as well when the air is already wet.", "La humedad lleva calor escondido, y tu sudor no te enfría igual cuando el aire ya está mojado.") },
+      { q: T("What does a pressure–temperature chart let a tech do?", "¿Qué le permite hacer a un técnico una tabla de presión–temperatura?"),
+        a: [T("Turn a pressure reading into the refrigerant's boiling temperature", "Convertir una lectura de presión en la temperatura de ebullición del refrigerante"), T("Set the thermostat", "Programar el termostato"), T("Measure airflow", "Medir el aire"), T("Find the house's square footage", "Calcular los metros de la casa")],
+        c: 0, why: T("While refrigerant is boiling, pressure and temperature are locked. The chart links them.", "Mientras el refrigerante hierve, presión y temperatura están amarradas. La tabla las relaciona.") },
+      { q: T("High superheat and low subcooling on a hot day most likely mean:", "Sobrecalentamiento alto y subenfriamiento bajo en un día caliente casi siempre significan:"),
+        a: [T("The system is low on refrigerant", "Al sistema le falta refrigerante"), T("The system has too much refrigerant", "Al sistema le sobra refrigerante"), T("The thermostat batteries are low", "Las pilas del termostato están bajas"), T("Everything is normal", "Todo está normal")],
+        c: 0, why: T("A starved coil gives high superheat, and a short supply of liquid gives low subcooling. Find the leak.", "Un serpentín con poco refrigerante da sobrecalentamiento alto, y poco líquido da subenfriamiento bajo. Busca la fuga.") }
     ]
   });
 
-  /* ---------------- Airflow (new) ---------------- */
+  /* ---------------- Airflow (v66 quality pass) ---------------- */
   window.LESSONS.airflow = window.LESSONS.airflow || {
-    module: "hvac101", icon: "💨", minutes: 10,
+    module: "hvac101", icon: "💨", minutes: 12,
     title: T("Airflow: the other half of comfort", "Flujo de aire: la otra mitad del confort"),
     intro: T("If the air isn't moving, the best refrigeration cycle in the world can't do its job.", "Si el aire no se mueve, el mejor ciclo de refrigeración del mundo no puede hacer su trabajo.")
   };
   attach("airflow", {
-    minutes: 10,
+    minutes: 12,
     steps: [
       { kicker: T("Airflow", "Flujo de aire"),
-        title: T("The refrigerant can't work if the air isn't moving", "El refrigerante no puede trabajar si el aire no se mueve"),
+        title: T("Air is the delivery truck for heat", "El aire es el camión de reparto del calor"),
         body: [
-          T("Every coil is a meeting place: refrigerant on one side, air on the other. If you starve the coil of air — a dirty filter, crushed return, closed supply vents — the heat has no ride. Indoor coils ice up. Outdoor coils overheat. Pressures go weird, and a tired tech starts adding refrigerant to a system that was just thirsty for air.",
-            "Cada serpentín es un punto de encuentro: refrigerante de un lado, aire del otro. Si le quitas aire — filtro sucio, retorno aplastado, rejillas cerradas — el calor no tiene transporte. El serpentín de adentro se hiela. El de afuera se sobrecalienta. Las presiones se ponen raras, y un técnico cansado empieza a agregar refrigerante a un sistema que solo tenía sed de aire.")
+          T("The refrigerant can only grab heat from air that actually touches the coil. If not enough air moves across it, the heat has no ride, no matter how good the rest of the system is.",
+            "El refrigerante solo puede agarrar calor del aire que de verdad toca el serpentín. Si no pasa suficiente aire, el calor no tiene transporte, por bueno que sea el resto del sistema."),
+          T("A lot of 'broken AC' calls turn out to be air problems: a clogged filter, a crushed duct, or closed vents.",
+            "Muchas llamadas de 'aire descompuesto' resultan ser problemas de aire: un filtro tapado, un ducto aplastado o rejillas cerradas.")
         ],
-        analogy: T("It's like trying to cool a pot of soup with the lid glued shut and no fan. The coil is the pot. Airflow is the breeze.",
-          "Es como querer enfriar una sopa con la tapa pegada y sin ventilador. El serpentín es la olla. El flujo de aire es la brisa.")
+        analogy: T("Blowing on hot soup cools it fast. Hold your breath and the soup stays hot. The coil is the soup; airflow is your breath.",
+          "Soplarle a la sopa caliente la enfría rápido. Si aguantas la respiración, sigue caliente. El serpentín es la sopa; el aire es tu soplido.")
       },
-      { title: T("Follow the air through a furnace or air handler", "Sigue el aire por un horno o un manejador"),
+      { title: T("Follow the air around the house", "Sigue el aire por la casa"),
         body: [
-          T("Room air is pulled through a return grille, through a filter, into the blower, across a heat exchanger or cooling coil, and pushed out the supply ducts to the rooms. If any step is blocked, the whole comfort system suffers. A rule of thumb you'll hear is about 350–400 CFM of air per ton of cooling — enough air to let the coil do both sensible and latent work.",
-            "El aire del cuarto entra por la rejilla de retorno, pasa el filtro, llega al soplador, cruza el intercambiador o el serpentín de frío, y sale por los ductos de suministro a las habitaciones. Si un paso está tapado, todo el confort se resiente. Una regla que vas a oír es unos 350–400 CFM de aire por tonelada de frío: suficiente para que el serpentín haga trabajo sensible y latente.")
+          T("Air leaves the rooms through a big grille called the return. It passes through the filter, then a blower (a big fan) pushes it across the indoor coil or the furnace's heat exchanger.",
+            "El aire sale de los cuartos por una rejilla grande llamada retorno. Pasa por el filtro, y luego un soplador (un ventilador grande) lo empuja por el serpentín de adentro o el intercambiador del horno."),
+          T("Conditioned air then travels through supply ducts and out the smaller vents in each room. Then it comes back to the return, and around it goes.",
+            "El aire acondicionado viaja por los ductos de suministro y sale por las rejillas chicas de cada cuarto. Luego regresa al retorno, y otra vuelta.")
         ],
-        visual: "airflow"
+        visual: "airflow",
+        analogy: T("Your lungs and blood vessels: the return breathes in, the blower is the heart, and the supply ducts are arteries carrying fresh air to every room.",
+          "Tus pulmones y venas: el retorno inhala, el soplador es el corazón, y los ductos de suministro son arterias que llevan aire a cada cuarto.")
       },
-      { title: T("See what leaky ducts do to real airflow", "Mira lo que hacen los ductos con fugas al flujo real"),
+      { title: T("What too little air does", "Qué pasa con muy poco aire"),
         body: [
-          T("Craig Migliaccio at AC Service Tech measures CFM, seals the ducts, and measures again. It's the nicest way to learn why 'the unit is new but the house still feels bad' is often a duct problem, not a refrigerant problem. Tap to watch.",
-            "Craig Migliaccio de AC Service Tech mide CFM, sella los ductos y vuelve a medir. Es una buena forma de ver por qué 'el equipo es nuevo pero la casa se siente mal' muchas veces es un problema de ductos, no de refrigerante. Toca para verlo.")
+          T("With too little air in cooling mode, the indoor coil gets colder and colder until moisture on it freezes into a block of ice. Then almost no air gets through at all.",
+            "Con muy poco aire en modo de enfriamiento, el serpentín de adentro se pone cada vez más frío hasta que la humedad se congela en un bloque de hielo. Entonces casi no pasa aire."),
+          T("In heating mode, a furnace with too little air overheats and shuts itself off on a safety switch, again and again.",
+            "En modo de calefacción, un horno con muy poco aire se sobrecalienta y se apaga solo por un interruptor de seguridad, una y otra vez.")
         ],
-        video: V.ducts
+        call: T("July call: the indoor coil is a block of ice and the filter looks like a rug. The fix starts with a new filter and thawing the coil — not with adding refrigerant.",
+          "Llamada de julio: el serpentín de adentro es un bloque de hielo y el filtro parece tapete. La reparación empieza con un filtro nuevo y descongelar el serpentín, no con agregar refrigerante.")
       },
-      { title: T("Static pressure is the 'blood pressure' of the ducts", "La presión estática es la 'presión arterial' de los ductos"),
+      { title: T("Leaky ducts waste air you paid to cool", "Los ductos con fugas tiran aire que pagaste por enfriar"),
         body: [
-          T("We measure how hard the blower is pushing and pulling, in inches of water column, with a manometer. Too much total external static pressure usually means a restriction: dirty filter, undersized return, a coil caked with dust, or supply runs that are too small. Before you change a charge, ask: is the air moving like the manufacturer designed it to?",
-            "Medimos qué tan fuerte empuja y jala el soplador, en pulgadas de columna de agua, con un manómetro. Demasiada presión estática externa total casi siempre es una restricción: filtro sucio, retorno pequeño, un serpentín lleno de polvo, o suministros demasiado estrechos. Antes de tocar la carga, pregunta: ¿el aire se mueve como lo diseñó el fabricante?")
+          T("Supply ducts often run through hot attics. Every gap or loose joint leaks cooled air into the attic instead of your bedroom. Leaky return ducts can suck hot, dusty attic air into the system.",
+            "Los ductos de suministro muchas veces pasan por áticos calientes. Cada hueco o unión floja fuga aire frío al ático en vez de a tu recámara. Los ductos de retorno con fugas pueden jalar aire caliente y polvoso del ático."),
+          T("Sealing ducts with mastic or proper tape can make a weak room feel like a new system.",
+            "Sellar los ductos con mástique o cinta correcta puede hacer que un cuarto débil se sienta como sistema nuevo.")
         ],
-        call: T("A house 'needs a new system' — until someone opens the filter slot and finds a filter that looks like a throw rug. New air, old charge, happy customer.",
-          "Una casa 'necesita equipo nuevo' — hasta que alguien abre el filtro y encuentra uno que parece un tapete. Aire nuevo, carga vieja, cliente feliz.")
+        video: V.ducts,
+        analogy: T("It's like watering the garden with a hose full of holes. The faucet is fine; the water just doesn't reach the end.",
+          "Es como regar el jardín con una manguera llena de hoyos. La llave está bien; el agua no llega al final.")
+      },
+      { title: T("Static pressure: the duct system's blood pressure", "Presión estática: la presión arterial de los ductos"),
+        body: [
+          T("Techs measure how hard the blower has to push using a tool called a manometer. That reading is static pressure.",
+            "Los técnicos miden qué tan fuerte tiene que empujar el soplador con una herramienta llamada manómetro. Esa lectura es la presión estática."),
+          T("High static means something is choking the air: a dirty filter, undersized ducts, or a dirty coil. The blower works harder, moves less air, and wears out sooner.",
+            "Estática alta significa que algo ahoga el aire: un filtro sucio, ductos muy chicos o un serpentín sucio. El soplador trabaja más, mueve menos aire y se gasta antes.")
+        ],
+        video: V.static,
+        analogy: T("High blood pressure means your heart works harder to push blood through narrow vessels. High static means the blower works harder to push air through tight ducts.",
+          "La presión alta significa que tu corazón trabaja más para empujar sangre por venas angostas. La estática alta significa que el soplador trabaja más para empujar aire por ductos apretados.")
+      },
+      { title: T("How much air is enough", "Cuánto aire es suficiente"),
+        body: [
+          T("Air is measured in CFM: cubic feet per minute. A common rule of thumb is about 400 CFM for every ton of cooling, adjusted for climate and the equipment maker's specs.",
+            "El aire se mide en CFM: pies cúbicos por minuto. Una regla común es unos 400 CFM por cada tonelada de enfriamiento, ajustado al clima y a lo que pide el fabricante."),
+          T("A 3-ton system needs roughly 1,200 CFM. Much less, and the coil gets too cold and does a poor job of drying the air. Much more, and the air comes out less dry and can feel clammy.",
+            "Un sistema de 3 toneladas necesita unos 1,200 CFM. Mucho menos, y el serpentín se enfría de más y seca mal el aire. Mucho más, y el aire sale menos seco y se puede sentir húmedo.")
+        ],
+        call: T("Before telling a customer they need a bigger unit, a good tech checks the filter, measures static, and looks at the ducts. Many 'too small' systems are really 'can't breathe' systems.",
+          "Antes de decirle a un cliente que necesita una unidad más grande, un buen técnico revisa el filtro, mide la estática y mira los ductos. Muchos sistemas 'muy chicos' en realidad 'no pueden respirar'.")
       }
     ],
     recap: [
-      T("Air and refrigerant have to meet at the coil. Starve one, and the other looks 'broken.'", "El aire y el refrigerante deben encontrarse en el serpentín. Si le quitas uno, el otro parece 'descompuesto.'"),
-      T("Path: return → filter → blower → coil or heat exchanger → supply → rooms.", "Ruta: retorno → filtro → soplador → serpentín o intercambiador → suministro → habitaciones."),
-      T("A common cooling target is about 350–400 CFM per ton, if the manufacturer agrees.", "Un objetivo común de frío es unos 350–400 CFM por tonelada, si el fabricante está de acuerdo."),
-      T("High static pressure usually means a restriction. Check air before you add charge.", "La presión estática alta casi siempre es una restricción. Revisa el aire antes de agregar carga.")
+      T("Air carries the heat to and from the coil. No airflow, no comfort.", "El aire lleva el calor al serpentín y desde él. Sin aire, no hay confort."),
+      T("Return → filter → blower → coil → supply → rooms → back to return.", "Retorno → filtro → soplador → serpentín → suministro → cuartos → retorno."),
+      T("Too little air freezes an AC coil and overheats a furnace.", "Muy poco aire congela el serpentín y sobrecalienta el horno."),
+      T("Leaky ducts waste conditioned air and can pull in attic air.", "Los ductos con fugas tiran aire acondicionado y pueden jalar aire del ático."),
+      T("High static means something is choking the air. Aim for roughly 400 CFM per ton.", "Estática alta significa que algo ahoga el aire. Busca unos 400 CFM por tonelada.")
     ],
     check: [
-      { q: T("An indoor coil is icing on a 75° day. A smart first check is:", "El serpentín de adentro se hiela en un día de 75 °F. Una primera revisión inteligente es:"),
-        a: [T("Airflow — dirty filter, blocked return, or a weak blower", "Flujo de aire: filtro sucio, retorno tapado o soplador débil"), T("Immediately add two pounds of refrigerant", "Agregar de inmediato dos libras de refrigerante"), T("Bypass the float switch and keep running", "Saltar el switch de flotador y seguir corriendo"), T("Turn the fan to 'auto' and leave", "Poner el ventilador en 'auto' y irte")],
-        c: 0, why: T("Low airflow lets evaporator pressure (and temperature) fall until the coil ices. Fix the air before you guess at a charge.", "El poco aire deja que la presión (y la temperatura) del evaporador bajen hasta helarse. Arregla el aire antes de adivinar la carga.") },
-      { q: T("Total external static pressure is much higher than the furnace nameplate. That usually means:", "La presión estática externa total está mucho más alta que la placa del horno. Eso casi siempre significa:"),
-        a: [T("The ducts or filter are restricting the blower", "Los ductos o el filtro están restringiendo el soplador"), T("The refrigerant is overcharged", "El refrigerante está sobrecargado"), T("The thermostat is set too low", "El termostato está demasiado bajo"), T("The gas pressure is high", "La presión de gas está alta")],
-        c: 0, why: T("Static is the duct system's resistance. High numbers point to a restriction on the air side, not the gas valve.", "La estática es la resistencia del sistema de ductos. Números altos apuntan a una restricción de aire, no a la válvula de gas.") },
-      { q: T("Why do we care about CFM per ton?", "¿Por qué nos importa el CFM por tonelada?"),
-        a: [T("The coil needs enough air to transfer heat and to dehumidify", "El serpentín necesita bastante aire para transferir calor y deshumidificar"), T("It's only a sales number", "Es solo un número de ventas"), T("It sets the refrigerant type", "Define el tipo de refrigerante"), T("It replaces a pressure reading", "Reemplaza una lectura de presión")],
-        c: 0, why: T("Too little air and the coil gets too cold, ices, and does a poor job with both temperature and humidity.", "Con poco aire el serpentín se pone demasiado frío, se hiela y hace mal el trabajo de temperatura y humedad.") }
+      { q: T("The indoor coil is covered in ice and the filter is filthy. What's the first fix?", "El serpentín de adentro está cubierto de hielo y el filtro está muy sucio. ¿Cuál es la primera reparación?"),
+        a: [T("Replace the filter and thaw the coil", "Cambiar el filtro y descongelar el serpentín"), T("Add refrigerant right away", "Agregar refrigerante de inmediato"), T("Chip the ice off with a screwdriver", "Quitar el hielo con un desarmador"), T("Turn the thermostat lower", "Bajar más el termostato")],
+        c: 0, why: T("Low airflow froze the coil. Restore air first. Chipping ice can puncture the coil.", "El poco aire congeló el serpentín. Primero devuelve el aire. Picar el hielo puede perforar el serpentín.") },
+      { q: T("Which part pulls air from the rooms back to the equipment?", "¿Qué parte regresa el aire de los cuartos al equipo?"),
+        a: [T("The return", "El retorno"), T("The supply vent", "La rejilla de suministro"), T("The condenser fan", "El ventilador del condensador"), T("The thermostat", "El termostato")],
+        c: 0, why: T("The return grille and duct bring room air back through the filter to the blower.", "La rejilla y el ducto de retorno regresan el aire del cuarto por el filtro hasta el soplador.") },
+      { q: T("High static pressure usually means:", "La presión estática alta casi siempre significa:"),
+        a: [T("Something is restricting airflow, like a dirty filter or small ducts", "Algo está restringiendo el aire, como un filtro sucio o ductos chicos"), T("The system has too much refrigerant", "El sistema tiene demasiado refrigerante"), T("The thermostat is set too low", "El termostato está muy bajo"), T("The gas pressure is high", "La presión del gas está alta")],
+        c: 0, why: T("Static is the duct system's resistance — the blower's 'blood pressure.'", "La estática es la resistencia de los ductos: la 'presión arterial' del soplador.") },
+      { q: T("About how much air does a 3-ton AC need, using the 400 CFM per ton rule of thumb?", "Más o menos cuánto aire necesita un aire de 3 toneladas, con la regla de 400 CFM por tonelada?"),
+        a: [T("About 1,200 CFM", "Unos 1,200 CFM"), T("About 300 CFM", "Unos 300 CFM"), T("About 4,000 CFM", "Unos 4,000 CFM"), T("Airflow doesn't matter", "El aire no importa")],
+        c: 0, why: T("3 tons × 400 CFM per ton ≈ 1,200 CFM. Always confirm against the manufacturer's data.", "3 toneladas × 400 CFM por tonelada ≈ 1,200 CFM. Siempre confirma con los datos del fabricante.") },
+      { q: T("Why can leaky supply ducts in an attic make a bedroom hot?", "¿Por qué los ductos de suministro con fugas en el ático pueden hacer que una recámara esté caliente?"),
+        a: [T("Cooled air escapes into the attic before reaching the room", "El aire frío se escapa al ático antes de llegar al cuarto"), T("Leaks make the compressor run backward", "Las fugas hacen que el compresor corra al revés"), T("Attic air is always cold", "El aire del ático siempre está frío"), T("Leaks only affect noise", "Las fugas solo afectan el ruido")],
+        c: 0, why: T("Like a hose full of holes: the system makes cool air, but it never gets to the end of the line.", "Como una manguera con hoyos: el sistema hace aire frío, pero nunca llega al final.") }
     ]
   });
   (function () {
