@@ -20,7 +20,7 @@
   const brQ = k => brReviewBank().find(q => q.key === k);
   const failCard = (id, did, extra = {}) => { const f = fail(id); return Object.assign({ did, why: `${tx(f.cue)}. ${tx(f.cause)}.`, rule: tx(BR.nitrogen.rule), sources: f.sources, q: brQ(`br:fail:${id}`) }, extra); };
   /* copper color by temperature (°F): bright copper → oxide → dull cherry red (~1100-1300) → bright orange (overheat) */
-  const STOPS = [[70, [184, 115, 51]], [500, [120, 64, 38]], [900, [80, 38, 28]], [1100, [128, 36, 24]], [1300, [190, 48, 26]], [1500, [255, 118, 30]], [1700, [255, 200, 120]]];
+  const STOPS = [[70, [196, 126, 62]], [500, [150, 72, 36]], [900, [110, 40, 24]], [1100, [186, 32, 28]], [1300, [230, 40, 30]], [1500, [255, 118, 30]], [1750, [255, 210, 140]]];
   const copper = T => { let i = 1; while (i < STOPS.length - 1 && T > STOPS[i][0]) i++; const [t0, c0] = STOPS[i - 1], [t1, c1] = STOPS[i], k = Math.max(0, Math.min(1, (T - t0) / (t1 - t0))); return `rgb(${c0.map((v, j) => Math.round(v + (c1[j] - v) * k)).join(",")})`; };
   /* data additions for the filler step (Harris procedures; verified Nov 2026) */
   if (!BR.failures.find(f => f.id === "excess")) BR.failures.push(
@@ -126,79 +126,129 @@
           const id = v > BR.n2Band.max ? "tooMuchN2" : "noN2";
           await R.miss(failCard(id, L(`You set ${v.toFixed(1)} CFH.`, `Pusiste ${v.toFixed(1)} CFH.`), { why: `${tx(fail(id).cue)}. ${tx(fail(id).cause)}. ${tx(BR.nitrogen.why)}`, rule: tx(BR.nitrogen.rule) + " " + tx(BR.n2Band.note), oem: true, sources: uniq([...fail(id).sources, ...BR.nitrogen.sources]) }));
           rng.value = 2.5; upd(); st.n2 = 2.5; heat(hiss); }; };
-      /* 4. hold to heat: finger on the work moves the flame; tube first, then the fitting cup */
-      const heat = hiss => { step.textContent = L("Hold on the tube, then slide to the cup", "Mantén en el tubo, luego desliza a la copa"); torch.style.display = ""; Sound.sfx("ignite");
-        hint.textContent = L("Release when the flux goes clear / dull cherry red", "Suelta cuando el fundente quede claro / rojo cereza opaco");
-        P.innerHTML = `<div class="br-hold"><span>${ico("hand", 18)} ${L("Press and hold on the pipe", "Mantén presionado sobre el tubo")}</span></div>`;
-        const scene = $("#brS"), svg = scene.querySelector(".br-svg"); let holding = false, fx = 120, tubeFirst = null, roar = null, parked = 0, lastX = 0;
-        if (guided) { scene.classList.add("tg-hl"); }
-        const toSvg = e => { const r = svg.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 360; };
-        const down = e => { if (st.heated) return; e.preventDefault(); holding = true; fx = toSvg(e); lastX = fx; if (tubeFirst == null) tubeFirst = fx < 196; roar = Sound.loop("torch", 0.6); try { scene.setPointerCapture(e.pointerId); } catch (err) {} scene.classList.add("heating"); scene.classList.remove("tg-hl"); R.resume("guide"); TG.buzz("tap"); };
-        const move = e => { if (holding) fx = Math.max(20, Math.min(300, toSvg(e))); };
-        const up = e => { if (!holding) return; if (e && e.pointerId != null) { try { scene.releasePointerCapture(e.pointerId); } catch (err) {} } holding = false; scene.classList.remove("heating"); roar && roar.stop(0.15); release(); };
-        scene.addEventListener("pointerdown", down); scene.addEventListener("pointermove", move); scene.addEventListener("pointerup", up); scene.addEventListener("pointercancel", up);
-        const moveDoc = e => { if (holding) move(e); }, upDoc = e => { if (holding) up(e); };
-        document.addEventListener("pointermove", moveDoc); document.addEventListener("pointerup", upDoc); document.addEventListener("pointercancel", upDoc);
-        R.stops.push(() => { document.removeEventListener("pointermove", moveDoc); document.removeEventListener("pointerup", upDoc); document.removeEventListener("pointercancel", upDoc); });
-        R.stops.push(() => roar && roar.stop());
-        const lv = TG.level(R.id), rate = 520 + lv * 40;
-        R.onFrame = dt => { if (st.heated) return; torch.setAttribute("transform", `translate(${fx + 26} 89) rotate(${holding ? -8 : 0})`); flame.style.opacity = holding ? 1 : 0.15;
-          const onTube = fx < 196; if (holding) { if (Math.abs(fx - lastX) < 3) parked += dt; else parked = Math.max(0, parked - dt * 2); lastX = fx;
-            if (onTube) { st.tubeT += rate * dt; st.fitT += rate * 0.28 * dt; } else { st.fitT += rate * 0.85 * dt; st.tubeT += rate * 0.35 * dt; } roar && roar.set(0.5 + 0.5 * Math.min(1, parked)); }
-          st.tubeT = Math.max(70, st.tubeT - (st.tubeT - 70) * 0.06 * dt); st.fitT = Math.max(70, st.fitT - (st.fitT - 70) * 0.06 * dt); paint();
-          if (holding && st.tubeT > 1520) { holding = false; roar && roar.stop(0.1); scene.classList.remove("heating"); st.overheated = true; release(); } };
-        const release = async () => { if (st.heated) return; st.heated = true; R.onFrame = null; torch.style.display = "none";
-          const hot = Math.min(st.tubeT, st.fitT);
-          if (st.overheated || st.tubeT > 1500) { st.fail = "overheat"; Sound.sfx("sizzle"); fillet.setAttribute("class", "br-fillet run"); await R.miss(failCard("overheat", L("You parked the flame on the tube until it glowed bright orange.", "Dejaste la llama quieta en el tubo hasta que quedó naranja brillante."), { rule: tx(BR.temperatureCues.phosColorCue) + " " + tx(BR.temperatureCues.fluxSequence), sources: BR.temperatureCues.sources })); return cool(hiss); }
-          if (hot < 900) { st.fail = "underheat"; fillet.setAttribute("class", "br-fillet balls"); Sound.sfx("drip"); await R.miss(failCard("underheat", L(`You fed rod with the joint at about ${Math.round(hot / 10) * 10}°F.`, `Aplicaste varilla con la unión a unos ${Math.round(hot / 10) * 10}°F.`), { rule: tx(BR.temperatureCues.fluxSequence) + " (" + BR.temperatureCues.fluxClearAtF + "°F)", sources: BR.temperatureCues.sources })); return cool(hiss); }
-          if (tubeFirst === false && st.fitT - st.tubeT > 250) { R.bonus(0, ""); }
-          R.hit({ label: L("brazing temp", "temperatura") }); feed(hiss); }; };
-      /* 5. feed the rod: a deliberate filler step. The flame stays on the joint; hold FEED when the base metal is at
-         brazing temperature (flux clear / dull cherry). Too early = alloy balls up; past full = drips and icicles inside;
-         on time = capillary flow pulls the alloy into the joint (Harris: feed only after the base metal is at temperature,
-         let the joint's heat melt the rod, stop once the joint is filled). */
-      const feed = hiss => { step.textContent = L("Hold to feed the rod — stop when the joint is full", "Mantén para aplicar la varilla — suelta cuando la unión esté llena");
+      /* 4. hold to heat: one Hold button, flame auto-positions tube then cup. Pause on lift, never fail on pointercancel. */
+      const heat = hiss => { step.textContent = L("Hold to heat the joint", "Mantén para calentar la unión");
+        hint.textContent = "";
+        torch.style.display = ""; Sound.sfx("ignite");
+        P.innerHTML = `<div class="br-hold"><button type="button" class="btn primary big full br-heat-btn" id="brHeatBtn">${ico("flame", 18)} ${L("Hold to heat", "Mantén para calentar")}<small class="block">${L("The flame moves for you. Hold until the copper glows cherry red.", "La llama se mueve sola. Mantén hasta que el cobre se ponga rojo cereza.")}</small></button></div>`;
+        const btn = $("#brHeatBtn"), scene = $("#brS");
+        let holding = false, roar = null, ready = false;
+        const DONE = 1180, OVER = 1780, rate = 420;
+        if (guided && btn) btn.classList.add("tg-hl");
+        const finishHeat = async (kind) => {
+          if (st.heated) return; st.heated = true; R.onFrame = null; holding = false;
+          scene && scene.classList.remove("heating"); roar && roar.stop(0.15); torch.style.display = "none";
+          if (kind === "overheat") { st.fail = "overheat"; st.overheated = true; Sound.sfx("sizzle"); fillet.setAttribute("class", "br-fillet run");
+            await R.miss(failCard("overheat", L("The joint went bright orange.", "La unión se puso naranja brillante."), { rule: tx(BR.temperatureCues.phosColorCue) + " " + tx(BR.temperatureCues.fluxSequence), sources: BR.temperatureCues.sources }));
+            return cool(hiss); }
+          R.hit({ label: L("brazing temp", "temperatura") }); feed(hiss);
+        };
+        const down = e => { if (st.heated) return; e.preventDefault(); holding = true;
+          if (!roar) roar = Sound.loop("torch", 0.6); scene && scene.classList.add("heating"); if (btn) btn.classList.add("held");
+          try { btn && btn.setPointerCapture(e.pointerId); } catch (err) {}
+          if (guided && btn) btn.classList.remove("tg-hl"); R.resume("guide"); TG.buzz("tap"); };
+        const up = (e, mode) => { if (!holding) return; holding = false;
+          if (btn) btn.classList.remove("held"); scene && scene.classList.remove("heating"); roar && roar.stop(0.15); roar = null;
+          if (e && e.pointerId != null) { try { btn && btn.releasePointerCapture(e.pointerId); } catch (err) {} }
+          /* pointercancel / lost capture only pause — they must not advance or fail the step */ };
+        if (btn) {
+          btn.addEventListener("pointerdown", down);
+          btn.addEventListener("pointerup", up);
+          btn.addEventListener("pointercancel", e => up(e, "pause"));
+          btn.addEventListener("lostpointercapture", e => up(e, "pause"));
+        }
+        const upDoc = e => { if (holding) up(e, "up"); };
+        document.addEventListener("pointerup", upDoc);
+        R.stops.push(() => { document.removeEventListener("pointerup", upDoc); roar && roar.stop(); });
+        /* failsafe: if the hold gesture never completes, auto-advance once the joint is close, else offer a way forward */
+        const heatBail = setTimeout(() => { if (st.heated) return;
+          if (Math.min(st.tubeT, st.fitT) >= 900) finishHeat("ok");
+          else if (btn) { btn.insertAdjacentHTML("afterend", `<button type="button" class="btn full" id="brHeatGo">${L("Continue", "Seguir")}</button>`);
+            const go = $("#brHeatGo"); if (go) go.onclick = () => { st.tubeT = st.fitT = Math.max(st.tubeT, DONE); paint(); finishHeat("ok"); }; }
+        }, 22000);
+        R.stops.push(() => clearTimeout(heatBail));
+        R.onFrame = dt => { if (st.heated) return;
+          const k = Math.min(1, (Math.max(st.tubeT, st.fitT) - 70) / 1200);
+          const fx = 140 + k * 72;
+          torch.setAttribute("transform", `translate(${fx + 26} 89) rotate(${holding ? -8 : 0})`);
+          flame.style.opacity = holding ? 1 : 0.16;
+          if (holding) {
+            if (st.tubeT < 1150) { st.tubeT += rate * dt; st.fitT += rate * 0.4 * dt; }
+            else { st.fitT += rate * 0.95 * dt; st.tubeT += rate * 0.28 * dt; }
+            roar && roar.set(0.45 + 0.55 * k);
+          } else {
+            st.tubeT = Math.max(70, st.tubeT - (st.tubeT - 70) * 0.025 * dt);
+            st.fitT = Math.max(70, st.fitT - (st.fitT - 70) * 0.025 * dt);
+          }
+          paint();
+          if (Math.max(st.tubeT, st.fitT) > OVER) return finishHeat("overheat");
+          if (Math.min(st.tubeT, st.fitT) >= DONE) { ready = true; return finishHeat("ok"); } };
+      };
+      /* 5. feed the rod: hold to feed, release pauses, auto-finishes when the joint is full. */
+      const feed = hiss => { step.textContent = L("Hold to feed the rod", "Mantén para aplicar la varilla");
         const filler = tx((BR.fillerCards.find(c => c.ok.includes(j.id)) || BR.fillerCards[0]).name);
-        hint.textContent = L("Flame on the cup. Hold FEED when the flux is clear and the copper is dull cherry red.", "Llama en la copa. Mantén APLICAR cuando el fundente esté claro y el cobre rojo cereza opaco.");
+        hint.textContent = "";
         torch.style.display = ""; const scene = $("#brS"), FX = brFx(scene); R.stops.push(() => FX.stop());
-        const svg = scene.querySelector(".br-svg"); svg.insertAdjacentHTML("beforeend", `<g id="brRod" class="br-rod"><rect x="-3" y="-120" width="6" height="120" rx="3"/><circle class="br-rod-tip" cx="0" cy="0" r="3.5"/><g id="brBall" class="br-ball"></g></g><ellipse id="brCap" class="br-cap" cx="196" cy="89" rx="6" ry="27"/>`);
+        const svg = scene.querySelector(".br-svg");
+        svg.insertAdjacentHTML("beforeend", `<g id="brRod" class="br-rod"><rect x="-3" y="-120" width="6" height="120" rx="3"/><circle class="br-rod-tip" cx="0" cy="0" r="3.5"/><g id="brBall" class="br-ball"></g></g><ellipse id="brCap" class="br-cap" cx="196" cy="89" rx="6" ry="27"/>`);
         const rod = $("#brRod"), ball = $("#brBall"), cap = $("#brCap");
         P.innerHTML = `<div class="br-feed"><div class="br-feed-meter"><div class="br-feed-band"></div><i id="brFill"></i><span>${L("filler in the joint", "aleación en la unión")}</span></div>
-          <button class="btn primary big full br-feed-btn" id="brFeed">${ico("hand", 18)} ${L("Hold to feed rod", "Mantén para aplicar")}<small class="block">${esc(filler)}</small></button></div>`;
+          <button type="button" class="btn primary big full br-feed-btn" id="brFeed">${ico("hand", 18)} ${L("Hold to feed rod", "Mantén para aplicar")}<small class="block">${esc(filler)}</small></button></div>`;
         const fillEl = $("#brFill"), btn = $("#brFeed"), roar = Sound.loop("torch", 0.5); R.stops.push(() => roar.stop());
-        if (guided) { btn.classList.add("tg-hl"); const clr = () => btn.classList.remove("tg-hl"); btn.addEventListener("pointerdown", clr, { once: true }); }
-        let T = Math.max(820, Math.min(st.tubeT, st.fitT) - 300), held = false, endT = false, sweep = 0, sizzT = 0, rodLen = 120;
-        const lvl = TG.level(R.id), rise = 150 + lvl * 15;
-        const end = async (kind, extra) => { if (endT) return; endT = true; held = false; R.onFrame = null; roar.stop(0.2); torch.style.display = "none"; btn.disabled = true;
-          if (kind === "ok") { fillet.setAttribute("class", "br-fillet done"); cap.classList.add("done"); FX.burst("glint", 196, 89, 18); Sound.sfx("flow"); Sound.sfx("correct", { pitch: 1.12 }); TG.buzz("correct"); R.hit({ pts: 180, label: L("capillary flow", "flujo capilar") }); await wait(500); return cool(hiss); }
-          st.fail = kind; await R.miss(failCard(kind, extra.did, { rule: tx(BR.temperatureCues.phosColorCue) + " " + L("Feed only after both parts are at temperature; stop once the joint is filled.", "Aplica solo con ambas piezas a temperatura; detente cuando la unión esté llena."), sources: uniq([...fail(kind).sources, "harris_proc"]) })); cool(hiss); };
-        const down = e => { e.preventDefault(); if (endT || held) return; held = true; btn.classList.add("held"); TG.buzz("tap"); Sound.sfx("tick");
-          if (T < BR.temperatureCues.fluxClearAtF) { /* cold joint: the rod melts in the flame and beads up on the surface */
-            ball.innerHTML = `<circle cx="-4" cy="4" r="5"/><circle cx="5" cy="7" r="4"/><circle cx="0" cy="12" r="3.5"/>`; fillet.setAttribute("class", "br-fillet balls"); Sound.sfx("drip"); FX.burst("smoke", 196, 70, 10);
-            end("underheat", { did: L(`You fed the rod at about ${Math.round(T / 10) * 10}°F, before the flux went clear.`, `Aplicaste la varilla a unos ${Math.round(T / 10) * 10}°F, antes de que el fundente quedara claro.`) }); } };
-        const up = () => { if (!held || endT) return; held = false; btn.classList.remove("held");
-          if (st.fill < 0.8) end("starved", { did: L(`You stopped at ${Math.round(st.fill * 100)}% filled.`, `Te detuviste al ${Math.round(st.fill * 100)}% lleno.`) });
-          else end("ok"); };
-        btn.addEventListener("pointerdown", down); btn.addEventListener("pointerup", up); btn.addEventListener("pointercancel", up); btn.addEventListener("pointerleave", up);
-        const kd = e => { if (e.code === "Space" && !e.repeat) down(e); }, ku = e => { if (e.code === "Space") up(); }; document.addEventListener("keydown", kd); document.addEventListener("keyup", ku); R.stops.push(() => { document.removeEventListener("keydown", kd); document.removeEventListener("keyup", ku); });
-        R.onFrame = dt => { if (endT) return; sweep += dt * 6; const fxp = 210 + Math.sin(sweep) * 14;
+        if (guided && btn) { btn.classList.add("tg-hl"); btn.addEventListener("pointerdown", () => btn.classList.remove("tg-hl"), { once: true }); }
+        let T = Math.max(1100, Math.min(st.tubeT, st.fitT)), held = false, endT = false, sweep = 0, sizzT = 0, rodLen = 120;
+        const end = async (kind, extra) => { if (endT) return; endT = true; held = false; R.onFrame = null; roar.stop(0.2); torch.style.display = "none"; if (btn) btn.disabled = true;
+          if (kind === "ok") { fillet.setAttribute("class", "br-fillet done"); if (cap) cap.classList.add("done"); FX.burst("glint", 196, 89, 18); if (scene) { const sp = document.createElement("div"); sp.className = "br-sparkle"; scene.appendChild(sp); }
+            Sound.sfx("flow"); Sound.sfx("correct", { pitch: 1.12 }); TG.buzz("correct"); R.hit({ pts: 180, label: L("capillary flow", "flujo capilar") }); await wait(500); return cool(hiss); }
+          st.fail = kind; await R.miss(failCard(kind, extra.did, { rule: tx(BR.temperatureCues.phosColorCue) + " " + L("Feed only after both parts are at temperature; stop once the joint is filled.", "Aplica solo con ambas piezas a temperatura; detente cuando la unión esté llena."), sources: uniq([...fail(kind).sources, "harris_proc"]) }));
+          cool(hiss); };
+        const down = e => { e.preventDefault(); if (endT || held) return; held = true; if (btn) btn.classList.add("held"); TG.buzz("tap"); Sound.sfx("tick");
+          try { btn && btn.setPointerCapture(e.pointerId); } catch (err) {} };
+        const up = (e, mode) => { if (!held || endT) return; held = false; if (btn) btn.classList.remove("held");
+          if (e && e.pointerId != null) { try { btn && btn.releasePointerCapture(e.pointerId); } catch (err) {} }
+          /* A real lift after a nearly full joint counts as success; early lift only pauses so iOS pointercancel can't starve the joint. */
+          if (mode !== "pause" && st.fill >= 0.72) end("ok"); };
+        if (btn) {
+          btn.addEventListener("pointerdown", down);
+          btn.addEventListener("pointerup", e => up(e, "up"));
+          btn.addEventListener("pointercancel", e => up(e, "pause"));
+          btn.addEventListener("lostpointercapture", e => up(e, "pause"));
+        }
+        const upDoc = e => { if (held) up(e, "up"); };
+        document.addEventListener("pointerup", upDoc);
+        const kd = e => { if (e.code === "Space" && !e.repeat) down(e); }, ku = e => { if (e.code === "Space") up(e, "up"); };
+        document.addEventListener("keydown", kd); document.addEventListener("keyup", ku);
+        R.stops.push(() => { document.removeEventListener("keydown", kd); document.removeEventListener("keyup", ku); document.removeEventListener("pointerup", upDoc); });
+        const feedBail = setTimeout(() => { if (endT) return;
+          if (st.fill >= 0.55) end("ok");
+          else if (btn) { btn.insertAdjacentHTML("afterend", `<button type="button" class="btn full" id="brFeedGo">${L("Continue", "Seguir")}</button>`);
+            const go = $("#brFeedGo"); if (go) go.onclick = () => { st.fill = 1; end("ok"); }; }
+        }, 22000);
+        R.stops.push(() => clearTimeout(feedBail));
+        R.onFrame = dt => { if (endT) return; sweep += dt * 6; const fxp = 210 + Math.sin(sweep) * 10;
           torch.setAttribute("transform", `translate(${fxp + 26} 89) rotate(-8)`); flame.style.opacity = 1;
-          T += (held ? 25 : rise) * dt; st.tubeT = st.fitT = T; paint(); roar.set(0.55 + 0.25 * Math.sin(sweep * 0.5) ** 2);
+          /* keep the joint in the feed window while they work; no hidden 300° drop */
+          if (T < 1100) T += 180 * dt; else if (T < 1400) T += (held ? 8 : 20) * dt;
+          st.tubeT = st.fitT = T; paint(); roar.set(0.55 + 0.25 * Math.sin(sweep * 0.5) ** 2);
           FX.emit("shimmer", fxp, 70, dt * 10); if (T > 1050) FX.emit("spark", fxp - 30, 89, dt * 14);
-          if (T > 1500) return end("overheat", { did: L("You waited too long: the joint passed bright orange before you fed the rod.", "Esperaste demasiado: la unión pasó a naranja brillante antes de aplicar.") });
+          if (T > 1780) return end("overheat", { did: L("You waited too long: the joint passed bright orange before you fed the rod.", "Esperaste demasiado: la unión pasó a naranja brillante antes de aplicar.") });
           const touch = held ? 1 : 0; rod.setAttribute("transform", `translate(196 ${62 - (1 - touch) * 26}) rotate(18)`);
-          if (held) { st.fill += dt * (0.42 + lvl * 0.02); rodLen = Math.max(30, 120 - st.fill * 70); rod.querySelector("rect").setAttribute("y", -rodLen); rod.querySelector("rect").setAttribute("height", rodLen);
-            fillEl.style.transform = `scaleX(${Math.min(1.4, st.fill) / 1.4})`; fillet.setAttribute("class", "br-fillet feeding"); fillet.style.strokeDashoffset = 50 * (1 - Math.min(1, st.fill));
-            cap.style.opacity = Math.min(1, st.fill); cap.setAttribute("rx", 4 + Math.min(1, st.fill) * 5); FX.emit("bead", 196, 72 + Math.random() * 34, dt * 30); FX.emit("smoke", 200, 64, dt * 6);
+          if (held) { st.fill += dt * 0.55; rodLen = Math.max(30, 120 - st.fill * 70); const rr = rod.querySelector("rect"); if (rr) { rr.setAttribute("y", -rodLen); rr.setAttribute("height", rodLen); }
+            if (fillEl) fillEl.style.transform = `scaleX(${Math.min(1.4, st.fill) / 1.4})`;
+            fillet.setAttribute("class", "br-fillet feeding"); fillet.style.strokeDashoffset = 50 * (1 - Math.min(1, st.fill));
+            if (cap) { cap.style.opacity = Math.min(1, st.fill); cap.setAttribute("rx", 4 + Math.min(1, st.fill) * 5); }
+            FX.emit("bead", 196, 72 + Math.random() * 34, dt * 30); FX.emit("smoke", 200, 64, dt * 6);
             sizzT -= dt; if (sizzT <= 0) { Sound.sfx("sizzle", { pitch: 0.9 + Math.random() * 0.2, vol: 0.5 }); sizzT = 0.32 + Math.random() * 0.2; }
-            if (st.fill > 1.25) { FX.burst("drip", 205, 104, 8); end("excess", { did: L("You kept feeding after the joint was full.", "Seguiste aplicando con la unión ya llena.") }); } }
+            if (st.fill >= 1) { FX.burst("glint", 196, 89, 14); end("ok"); } }
           FX.tick(dt); };
       };
       /* 6. keep N2 until cool */
       const cool = hiss => { step.textContent = L("Keep N₂ on while it cools", "Mantén N₂ mientras enfría"); hint.textContent = "";
         const t0 = performance.now(), need = 1800; P.innerHTML = `<div class="br-cool"><div class="br-fillbar cool"><i id="brCool"></i></div><p class="sm muted center">${L("Nitrogen stays on until the joint is cool.", "El nitrógeno sigue hasta que la unión enfríe.")}</p></div>`;
         const bar = $("#brCool");
-        R.onFrame = () => { const k = Math.min(1, (performance.now() - t0) / need); if (bar) bar.style.transform = `scaleX(${k})`; st.tubeT = 70 + (Math.max(st.tubeT, 600) - 70) * (1 - k) * 0.97 + 0.03; st.fitT = st.tubeT; paint(); if (k >= 1) { R.onFrame = null; hiss && hiss.stop && hiss.stop(0.3); if (!st.fail) R.hit({ quiet: true, pts: 50, label: "N₂" }); done(); } }; };
+        const coolBail = setTimeout(() => { if (!st || st._cooled) return; st._cooled = true; R.onFrame = null; hiss && hiss.stop && hiss.stop(0.3); if (!st.fail) R.hit({ quiet: true, pts: 50, label: "N₂" }); done(); }, 4000);
+        R.stops.push(() => clearTimeout(coolBail));
+        R.onFrame = () => { const k = Math.min(1, (performance.now() - t0) / need); if (bar) bar.style.transform = `scaleX(${k})`; st.tubeT = 70 + (Math.max(st.tubeT, 600) - 70) * (1 - k) * 0.97 + 0.03; st.fitT = st.tubeT; paint(); if (k >= 1) { if (st._cooled) return; st._cooled = true; R.onFrame = null; hiss && hiss.stop && hiss.stop(0.3); if (!st.fail) R.hit({ quiet: true, pts: 50, label: "N₂" }); done(); } }; };
       const startHeat = () => {
         const hiss = Sound.loop("n2", 0);
         st.n2 = 2.5; hiss.set(2.5 / 8); const n2el = $("#brN2"); if (n2el) n2el.style.opacity = 1;

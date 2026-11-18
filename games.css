@@ -869,3 +869,31 @@ html.reduce-motion .tg-hl { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .feel-flash, .feel-combo { animation: none; }
 }
+
+/* ===== v70: Braze — readable heat, flowing filler, sparkle, reliable hold ===== */
+.br-scene { position: relative; overflow: hidden; }
+.br-scene.heating { filter: saturate(1.15); }
+.br-svg .br-flame { filter: drop-shadow(0 0 8px rgba(255, 160, 60, .85)); }
+#brHeat { mix-blend-mode: screen; }
+.br-heat-btn small, .br-feed-btn small { font-weight: 600; opacity: .85; margin-top: 4px; }
+.br-heat-btn.held, .br-feed-btn.held {
+  transform: scale(.98);
+  box-shadow: 0 0 0 3px rgba(255, 138, 48, .45), 0 0 22px rgba(255, 120, 40, .55);
+}
+.br-sparkle {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 54% 52%, #fff6c8 0 2px, transparent 3px),
+    radial-gradient(circle at 46% 48%, #ffe08a 0 1.5px, transparent 3px),
+    radial-gradient(circle at 58% 58%, #fff 0 1px, transparent 3px),
+    radial-gradient(circle at 42% 60%, #ffd36a 0 2px, transparent 4px);
+  animation: brSparkle .7s ease-out forwards;
+  mix-blend-mode: screen;
+}
+@keyframes brSparkle {
+  0% { opacity: 0; transform: scale(.7); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+.br-fillet.feeding, .br-fillet.done { filter: drop-shadow(0 0 4px rgba(255, 200, 80, .8)); }
+.br-hold, .br-feed { display: grid; gap: 10px; }

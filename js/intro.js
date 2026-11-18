@@ -54,6 +54,18 @@
     if (dt > 2) return R;
     return { cx: R.cx + logoSpring(dt, LOGO.vSpr.cx), cy: R.cy + logoSpring(dt, LOGO.vSpr.cy), s: R.s + logoSpring(dt, LOGO.vSpr.s) };
   }
+
+  /* Letter heat stages from the original letter-stages asset, timed to the slam. */
+  const HEAT = { appear: 2.133, hotEnd: 2.45, coolEnd: 2.95, brassEnd: 4.40, typeEnd: 6.20 };
+  function letterHeat(t) {
+    const H = HEAT, o = { hot: 0, cooling: 0, brass: 0, type: 0 };
+    if (t <= H.appear) return o;
+    if (t < H.hotEnd) { o.hot = (t - H.appear) / (H.hotEnd - H.appear); return o; }
+    if (t < H.coolEnd) { const u = (t - H.hotEnd) / (H.coolEnd - H.hotEnd); o.hot = 1 - u; o.cooling = u; return o; }
+    if (t < H.brassEnd) { const u = (t - H.coolEnd) / (H.brassEnd - H.coolEnd); o.cooling = 1 - u; o.brass = u; return o; }
+    if (t < H.typeEnd) { const u = (t - H.brassEnd) / (H.typeEnd - H.brassEnd); o.brass = 1 - u; o.type = u; return o; }
+    o.type = 1; return o;
+  }
   function logoFlash(t) {
     if (t < 2.15 || t > 2.55) return 0;
     if (t <= 2.22) return 0.55;
@@ -131,9 +143,9 @@
     box.style.width = a.w + "px";
     box.style.height = a.h + "px";
     const [x0, y0, x1, y1] = LOGO_CROP;
-    const blank = document.getElementById("intro-logo-blank");
-    const type = document.getElementById("intro-logo-type");
-    [blank, type].forEach(img => {
+    const layerIds = ["intro-logo-blank", "intro-logo-hot", "intro-logo-cooling", "intro-logo-brass", "intro-logo-type"];
+    layerIds.forEach(id => {
+      const img = document.getElementById(id);
       if (!img) return;
       img.style.left = (x0 / ART_W * a.w) + "px";
       img.style.top = (y0 / ART_H * a.h) + "px";
@@ -156,7 +168,12 @@
     if (blur > 0.18) filters.push("blur(" + blur + "px)");
     if (lift > 0.02) filters.push("brightness(" + (1 + 0.55 * lift) + ")", "sepia(" + (0.22 * lift) + ")");
     box.style.filter = filters.join(" ");
-    if (type) type.style.opacity = String(p.letter);
+    const heat = letterHeat(time);
+    const setOp = (id, v) => { const el = document.getElementById(id); if (el) el.style.opacity = String(v); };
+    setOp("intro-logo-hot", heat.hot);
+    setOp("intro-logo-cooling", heat.cooling);
+    setOp("intro-logo-brass", heat.brass);
+    setOp("intro-logo-type", heat.type);
   }
   function logoTick(now) {
     if (finish.done) return;
@@ -205,8 +222,9 @@
     if (finish.done) return; finish.done = true;
     clearTimeout(finish.timer);
     cancelAnimationFrame(logoTick.raf);
-    const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid");
+    const ov = document.getElementById("intro-ov"), vid = document.getElementById("intro-vid"), fx = document.getElementById("intro-fx");
     try { if (vid) { vid.pause(); vid.removeAttribute("src"); vid.load(); } } catch (e) {}
+    try { if (fx) { fx.pause(); fx.removeAttribute("src"); fx.load(); } } catch (e) {}
     try { Sound.stopIntroStem && Sound.stopIntroStem(); } catch (e) {}
     if (ov) {
       ov.classList.add("out");
@@ -254,6 +272,8 @@
     } catch (e) {}
     if (!vid) return finish();
     vid.muted = true; /* picture only; soundtrack is the HTMLAudio stem */
+    const fx = document.getElementById("intro-fx");
+    if (fx) { fx.muted = true; try { fx.currentTime = 0; } catch (e) {} const fp = fx.play(); if (fp && fp.catch) fp.catch(() => {}); }
     const p = vid.play();
     if (p && p.catch) p.catch(() => {
       /* only restore the gate if the picture never started (audio unlock still needed) */
@@ -275,8 +295,12 @@
     ov.innerHTML = `<video id="intro-vid" playsinline webkit-playsinline preload="auto" poster="${POSTER}" src="${SRC}" muted></video>
       <div id="intro-logo" aria-hidden="true">
         <img id="intro-logo-blank" src="img/intro-emblem-blank.webp" alt="" draggable="false">
+        <img id="intro-logo-hot" src="img/intro-emblem-hot.webp" alt="" draggable="false">
+        <img id="intro-logo-cooling" src="img/intro-emblem-cooling.webp" alt="" draggable="false">
+        <img id="intro-logo-brass" src="img/intro-emblem-brass.webp" alt="" draggable="false">
         <img id="intro-logo-type" src="img/intro-emblem.webp" alt="" draggable="false">
       </div>
+      <video id="intro-fx" playsinline webkit-playsinline preload="auto" src="video/intro-fx.mp4" muted></video>
       <div id="intro-gate">
         <button type="button" class="intro-start" id="intro-start">${ES ? "Toca para empezar" : "Tap to start"}</button>
       </div>`;
@@ -286,13 +310,14 @@
     hookFrame();
     const paint = () => { frameIntro(); requestAnimationFrame(placeStartBtn); };
     requestAnimationFrame(() => { paint(); requestAnimationFrame(paint); });
-    ["intro-logo-blank", "intro-logo-type"].forEach(id => {
+    ["intro-logo-blank", "intro-logo-hot", "intro-logo-cooling", "intro-logo-brass", "intro-logo-type"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener("load", paint, { once: true });
     });
 
     const vid = ov.querySelector("#intro-vid");
     if (vid) vid.muted = true;
+    const fx0 = ov.querySelector("#intro-fx"); if (fx0) fx0.muted = true;
     try { Sound.preloadIntroStem && Sound.preloadIntroStem(); } catch (e) {}
 
     const start = ev => { if (ev && ev.preventDefault && ev.type === "keydown") ev.preventDefault(); play(); };
