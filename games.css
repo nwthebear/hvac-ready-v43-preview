@@ -472,3 +472,75 @@
   height: var(--app-h, 100dvh);
   bottom: auto;
 }
+
+/* ===== v61: color timer, full-bleed play, guided highlights ===== */
+.gtimer { position: relative; width: 72px; height: 72px; display: grid; place-items: center; flex: none; color: var(--gt-num, #F3F0E4); }
+.gtimer svg { position: absolute; inset: 0; transform: rotate(-90deg); overflow: visible; }
+.gtimer circle { fill: none; stroke-width: 7; }
+.gtimer .gt-bg { stroke: rgba(255,255,255,.12); }
+.gtimer .gt-fg { stroke: var(--gt-stroke, #C9E08A); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 0; transition: stroke .35s linear; }
+.gtimer .gt-num { font: 800 28px/1 var(--font, system-ui); font-variant-numeric: tabular-nums; letter-spacing: -.03em; color: var(--gt-num, #F3F0E4); transition: color .35s linear; text-shadow: 0 1px 0 rgba(0,0,0,.55); z-index: 1; }
+.gtimer.gtimer-lg { width: 84px; height: 84px; }
+.gtimer.gtimer-lg .gt-num { font-size: 34px; }
+.gtimer[data-stage="red"] .gt-num { animation: gtPulse 1s ease-in-out infinite; }
+.gtimer[data-stage="red"] .gt-fg { filter: drop-shadow(0 0 6px rgba(255,90,74,.55)); }
+@keyframes gtPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) {
+  .gtimer[data-stage="red"] .gt-num { animation: none; }
+}
+html.reduce-motion .gtimer[data-stage="red"] .gt-num { animation: none; }
+
+.page.game { padding-left: 0; padding-right: 0; padding-bottom: 0; height: 100%; max-height: 100%; }
+.page.game .topbar { margin: 0; padding: 8px 12px 4px; flex: none; }
+.page.game .game-stage,
+.page.tg-page .game-stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: 0; }
+#stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.tg-round, .freeze, .matchg { flex: 1 1 auto; min-height: 0; height: 100%; display: flex; flex-direction: column; padding: 8px 12px calc(8px + var(--sab, 0px) + var(--vv-nudge, 0px)); box-sizing: border-box; }
+.tg-hud { position: relative; flex: none; padding: 4px 4px 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 92%, transparent), transparent); backdrop-filter: blur(8px); }
+.tg-timer { width: auto; height: auto; background: none; }
+.tg-body { flex: 1 1 auto; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; }
+.tg-round.slim #tgAv { display: none; }
+.tg-goal { margin: 0 0 10px; font-size: 15px; font-weight: 650; line-height: 1.35; color: #F3F0E4; text-shadow: 0 1px 0 rgba(0,0,0,.45); }
+.tg-goal small { display: block; font-weight: 500; opacity: .72; margin-top: 2px; }
+.tg-hl { position: relative; z-index: 2; box-shadow: 0 0 0 3px #F5D76E, 0 0 18px rgba(245,215,110,.45); animation: tgHl 1.4s ease-in-out infinite; border-radius: 12px; }
+@keyframes tgHl { 0%,100% { box-shadow: 0 0 0 3px #F5D76E, 0 0 14px rgba(245,215,110,.35); } 50% { box-shadow: 0 0 0 5px #F5D76E, 0 0 22px rgba(245,215,110,.55); } }
+@media (prefers-reduced-motion: reduce) { .tg-hl { animation: none; } }
+html.reduce-motion .tg-hl { animation: none; }
+.tg-n2lamp { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #9fdfb0; }
+.tg-n2lamp i { width: 8px; height: 8px; border-radius: 50%; background: #3ecf70; box-shadow: 0 0 8px #3ecf70; display: inline-block; }
+.tg-score { font-size: 28px; font-weight: 800; letter-spacing: -.03em; text-shadow: 0 0 18px rgba(255,158,42,.25); }
+.tg-round { background:
+  radial-gradient(120% 80% at 50% -10%, rgba(255,158,42,.1), transparent 50%),
+  radial-gradient(80% 50% at 100% 100%, rgba(90,140,90,.07), transparent 40%);
+}
+.tg-result { text-align: center; animation: tgResIn .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes tgResIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.tg-choice, .ans { transition: transform .18s cubic-bezier(.2,.8,.2,1), background .18s, border-color .18s; min-height: 52px; border-radius: 14px; }
+.tg-choice:active, .ans:active { transform: scale(.98); }
+.game-over .go-score { font-size: 56px; font-weight: 800; letter-spacing: -.04em; }
+.game-over { padding: 16px 12px calc(16px + var(--sab, 0px) + var(--vv-nudge, 0px)); }
+
+.freeze { background: radial-gradient(120% 80% at 50% 0%, #1c2a44, #0e1218 60%); }
+.freeze .quiz-hud, .matchg .quiz-hud { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: none; padding: 4px 0 8px; }
+.fz-scene { flex: 0 0 36%; min-height: 160px; position: relative; overflow: hidden; border-radius: 16px; box-shadow: inset 0 -30px 40px rgba(0,20,40,.35); }
+#fzq { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding-top: 8px; }
+#fzq .answers { display: grid; gap: 10px; margin-top: auto; }
+.freeze .answers .ans { min-height: 56px; }
+
+.matchg .m-cols { flex: 1 1 auto; gap: 10px; min-height: 0; }
+.matchg .m-pic, .matchg .m-name { border-radius: 14px; min-height: 72px; box-shadow: 0 6px 16px rgba(0,0,0,.2); transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s; }
+.matchg .m-pic.sel, .matchg .m-name.sel { transform: scale(1.03); box-shadow: 0 0 0 2px var(--accent, #FF9E2A), 0 8px 20px rgba(255,158,42,.25); }
+.matchg .m-pic.matched, .matchg .m-name.matched { box-shadow: 0 0 0 2px #C9E08A, 0 8px 18px rgba(160,200,80,.25); }
+.page.game .topbar a, .page.game .topbar button { min-width: 44px; min-height: 44px; }
+
+.arcade-lineup { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; padding-bottom: calc(96px + var(--sab, 0px) + var(--vv-nudge, 0px)); }
+.arcade-lineup .game-card:last-child { grid-column: 1 / -1; min-height: 112px; }
+.game-card.locked { opacity: .72; pointer-events: none; position: relative; }
+.game-card .tg-lock { position: absolute; top: 10px; right: 10px; }
+
+/* Thermostat: hide settings drawer on guided/simple boards (drawer is a sibling of .tw-board) */
+.tw-board.simple .tw-drawer,
+.tw-board.simple ~ .tw-drawer { display: none; }
+.gr-readout { display: flex; gap: 10px; justify-content: center; margin: 8px 0; }
+.gr-readout span { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 8px 12px; font-weight: 700; }
+.gr-readout b { display: block; font-size: 20px; letter-spacing: -.03em; }

@@ -7,6 +7,8 @@
   const GD = window.GAMES_DATA, GM = {}; GD.games.forEach(g => (GM[g.id] = g));
   const L = (en, es) => (S.lang === "es" ? es : en);
   const TG = A.TG = { data: GD, game: id => GM[id], defs: [], byId: {}, bySlug: {} };
+  TG.VISIBLE = ["braze_master", "gauge_reader", "thermostat_wiring"];
+  TG.isVisible = id => TG.VISIBLE.indexOf(id) >= 0;
   S.tg = S.tg || {}; /* per game: { lv, best, plays, unlocked } */
   const st = id => (S.tg[id] = S.tg[id] || { lv: 1, plays: 0 });
   TG.state = st;
@@ -50,7 +52,7 @@
   TG.checkUnlocks = (opts = {}) => {
     if (!S.onboarded) return [];
     if (A.ownerMode && A.ownerMode()) return [];
-    const fresh = TG.defs.filter(d => TG.isUnlocked(d.id) && !st(d.id).unlocked);
+    const fresh = TG.defs.filter(d => TG.isVisible(d.id) && TG.isUnlocked(d.id) && !st(d.id).unlocked);
     if (!fresh.length) return [];
     fresh.forEach(d => (st(d.id).unlocked = Date.now())); A.save();
     if (opts.silent) return fresh;
@@ -107,10 +109,11 @@
 
   /* ---------- hub (inside #/arcade) ---------- */
   TG.hubHtml = () => {
-    const es = S.lang === "es", open = TG.defs.filter(d => TG.isUnlocked(d.id)).length;
-    return `<section class="tg-hub"><div class="row between tg-hub-h"><h3 class="sec-h">${es ? "Juegos de entrenamiento" : "Training games"}</h3><span class="chip">${open}/${TG.defs.length}</span></div>
+    const vis = TG.defs.filter(d => TG.isVisible(d.id)), es = S.lang === "es", open = vis.filter(d => TG.isUnlocked(d.id)).length;
+    if (!vis.length) return "";
+    return `<section class="tg-hub"><div class="row between tg-hub-h"><h3 class="sec-h">${es ? "Juegos de entrenamiento" : "Training games"}</h3><span class="chip">${open}/${vis.length}</span></div>
       <p class="sm muted tg-hub-sub">${es ? "Práctica real en forma de juego. Cada error abre una tarjeta con la regla y su fuente." : "Real practice in game form. Every mistake opens a card with the rule and its source."}</p>
-      <div class="tg-grid">${TG.defs.map((d, k) => { const g = GM[d.id], un = TG.isUnlocked(d.id), best = st(d.id).best || 0, fresh = un && !st(d.id).plays;
+      <div class="tg-grid">${TG.defs.filter(d => TG.isVisible(d.id)).map((d, k) => { const g = GM[d.id], un = TG.isUnlocked(d.id), best = st(d.id).best || 0, fresh = un && !st(d.id).plays;
         return un ? `<a class="tg-card has-cov" href="#/arcade/${d.slug}" style="--k:${k}"><span class="tg-cov">${TG.ART ? TG.ART.cover(d.slug) : d.art(56)}</span><b>${esc(tx(g.name))}</b><small>${esc(tx(d.tag))}</small>
             <span class="tg-meta">${fresh ? `<span class="tg-new">${es ? "NUEVO" : "NEW"}</span>` : `${ico("trophy", 13)} ${best}`}<span class="tg-lv">${es ? "Nv" : "Lv"} ${TG.level(d.id)}</span></span></a>`
           : `<div class="tg-card locked has-cov" style="--k:${k}" aria-disabled="true"><span class="tg-cov sil">${TG.ART ? TG.ART.cover(d.slug) : d.art(56)}</span><span class="tg-lock">${ico("lock", 14)}</span><b>${esc(tx(g.name))}</b><small>${esc(TG.unlockText(d.id))}</small></div>`; }).join("")}</div></section>`; };
@@ -135,18 +138,18 @@
     const R = this, es = S.lang === "es", g = GM[cfg.id], def = TG.byId[cfg.id];
     Object.assign(R, { id: cfg.id, def, g, score: 0, combo: 0, best: 0, mult: 1, mistakes: 0, boards: 0, clean: 0, stamps: 0, boardMiss: 0, cards: [], left: cfg.seconds || g.roundSeconds, total: cfg.seconds || g.roundSeconds,
       hearts: cfg.hearts || 0, paused: 0, over: false, t0: performance.now(), stops: [], speed: 0 });
-    const stage = $("#stage"); stage.innerHTML = `<div class="tg-round g-${def.slug}" id="tgR">
+    const stage = $("#stage"); stage.innerHTML = `<div class="tg-round slim g-${def.slug}" id="tgR">
       <div class="tg-hud"><div class="tg-hud-l"><span class="tg-score" id="tgScore">0</span><span class="tg-mult" id="tgMult" data-m="1">×1</span></div>
         <div class="tg-hud-m" id="tgHudM">${cfg.hudMid || ""}</div>
-        <div class="tg-hud-r">${R.hearts ? `<span class="tg-hearts" id="tgHearts">${"<i></i>".repeat(R.hearts)}</span>` : ""}<span class="tg-timer" id="tgTimer"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="tr-bg"/><circle cx="20" cy="20" r="17" class="tr-fg" id="tgRing"/></svg><b id="tgSec">${R.left}</b></span></div></div>
+        <div class="tg-hud-r">${R.hearts ? `<span class="tg-hearts" id="tgHearts">${"<i></i>".repeat(R.hearts)}</span>` : ""}<span class="tg-timer" id="tgTimer">${window.GameTimer ? GameTimer.markup(R.left, "gtimer-lg") : `<b id="tgSec">${R.left}</b>`}</span></div></div>
       <div class="tg-av" id="tgAv">${avatarSVG(S.avatar, 58)}</div>
       <div class="tg-body" id="tgBody"></div></div>`;
-    R.el = $("#tgR"); R.body = $("#tgBody"); const ring = $("#tgRing"), sec = $("#tgSec"), CIRC = 2 * Math.PI * 17; ring.style.strokeDasharray = CIRC;
-    let last = performance.now(), shown = R.left, raf = 0, ticks = new Set();
-    const frame = now => { if (R.over) return; const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    R.el = $("#tgR"); R.body = $("#tgBody"); const gtEl = $("#tgTimer .gtimer") || $("#tgTimer");
+    let last = performance.now(), shown = Math.ceil(R.left), raf = 0, ticks = new Set();
+    const frame = now => { if (R.over) return; const dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (!R.paused && R.left > 0) { R.left = Math.max(0, R.left - dt); const s = Math.ceil(R.left);
-        ring.style.strokeDashoffset = (CIRC * (1 - R.left / R.total)).toFixed(2);
-        if (s !== shown) { shown = s; sec.textContent = s; if (s <= 10 && s > 0 && !ticks.has(s)) { ticks.add(s); Sound.sfx("tick"); R.el.classList.add("hurry"); } }
+        if (window.GameTimer) GameTimer.paint(gtEl, R.left, R.total);
+        if (s !== shown) { shown = s; if (s <= 3 && s > 0 && !ticks.has(s)) { ticks.add(s); Sound.sfx("tick"); } }
         if (R.left <= 0) { R.timeUp(); return; } }
       R.onFrame && R.onFrame(dt, now);
       raf = requestAnimationFrame(frame); };
@@ -276,6 +279,10 @@
   TG.intro = (R, html, label, cb) => { R.pause("intro"); const d = document.createElement("div"); d.className = "tg-intro"; d.innerHTML = `<div class="tg-intro-in">${html}<button class="btn primary big full" id="tgStart">${label || L("Start", "Empezar")} ${ico("play", 18)}</button></div>`;
     R.el.appendChild(d); requestAnimationFrame(() => d.classList.add("open")); d.querySelector("#tgStart").onclick = () => { Sound.sfx("whoosh"); d.classList.remove("open"); setTimeout(() => d.remove(), 250); R.resume("intro"); cb && cb(); }; };
   TG.flash = (R, html, cls = "", ms = 1100) => { const d = document.createElement("div"); d.className = "tg-flash " + cls; d.innerHTML = html; R.el.appendChild(d); setTimeout(() => d.remove(), ms); };
+
+  TG.highlight = (el, on) => { if (!el) return; el.classList.toggle("tg-hl", !!on); };
+  TG.clearHighlights = root => (root || document).querySelectorAll(".tg-hl").forEach(el => el.classList.remove("tg-hl"));
+
   TG.start = slug => { const d = TG.bySlug[slug]; if (!d) return false;
     if (!TG.isUnlocked(d.id)) { $("#stage").innerHTML = `<div class="empty tg-locked-full"><span class="tg-art sil big">${d.art(110)}</span><h3>${esc(tx(GM[d.id].name))}</h3><p class="muted">${esc(TG.unlockText(d.id))}</p><a class="btn" href="#/arcade">${t("arcade")}</a></div>`; return true; }
     Sound.playMusic("arcade"); d.run(); return true; };

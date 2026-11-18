@@ -1,4 +1,5 @@
-/* Arcade: Don't Freeze!, Lightning Round, Component/Tool Match, Fix the System, Daily Challenge. */
+/* Arcade: Component Match, Don't Freeze, Braze, Gauge Reader, Thermostat Wiring.
+   Lightning, Fix, Daily stay implemented but are hidden from every menu. */
 (function () {
   const A = window.App, S = A.S, esc = A.esc, V = A.views, $ = s => document.querySelector(s), sh = a => A.shuffle(a);
   const TOPICS = () => [["all", t("allTopics")], ["path", t("myPath")], ["core", "EPA Core"], ["type1", "Type I"], ["type2", "Type II"], ["type3", "Type III"], ["guides", t("studyGuides")], ["skills", t("handsOn")]];
@@ -19,21 +20,38 @@
     $("#again").onclick = () => A.render();
     setTimeout(() => A.celebrate({ title, sub: `${score} ${t("points").toLowerCase()}${nh ? " · " + t("newHigh") : ""}`, showBoard: false }), 500);
   }
-  const GAMES = [["freeze", "snow", "dontFreeze", "dontFreezeSub"], ["lightning", "bolt", "lightning", "lightningSub"], ["match", "cog", "compMatch", "compMatchSub"], ["fix", "wrench", "fixSystem", "fixSystemSub"], ["daily", "calendar", "daily", "dailySub"]];
+  const GAMES = [
+    ["match", "cog", "compMatch", "compMatchSub"],
+    ["freeze", "snow", "dontFreeze", "dontFreezeSub"],
+    ["braze", "flame", "brazeMaster", "brazeMasterSub"],
+    ["gauges", "gauge", "gaugeReader", "gaugeReaderSub"],
+    ["thermostat", "cog", "tstatWiring", "tstatWiringSub"]
+  ];
+  const ART = { match:"thermostat", freeze:"cylinder", braze:"torch-oxy", gauges:"gauge-analog", thermostat:"thermostat" };
+  const HIDDEN = { lightning:1, fix:1, daily:1 };
+  function gameTitle(id, key) {
+    if (A.TG && A.TG.bySlug[id]) { const d = A.TG.bySlug[id], g = A.TG.game(d.id); if (g) return tx(g.name); }
+    try { const s = t(key); if (s && s !== key) return s; } catch (e) {}
+    return ({ brazeMaster:"Braze Master", brazeMasterSub:"Heat the tube, then feed the rod", gaugeReader:"Gauge Reader", gaugeReaderSub:"Read the gauges and make the call", tstatWiring:"Thermostat Wiring", tstatWiringSub:"Land each wire, then power on" })[key] || key;
+  }
+
   V.arcade = ([g]) => {
     if (!g) { const tp = A.arcTopic || (A.plan() ? "path" : "all");
       return `<main class="page">${A.head(t("arcade"))}<p class="muted">${t("arcadeSub")}</p>${A.arcQuip ?? (A.arcQuip = A.saying("arcade"))}
-        <h3 class="sec-h">${S.lang === "es" ? "Juegos rápidos" : "Quick games"}</h3>
-        <label class="sm">${t("topic")}<select id="tp" class="input">${TOPICS().map(([k, l]) => `<option value="${k}" ${k === tp ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></label>
-        <div class="game-grid">${(A.homeArcade ? A.homeArcade(GAMES) : GAMES).map(([id, i, n, sub]) => `<a class="game-card g-${id}" href="#/arcade/${id}"><img class="g-art" src="img/illust/${({ freeze:"cylinder", lightning:"clamp-meter", match:"thermostat", fix:"torch-map", daily:"gauge-digital" })[id] || "thermostat"}.webp" alt="" aria-hidden="true"><span class="g-ico">${ico(i, 34)}</span><b>${t(n)}${id === "match" ? ` <span class="tg-starter">${S.lang === "es" ? "Inicio" : "Starter"}</span>` : ""}</b><small>${t(sub)}</small><span class="g-hi">${ico("trophy", 14)} ${id === "daily" ? (S.daily[A.today()] != null ? S.daily[A.today()] : "—") : hi(id)}</span></a>`).join("")}</div>
+        <div class="game-grid arcade-lineup">${(A.homeArcade ? A.homeArcade(GAMES) : GAMES).map(([id, i, n, sub]) => {
+          const def = A.TG && A.TG.bySlug[id], locked = def && !(A.TG.isUnlocked(def.id));
+          const title = gameTitle(id, n), subT = def ? esc(tx(def.tag)) : (gameTitle(id, sub));
+          const inner = `<img class="g-art" src="img/illust/${ART[id] || "thermostat"}.webp" alt="" aria-hidden="true"><span class="g-ico">${ico(i, 34)}</span><b>${esc(title)}${id === "match" ? ` <span class="tg-starter">${S.lang === "es" ? "Inicio" : "Starter"}</span>` : ""}</b><small>${subT}</small>${locked ? `<span class="tg-lock">${ico("lock", 14)}</span><span class="g-hi sm">${esc(A.TG.unlockText(def.id))}</span>` : `<span class="g-hi">${ico("trophy", 14)} ${hi(def ? "tg:" + def.id : id)}</span>`}`;
+          return locked ? `<div class="game-card g-${id} locked" aria-disabled="true">${inner}</div>` : `<a class="game-card g-${id}" href="#/arcade/${id}">${inner}</a>`;
+        }).join("")}</div>
         <a class="list-card mt" href="#/sim"><span class="lc-ico">${ico("wrench")}</span><span class="grow"><b>${S.lang === "es" ? "Simulador de diagnóstico" : "Troubleshooting Simulator"}</b><span class="sm muted block">${S.lang === "es" ? "Llamadas reales: elige pruebas, lee lecturas y decide" : "Real calls: pick tests, read the numbers, make the call"}</span></span>${ico("arrow", 18)}</a>
-        ${A.TG ? A.TG.hubHtml() : ""}</main>`; }
+        </main>`; }
     const tgT = A.TG && A.TG.title(g), known = GAMES.find(x => x[0] === g);
     if (!tgT && !known) { setTimeout(() => A.go("#/arcade"), 0); return `<main class="page"></main>`; }
     return `<main class="page game${tgT ? " tg-page" : ""}${!tgT && known && known[0] === "match" ? " match-page" : ""}">${A.head(tgT || t(known[2]), "#/arcade")}<div id="stage" class="game-stage"></div></main>`;
   };
   A.bind.arcade = ([g]) => {
-    if (!g) { $("#tp").onchange = e => { A.arcTopic = e.target.value; }; return; }
+    if (!g) return;
     if (A.TG && A.TG.bySlug[g]) { A.tgStop && A.tgStop(); A.TG.start(g); return; }
     if (!GAMES.find(x => x[0] === g)) return;
     A.arcTopic = A.arcTopic || (A.plan() ? "path" : "all"); Sound.playMusic("arcade");
@@ -46,22 +64,23 @@
     const N = 10, qs = sh(pool(A.arcTopic)).slice(0, N); let i = 0, water = 0, score = 0, streak = 0, tm;
     const MAXW = 3;
     $("#stage").innerHTML = `<div class="freeze"><div class="fz-scene" id="fz"><div class="fz-sky"></div>${[...Array(N + 1)].map((_, k) => `<div class="fz-block" style="--k:${k}"></div>`).join("")}<div class="fz-av" id="fzav">${avatarSVG(S.avatar, 66)}</div><div class="fz-water" id="fzw"></div></div>
-      <div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} <b id="fzs">0</b></span><span class="hud-streak" id="fzk"></span><span class="timer" id="fzt">15</span></div><div id="fzq"></div></div>`;
+      <div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} <b id="fzs">0</b></span><span class="hud-streak" id="fzk"></span><span id="fzt">${GameTimer.markup(15, "gtimer-lg")}</span></div><div id="fzq"></div></div>`;
     const upd = () => { $("#fzav").style.setProperty("--k", i); $("#fzw").style.height = (14 + water * 22) + "%"; $("#fz").style.setProperty("--ice", water / MAXW); $("#fzs").textContent = score; $("#fzk").innerHTML = streak > 1 ? ico("fire", 14) + " ×" + streak : ""; };
     const ask = () => {
       upd(); if (water >= MAXW) { Sound.sfx("freeze"); $("#fzav").classList.add("frozen"); $("#fzav").innerHTML = avatarSVG(S.avatar, 66, { frozen: true }); return setTimeout(() => finish("freeze", score, t("dontFreeze"), t("frozen")), 900); }
       if (i >= N || i >= qs.length) { Sound.sfx("fanfare"); return finish("freeze", score + 1000, t("dontFreeze"), t("survived")); }
       const q = qs[i], order = sh(q.a.map((_, k) => k)); let left = 15, done = false;
       $("#fzq").innerHTML = `<h3 class="qtext sm">${qText(q)}</h3><div class="answers compact">${order.map((oi, k) => `<button class="ans a${k}" data-k="${oi}"><span class="ans-shape">${["▲", "◆", "●", "■"][k]}</span><span>${esc(tx(q.a[oi]))}</span></button>`).join("")}</div>`;
-      const res = ok => { if (done) return; done = true; clearInterval(tm);
+      const res = ok => { if (done) return; done = true; tm && tm.stop && tm.stop();
         document.querySelectorAll("#fzq .ans").forEach(b => { b.disabled = true; if (+b.dataset.k === q.c) b.classList.add("right"); });
         if (ok) { streak++; score += 300 + left * 20 + streak * 40; i++; Sound.sfx("jump"); $("#fzav").classList.remove("jump"); void $("#fzav").offsetWidth; $("#fzav").classList.add("jump"); if (water > 0 && streak % 3 === 0) water--; }
         else { streak = 0; water++; Sound.sfx("splash"); const av = $("#fzav"); av.classList.remove("shiver"); void av.offsetWidth; av.classList.add("shiver"); $("#fz").classList.add("shake"); setTimeout(() => $("#fz") && $("#fz").classList.remove("shake"), 400); i++; }
         setTimeout(() => $("#fzq") && ask(), ok ? 650 : 1100); };
       A.bindTap(document.querySelectorAll("#fzq .ans"), b => res(+b.dataset.k === q.c));
-      tm = setInterval(() => { left--; const el = $("#fzt"); if (!el) return clearInterval(tm); el.textContent = left; if (left <= 4) Sound.sfx("tick"); if (left <= 0) res(false); }, 1000); $("#fzt").textContent = left;
+      const slot = $("#fzt"); if (slot) slot.innerHTML = GameTimer.markup(15, "gtimer-lg");
+      tm = GameTimer.start({ el: "#fzt .gtimer", total: 15, setLeft: v => { left = v; }, onDone: () => res(false) });
     };
-    stopFns.push(() => clearInterval(tm)); ask();
+    stopFns.push(() => tm && tm.stop && tm.stop()); ask();
   }
   /* ---- Lightning Round ---- */
   function lightning() {
@@ -77,15 +96,17 @@
      correct pair = green glow, stays matched, counts; wrong pair = brief red flash, reset.
      Uses pointerup (A.bindTap) so iOS touch is reliable. */
   function match() {
-    let round = 0, score = 0, streak = 0; const t0 = Date.now();
+    let round = 0, score = 0, streak = 0, clock; const t0 = Date.now();
     const items = sh(COMPONENTS.map(c => ({ id: "c:" + c.id, name: c.name, svg: compSVG(c.id, { labels: false }) })).concat(sh(TOOLS).slice(0, 12).map(x => ({ id: "t:" + x.id, name: x.name, svg: toolSVG(x.id, { labels: false }) }))));
     const play = () => {
-      if (round >= 3) { const secs = Math.round((Date.now() - t0) / 1000); return finish("match", Math.max(100, score + 1500 - secs * 10), t("compMatch"), t("matched")); }
+      if (round >= 3) { if (clock) clock.stop(); const secs = Math.round((Date.now() - t0) / 1000); return finish("match", Math.max(100, score + 1500 - secs * 10), t("compMatch"), t("matched")); }
       const set = items.slice(round * 4, round * 4 + 4); let sel = null, left = set.length, busy = false;
       const hint = S.lang === "es"
         ? (round === 0 ? "Estás en la camioneta. Toca una foto, luego el nombre que le va. Un par a la vez — sin trucos." : `${t("round")} ${round + 1}/3`)
         : (round === 0 ? "You're at the truck. Tap a picture, then the name that goes with it. One pair at a time — no trick questions." : `${t("round")} ${round + 1}/3`);
-      $("#stage").innerHTML = `<div class="matchg"><div class="muted sm center">${hint}</div><div class="m-cols"><div>${sh(set).map(x => `<button type="button" class="m-pic" data-col="pic" data-id="${x.id}">${x.svg}</button>`).join("")}</div><div>${sh(set).map(x => `<button type="button" class="m-name" data-col="name" data-id="${x.id}">${esc(tx(x.name))}</button>`).join("")}</div></div><div class="center hud-pts">${ico("star", 16)} ${score}</div></div>`;
+      $("#stage").innerHTML = `<div class="matchg"><div class="quiz-hud"><span class="hud-pts">${ico("star", 16)} <b id="mzs">${score}</b></span><span id="mzt">${GameTimer.markup(30, "gtimer-lg")}</span></div><p class="tg-goal">${hint}</p><div class="m-cols"><div>${sh(set).map(x => `<button type="button" class="m-pic" data-col="pic" data-id="${x.id}">${x.svg}</button>`).join("")}</div><div>${sh(set).map(x => `<button type="button" class="m-name" data-col="name" data-id="${x.id}">${esc(tx(x.name))}</button>`).join("")}</div></div></div>`;
+      if (clock) clock.stop();
+      clock = GameTimer.start({ el: "#mzt .gtimer", total: 30, onDone: () => { if (busy) return; finish("match", Math.max(100, score), t("compMatch")); } });
       const clearSel = () => { document.querySelectorAll(".m-pic.sel, .m-name.sel").forEach(x => x.classList.remove("sel")); sel = null; };
       const onTile = el => {
         if (busy || el.disabled || el.classList.contains("matched")) return;
@@ -99,19 +120,19 @@
           [a, b].forEach(x => { x.classList.remove("sel", "nope"); x.classList.add("matched", "pop"); x.disabled = true; A.sparkAt && A.sparkAt(x, 8); });
           Sound.sfx("correct", { streak }); A.onStreak(streak);
           sel = null; busy = false;
-          document.querySelector(".hud-pts") && (document.querySelector(".hud-pts").innerHTML = ico("star", 16) + " " + score);
-          if (--left === 0) { round++; setTimeout(play, 650); }
+          const hp = document.querySelector("#mzs"); if (hp) hp.textContent = score;
+          if (--left === 0) { if (clock) clock.stop(); round++; setTimeout(play, 650); }
         } else {
           streak = 0; score = Math.max(0, score - 50);
           [a, b].forEach(x => { x.classList.remove("sel"); x.classList.add("nope"); });
           Sound.sfx("wrong");
-          document.querySelector(".hud-pts") && (document.querySelector(".hud-pts").innerHTML = ico("star", 16) + " " + score);
+          const hp = document.querySelector("#mzs"); if (hp) hp.textContent = score;
           setTimeout(() => { [a, b].forEach(x => x.classList.remove("nope", "sel")); sel = null; busy = false; }, 450);
         }
       };
       A.bindTap(document.querySelectorAll(".m-pic, .m-name"), onTile);
     };
-    play();
+    stopFns.push(() => clock && clock.stop && clock.stop()); play();
   }
   /* ---- Fix the System ---- */
   function fix() {

@@ -48,18 +48,27 @@
 
   function thermostat() {
     const R = new TG.Round({ id: "thermostat_wiring" });
-    const boards = TG.draw(TW.scenarios, R.id, 4); let bi = 0;
-    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-bust">${avatarSVG(S.avatar, 40, { mode: "bust" })}</span><span class="tg-prog" id="twProg"></span>`;
-    const av = $("#tgAv"); av.remove(); hudM.querySelector(".tg-bust").id = "tgAv";
+    const firstPlay = !(TG.state("thermostat_wiring").plays);
+    const all = TW.scenarios.slice();
+    const txt = o => ((o && (o.en || o.es)) || o || "") + "";
+    const easy = all.filter(s => !s.boards && (s.wiresAtWall || []).length <= 5 && !/heat pump|dual fuel/i.test(txt(s.system) + " " + txt(s.title)));
+    const restEasy = s => easy.includes(s) && s !== easy[0];
+    const boards = firstPlay
+      ? (easy[0] ? [easy[0], ...(TG.draw(all.filter(restEasy).length ? all.filter(restEasy) : all.filter(s => s !== easy[0] && !s.boards), R.id, 1))] : TG.draw(all.filter(s => !s.boards), R.id, 2))
+      : TG.draw(all, R.id, 3);
+    let bi = 0;
+    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-prog" id="twProg"></span>`;
     const prog = () => { $("#twProg").innerHTML = boards.map((b, i) => `<i class="${i < bi ? "done" : i === bi ? "cur" : ""}"></i>`).join(""); };
     const next = () => { if (R.over) return; if (bi >= boards.length) return R.end(true); prog(); const s = boards[bi]; R.boardStart(); (s.boards ? boardCheck : wireBoard)(s); };
     let advAt = -1; const advance = () => { if (advAt === bi) return; advAt = bi; bi++; setTimeout(next, 900); };
-    const head = s => `<div class="tg-head"><span class="tg-lv-chip">${L("Lv", "Nv")} ${s.level}</span><b>${esc(tx(s.title))}</b><p class="sm muted">${esc(tx(s.system))}</p></div>`;
+    const head = s => `<div class="tg-head"><p class="tg-goal">${L("Land each wire on its matching terminal, then power on. R goes to Rc, Y to Y1, W to W1.", "Conecta cada cable en su terminal y luego enciende. R va a Rc, Y a Y1, W a W1.")}</p><b>${esc(tx(s.title))}</b><p class="sm muted">${esc(tx(s.system))}</p></div>`;
 
     function wireBoard(s) {
       const map = mapOf(s), exp = expSet(s), rel = relevant(s), conn = {}, scored = new Set(), set = { jumper: "closed", system: "conventional", ob: "O", stages: 1 }; let checking = false, firstTry = true;
       R.el.classList.remove("checking"); const SL = TW.settingsLabels; TG.qaCur = { kind: "tw", map, exp, rel };
-      R.body.innerHTML = `${head(s)}<div class="tw-board" id="twB"><svg class="tg-wires" id="twSvg"></svg>
+      const guided = firstPlay && bi === 0;
+      const simple = guided || ((s.wiresAtWall || []).length <= 4 && !s.settings);
+      R.body.innerHTML = `${head(s)}<div class="tw-board${simple ? " simple" : ""}" id="twB"><svg class="tg-wires" id="twSvg"></svg>
         <div class="tw-wall"><div class="tw-cap">${L("Old base", "Base vieja")}</div><div class="tw-hole" aria-hidden="true"></div>${s.wiresAtWall.map((w, i) => `<div class="tw-wire art" data-w="${esc(w.label)}" style="--wc:${TG.wireHex(w.color.split(" ")[0])}"><span class="tw-tagw"><span class="tw-tag">${esc(lbl(w.label))}</span><small>${esc(w.color)}</small></span>${TG.ART.curl(i)}</div>`).join("")}</div>
         <div class="tw-stat art"><div class="tw-cap">${L("New thermostat", "Termostato nuevo")}</div><div class="tw-sub"><span class="tw-sub-slot l"></span><span class="tw-sub-slot r"></span><span class="tw-sub-lvl"><i></i></span><div class="tw-terms">${TERMS.map(x => `<div class="tw-term" data-t="${x}"><i></i><b>${x}</b></div>`).join("")}</div><span class="tw-sub-brand">HVAC·PRO</span></div></div></div>
         <div class="tw-drawer">
@@ -69,11 +78,23 @@
         <div class="tw-foot">${TG.ART.house()}<div class="tw-out" id="twOut"></div><button class="btn primary big tw-power" id="twGo">${ico("bolt", 20)} ${L("Power On", "Encender")}</button></div>`;
       const B = $("#twB"), svg = $("#twSvg"), stat = svg.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "g")), house = R.body.querySelector(".tw-house"), out = $("#twOut");
       const wires = [...B.querySelectorAll(".tw-wire")], terms = [...B.querySelectorAll(".tw-term")];
+      const guidePair = () => {
+        TG.clearHighlights(B);
+        if (!guided) return;
+        const open = wires.find(w => !conn[w.dataset.w]);
+        if (!open) return;
+        const lab = open.getAttribute("data-w");
+        const want = map[lab] || lab;
+        const term = terms.find(x => x.getAttribute("data-t") === want);
+        open.classList.add("tg-hl"); if (term) term.classList.add("tg-hl");
+      };
+      if (guided) { R.pause("guide"); setTimeout(guidePair, 200); B.addEventListener("pointerdown", () => R.resume("guide"), { once: true }); }
+
       const obSeg = R.body.querySelector('[data-set="ob"]'); const syncOb = () => obSeg.classList.toggle("dis", set.system === "conventional"); syncOb();
       R.body.querySelectorAll(".tw-drawer .seg").forEach(sg => sg.querySelectorAll("button").forEach(b => b.onclick = () => { if (checking) return; sg.querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); const k = sg.dataset.set; set[k] = k === "stages" ? +b.dataset.v : b.dataset.v; if (k === "system") syncOb(); }));
       const W = TG.wiring({ root: B, svg, srcSide: "r", tgtSide: "l", sources: wires.map(el => ({ el, id: el.dataset.w, color: s.wiresAtWall.find(w => w.label === el.dataset.w).color.split(" ")[0] })), targets: terms.map(el => ({ el, id: el.dataset.t })),
         canDrag: () => !checking, onPick: w => { if (conn[w]) { delete conn[w]; draw(); } },
-        onDrop: (w, term, wEl, tEl) => { Object.keys(conn).forEach(k => { if (conn[k] === term && k !== w) delete conn[k]; }); conn[w] = term; draw(); Sound.sfx("snap", { pitch: 0.9 + Object.keys(conn).length * 0.04 }); TG.buzz("tap");
+        onDrop: (w, term, wEl, tEl) => { Object.keys(conn).forEach(k => { if (conn[k] === term && k !== w) delete conn[k]; }); conn[w] = term; draw(); Sound.sfx("snap", { pitch: 0.9 + Object.keys(conn).length * 0.04 }); TG.buzz("tap"); if (typeof guidePair === "function") guidePair();
           tEl.classList.remove("snapped"); void tEl.offsetWidth; tEl.classList.add("snapped"); } });
       function draw() { stat.innerHTML = Object.entries(conn).map(([w, term]) => { const a = W.anchorOf(B.querySelector(`.tw-wire[data-w="${CSS.escape(w)}"]`), "r"), b = W.anchorOf(B.querySelector(`.tw-term[data-t="${CSS.escape(term)}"]`), "l");
           return TG.wireSvgPath(s.wiresAtWall.find(x => x.label === w).color.split(" ")[0], TG.cablePath(a.x, a.y, b.x, b.y), scored.has(w) ? "ok" : ""); }).join("");
@@ -103,7 +124,7 @@
           if (scored.has(w) && ok) continue; await wait(150);
           if (ok) { scored.add(w); draw(); const r = W.rel(tEl); R.hit({ quiet: true, x: r.x + 10, y: r.y + B.offsetTop - 20 }); tEl.classList.add("good"); continue; }
           const card = wireCard(w, term); showOut(outcomeFor(w, term), false); if (outcomeFor(w, term) === "fuse") Sound.sfx("pop"); else Sound.sfx("spark");
-          firstTry = false; await R.miss(card); if (R.over) return; delete conn[w]; draw(); tEl.classList.remove("good"); house.setAttribute("class", "tw-house"); out.innerHTML = ""; checking = false; R.el.classList.remove("checking"); return; }
+          firstTry = false; await R.miss(card); if (R.over) return; delete conn[w]; draw(); tEl.classList.remove("good"); house.setAttribute("class", "tw-house"); out.innerHTML = ""; checking = false; R.el.classList.remove("checking"); if (typeof guidePair === "function") guidePair(); return; }
         for (const k of ["jumper", "system", "ob", "stages"]) { if (R.over) return; if (k === "ob" && !exp.ob) continue;
           const ok = set[k] === exp[k]; if (ok) { if (rel[k] && !scored.has("set:" + k)) { scored.add("set:" + k); await wait(120); R.hit({ quiet: true, label: L("setup", "ajuste") }); } continue; }
           const card = setCard(k); showOut(k === "ob" ? "coldInHeat" : k === "jumper" ? "nothing" : "wrong", false); Sound.sfx("spark"); firstTry = false; await R.miss(card); if (R.over) return;
@@ -138,7 +159,7 @@
             await R.miss({ did: L(`You landed ${[...picked].join(", ") || "nothing"}. This unit needs ${b.need.join(", ")}.`, `Conectaste ${[...picked].join(", ") || "nada"}. Esta unidad necesita ${b.need.join(", ")}.`), why, rule: tx(s.learn), sources: uniq([...(m ? m.sources : []), ...b.sources, ...s.sources]), q: twQ(`tw:tw12:${b.id}`) }); }
           k++; setTimeout(one, 400); }; };
       one(); }
-    TG.intro(R, `<div class="tg-intro-art">${TG.byId.thermostat_wiring.art(84)}</div><h3>${esc(tx(TW.name))}</h3><p class="sm">${L("The old thermostat is coming off the wall. Drag each wire to the new base, set the installer drawer, then Power On. Go by the letter, never the color.", "El termostato viejo sale de la pared. Arrastra cada cable a la base nueva, ajusta el cajón de instalador y enciende. Guíate por la letra, nunca por el color.")}</p><p class="sm muted">${L("Power is off at the equipment before you touch wires.", "La energía está apagada en el equipo antes de tocar cables.")}</p>`, null, next);
+    TG.intro(R, `<div class="tg-intro-art">${TG.byId.thermostat_wiring.art(84)}</div><h3>${esc(tx(TW.name))}</h3><p class="sm">${L("Land each labeled wire on the matching terminal, then Power On. Go by the letter, never the color.", "Conecta cada cable rotulado en su terminal y pulsa Encender. Guíate por la letra, nunca por el color.")}</p><p class="sm muted">${L("Power is off at the equipment before you touch wires.", "La energía está apagada en el equipo antes de tocar cables.")}</p>`, null, next);
   }
 
   /* ===================== WIRE IT UP ===================== */
@@ -213,7 +234,7 @@
   }
 
   const art = (inner) => s => `<svg class="tg-art-svg" width="${s}" height="${s}" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
-  TG.register({ id: "thermostat_wiring", slug: "thermostat", order: 1, tag: { en: "R, C, G, Y, W, O/B", es: "R, C, G, Y, W, O/B" }, run: thermostat, reviewBank: twReviewBank,
+  TG.register({ id: "thermostat_wiring", slug: "thermostat", order: 1, tag: { en: "Land the wires, then power on", es: "Conecta los cables y enciende" }, run: thermostat, reviewBank: twReviewBank,
     art: art(`<rect x="12" y="8" width="40" height="48" rx="8"/><circle cx="32" cy="27" r="10"/><path d="M32 21v6l4 3"/><path class="ac" d="M20 46h4M28 46h4M36 46h4M44 46h-0"/><path class="ac2" d="M4 40c6 0 6 8 12 8M4 48c6 0 6-4 12-4"/>`) });
   TG.register({ id: "wire_it_up", slug: "wireitup", order: 3, tag: { en: "Contactor, cap, C/S/R", es: "Contactor, capacitor, C/S/R" }, run: wireItUp, reviewBank: wuReviewBank,
     art: art(`<rect x="8" y="12" width="26" height="40" rx="4"/><path d="M14 22h14M14 32h14M14 42h14"/><circle cx="48" cy="24" r="9"/><path d="M44 24h8M48 20v8"/><path class="ac" d="M34 22c8 0 6 2 14 2M34 42c10 0 14-6 14-9"/><path class="ac2" d="M52 44l-4 6h5l-4 6"/>`) });

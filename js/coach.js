@@ -18,7 +18,7 @@
     (window.SKILLS || []).forEach(s => add(s.title, { en: s.intro.en + " " + s.steps.join(" ") + " " + s.safety.join(" ") + " " + s.mistakes.join(" ") }, "#/skill/" + s.id, "Skill"));
     (window.TOOLS || []).forEach(t => add(t.name, { en: [t.what, t.use, t.safety, t.mistake].map(x => x.en).join(" "), es: [t.what, t.use, t.safety, t.mistake].map(x => x.es).join(" ") }, "#/tool/" + t.id, "Tool"));
     Object.entries(window.EPA_QUESTIONS || {}).forEach(([sec, qs]) => qs.forEach(q => add(q.q, { en: q.a[q.c].en + ". " + q.why.en + " (" + q.ref + ")", es: (q.a[q.c].es || "") + ". " + (q.why.es || "") }, "#/epa/" + sec, "EPA 608")));
-    (window.SCENARIOS || []).forEach(s => add(s.s, { en: s.a[s.c].en + ". " + s.why.en, es: s.a[s.c].es + ". " + s.why.es }, "#/arcade/fix", "Troubleshooting"));
+    (window.SCENARIOS || []).forEach(s => add(s.s, { en: s.a[s.c].en + ". " + s.why.en, es: s.a[s.c].es + ". " + s.why.es }, "#/sim", "Troubleshooting"));
     const df = {}; docs.forEach(d => new Set([...d.tt, ...d.bt]).forEach(w => df[w] = (df[w] || 0) + 1));
     INDEX = { docs, df, N: docs.length };
   }

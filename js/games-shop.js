@@ -54,15 +54,17 @@
       stop() { alive = false; cv.remove(); } };
   }
   function braze() {
-    const R = new TG.Round({ id: "braze_master" }); const joints = TG.shuffle(BR.joints).slice(0, 3).sort((a, b) => a.rule - b.rule); let ji = 0;
+    const R = new TG.Round({ id: "braze_master" }); const firstPlay = !(TG.state("braze_master").plays);
+    const joints = TG.shuffle(BR.joints).slice(0, firstPlay || TG.level("braze_master") <= 2 ? 2 : 3).sort((a, b) => a.rule - b.rule); let ji = 0;
     if (TG.level("braze_master") <= 1) joints.sort((a, b) => (a.id === "cucu" ? -1 : 0) - (b.id === "cucu" ? -1 : 0));
-    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-bust" id="tgAvB">${avatarSVG(S.avatar, 40, { mode: "bust" })}</span><span class="tg-prog" id="brProg"></span>`; $("#tgAv").remove(); $("#tgAvB").id = "tgAv";
+    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-prog" id="brProg"></span>`;
     const prog = () => { $("#brProg").innerHTML = joints.map((b, i) => `<i class="${i < ji ? "done" : i === ji ? "cur" : ""}"></i>`).join(""); };
     const next = () => { if (R.over) return; if (ji >= joints.length) return R.end(true); prog(); R.boardStart(); joint(joints[ji]); };
     function joint(j) {
       const st = { fail: null, tubeT: 70, fitT: 70, n2: 0, heated: false, fill: 0, scale: false };
       const rule = BR.fillerRules[j.rule]; TG.qaCur = { kind: "br", st, j, ok: BR.fillerCards.filter(c => c.ok.includes(j.id)).map(c => tx(c.name)) };
-      R.body.innerHTML = `<div class="tg-head"><b>${esc(tx(j.name))}</b><p class="sm muted" id="brStep"></p></div>
+      const guided = firstPlay && ji === 0;
+      R.body.innerHTML = `<div class="tg-head"><p class="tg-goal" id="brGoal">${L("Heat the tube first, then the fitting. When the metal is ready, feed the rod.", "Calienta el tubo primero, luego el accesorio. Cuando el metal esté listo, aplica la varilla.")}</p><b>${esc(tx(j.name))}</b><p class="sm muted" id="brStep"></p></div>
         <div class="br-scene" id="brS"><svg viewBox="0 0 360 170" class="br-svg" aria-hidden="true">
           <defs><linearGradient id="brShade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
           <linearGradient id="brWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2722"/><stop offset="1" stop-color="#1a1816"/></linearGradient>
@@ -125,12 +127,13 @@
           await R.miss(failCard(id, L(`You set ${v.toFixed(1)} CFH.`, `Pusiste ${v.toFixed(1)} CFH.`), { why: `${tx(fail(id).cue)}. ${tx(fail(id).cause)}. ${tx(BR.nitrogen.why)}`, rule: tx(BR.nitrogen.rule) + " " + tx(BR.n2Band.note), oem: true, sources: uniq([...fail(id).sources, ...BR.nitrogen.sources]) }));
           rng.value = 2.5; upd(); st.n2 = 2.5; heat(hiss); }; };
       /* 4. hold to heat: finger on the work moves the flame; tube first, then the fitting cup */
-      const heat = hiss => { step.textContent = L("4 · Hold to heat: tube first, then slide to the cup", "4 · Mantén para calentar: tubo primero, luego desliza a la copa"); torch.style.display = ""; Sound.sfx("ignite");
+      const heat = hiss => { step.textContent = L("Hold on the tube, then slide to the cup", "Mantén en el tubo, luego desliza a la copa"); torch.style.display = ""; Sound.sfx("ignite");
         hint.textContent = L("Release when the flux goes clear / dull cherry red", "Suelta cuando el fundente quede claro / rojo cereza opaco");
         P.innerHTML = `<div class="br-hold"><span>${ico("hand", 18)} ${L("Press and hold on the pipe", "Mantén presionado sobre el tubo")}</span></div>`;
         const scene = $("#brS"), svg = scene.querySelector(".br-svg"); let holding = false, fx = 120, tubeFirst = null, roar = null, parked = 0, lastX = 0;
+        if (guided) { scene.classList.add("tg-hl"); }
         const toSvg = e => { const r = svg.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 360; };
-        const down = e => { if (st.heated) return; holding = true; fx = toSvg(e); lastX = fx; if (tubeFirst == null) tubeFirst = fx < 196; roar = Sound.loop("torch", 0.6); scene.setPointerCapture(e.pointerId); scene.classList.add("heating"); TG.buzz("tap"); };
+        const down = e => { if (st.heated) return; holding = true; fx = toSvg(e); lastX = fx; if (tubeFirst == null) tubeFirst = fx < 196; roar = Sound.loop("torch", 0.6); scene.setPointerCapture(e.pointerId); scene.classList.add("heating"); scene.classList.remove("tg-hl"); R.resume("guide"); TG.buzz("tap"); };
         const move = e => { if (holding) fx = Math.max(20, Math.min(300, toSvg(e))); };
         const up = () => { if (!holding) return; holding = false; scene.classList.remove("heating"); roar && roar.stop(0.15); release(); };
         scene.addEventListener("pointerdown", down); scene.addEventListener("pointermove", move); scene.addEventListener("pointerup", up); scene.addEventListener("pointercancel", up);
@@ -151,7 +154,7 @@
          brazing temperature (flux clear / dull cherry). Too early = alloy balls up; past full = drips and icicles inside;
          on time = capillary flow pulls the alloy into the joint (Harris: feed only after the base metal is at temperature,
          let the joint's heat melt the rod, stop once the joint is filled). */
-      const feed = hiss => { step.textContent = L("5 · Feed the filler rod", "5 · Aplica la varilla de aporte");
+      const feed = hiss => { step.textContent = L("Hold to feed the rod — stop when the joint is full", "Mantén para aplicar la varilla — suelta cuando la unión esté llena");
         const filler = tx((BR.fillerCards.find(c => c.ok.includes(j.id)) || BR.fillerCards[0]).name);
         hint.textContent = L("Flame on the cup. Hold FEED when the flux is clear and the copper is dull cherry red.", "Llama en la copa. Mantén APLICAR cuando el fundente esté claro y el cobre rojo cereza opaco.");
         torch.style.display = ""; const scene = $("#brS"), FX = brFx(scene); R.stops.push(() => FX.stop());
@@ -160,6 +163,7 @@
         P.innerHTML = `<div class="br-feed"><div class="br-feed-meter"><div class="br-feed-band"></div><i id="brFill"></i><span>${L("filler in the joint", "aleación en la unión")}</span></div>
           <button class="btn primary big full br-feed-btn" id="brFeed">${ico("hand", 18)} ${L("Hold to feed rod", "Mantén para aplicar")}<small class="block">${esc(filler)}</small></button></div>`;
         const fillEl = $("#brFill"), btn = $("#brFeed"), roar = Sound.loop("torch", 0.5); R.stops.push(() => roar.stop());
+        if (guided) { btn.classList.add("tg-hl"); const clr = () => btn.classList.remove("tg-hl"); btn.addEventListener("pointerdown", clr, { once: true }); }
         let T = Math.max(820, Math.min(st.tubeT, st.fitT) - 300), held = false, endT = false, sweep = 0, sizzT = 0, rodLen = 120;
         const lvl = TG.level(R.id), rise = 150 + lvl * 15;
         const end = async (kind, extra) => { if (endT) return; endT = true; held = false; R.onFrame = null; roar.stop(0.2); torch.style.display = "none"; btn.disabled = true;
@@ -188,15 +192,21 @@
           FX.tick(dt); };
       };
       /* 6. keep N2 until cool */
-      const cool = hiss => { step.textContent = L("6 · Keep N₂ flowing until it's cool", "6 · Mantén N₂ hasta que enfríe"); hint.textContent = "";
-        const t0 = performance.now(), need = 2600; P.innerHTML = `<div class="br-cool"><div class="br-fillbar cool"><i id="brCool"></i></div><button class="btn big full" id="brOff">${ico("close", 18)} ${L("Shut off N₂", "Cerrar N₂")}</button></div>`;
-        const bar = $("#brCool"); let fin = false;
-        R.onFrame = () => { const k = Math.min(1, (performance.now() - t0) / need); bar.style.transform = `scaleX(${k})`; st.tubeT = 70 + (Math.max(st.tubeT, 600) - 70) * (1 - k) * 0.97 + 0.03; st.fitT = st.tubeT; paint(); if (k >= 1 && !fin) { fin = true; R.onFrame = null; hiss.stop(0.3); $("#brOff").classList.add("primary"); $("#brOff").innerHTML = `${ico("check", 18)} ${L("Cool. Shut off N₂", "Frío. Cerrar N₂")}`; } };
-        $("#brOff").onclick = async () => { hiss.stop(0.2); if (!fin) { R.onFrame = null; st.scale = true; if (!st.fail) st.fail = "noN2"; await R.miss(failCard("noN2", L("You shut off the nitrogen while the joint was still hot.", "Cerraste el nitrógeno con la unión aún caliente."), { why: tx(BR.nitrogen.why), rule: tx(BR.nitrogen.rule), sources: BR.nitrogen.sources, q: brQ("br:n2") })); }
-          else if (!st.fail) R.hit({ quiet: true, pts: 50, label: "N₂" }); if (st.n2 < BR.n2Band.min) st.scale = true; done(); }; };
-      pickFiller();
+      const cool = hiss => { step.textContent = L("Keep N₂ on while it cools", "Mantén N₂ mientras enfría"); hint.textContent = "";
+        const t0 = performance.now(), need = 1800; P.innerHTML = `<div class="br-cool"><div class="br-fillbar cool"><i id="brCool"></i></div><p class="sm muted center">${L("Nitrogen stays on until the joint is cool.", "El nitrógeno sigue hasta que la unión enfríe.")}</p></div>`;
+        const bar = $("#brCool");
+        R.onFrame = () => { const k = Math.min(1, (performance.now() - t0) / need); if (bar) bar.style.transform = `scaleX(${k})`; st.tubeT = 70 + (Math.max(st.tubeT, 600) - 70) * (1 - k) * 0.97 + 0.03; st.fitT = st.tubeT; paint(); if (k >= 1) { R.onFrame = null; hiss && hiss.stop && hiss.stop(0.3); if (!st.fail) R.hit({ quiet: true, pts: 50, label: "N₂" }); done(); } }; };
+      const startHeat = () => {
+        const hiss = Sound.loop("n2", 0);
+        st.n2 = 2.5; hiss.set(2.5 / 8); const n2el = $("#brN2"); if (n2el) n2el.style.opacity = 1;
+        const lamp = document.createElement("div"); lamp.className = "tg-n2lamp"; lamp.innerHTML = `<i></i>${L("N₂ flowing", "N₂ fluyendo")}`;
+        (document.getElementById("brGoal") || step).after(lamp);
+        if (guided) { R.pause("guide"); }
+        heat(hiss);
+      };
+      startHeat();
     }
-    TG.intro(R, `<div class="tg-intro-art">${TG.byId.braze_master.art(84)}</div><h3>${esc(tx(BR.name))}</h3><p class="sm">${L("Pick the filler, prep, flow nitrogen, heat the tube then the cup, feed the rod, keep N₂ until cool. Then we cut the joint open.", "Elige aleación, prepara, abre nitrógeno, calienta tubo y copa, aplica varilla y mantén N₂ hasta que enfríe. Luego cortamos la unión.")}</p><p class="sm muted">${esc(tx(BR.safety[0]))}</p>`, null, next);
+    TG.intro(R, `<div class="tg-intro-art">${TG.byId.braze_master.art(84)}</div><h3>${esc(tx(BR.name))}</h3><p class="sm">${L("Heat the tube first, then the fitting. When the copper is at brazing temperature, feed the rod and stop when the fillet is full. Nitrogen is already flowing.", "Calienta el tubo primero, luego el accesorio. Cuando el cobre esté a temperatura de soldadura, aplica la varilla y suelta al llenar el filete. El nitrógeno ya está fluyendo.")}</p><p class="sm muted">${esc(tx(BR.safety[0]))}</p>`, null, next);
   }
 
   /* ===================== GAUGE READER ===================== */
@@ -220,24 +230,29 @@
       <g class="gg-ticks">${ticks}</g><text x="50" y="72" class="gg-lbl">${label}</text><text x="50" y="80" class="gg-max">0-${max}</text><g class="gg-needle"><path d="M50 50L50 12" /><circle cx="50" cy="50" r="4"/></g></svg>`; };
   function gauge() {
     const R = new TG.Round({ id: "gauge_reader" }); const twin = c => GR.cases.find(x => x.id === (c.id[2] === "A" ? "grB" : "grA") + c.id.slice(3));
-    const pool = GR.cases.filter(c => c.id[2] === "A"), picked = TG.draw(pool, R.id, 4).map(c => Math.random() < 0.5 ? twin(c) : c); let ci = 0;
-    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-bust" id="tgAvB">${avatarSVG(S.avatar, 40, { mode: "bust" })}</span><span class="tg-prog" id="grProg"></span>`; $("#tgAv").remove(); $("#tgAvB").id = "tgAv";
+    const firstPlay = !(TG.state("gauge_reader").plays);
+    const pool = GR.cases.filter(c => c.id[2] === "A"), picked = TG.draw(pool, R.id, firstPlay ? 2 : 3).map(c => Math.random() < 0.5 ? twin(c) : c); let ci = 0;
+    const hudM = $("#tgHudM"); hudM.innerHTML = `<span class="tg-prog" id="grProg"></span>`;
     const prog = () => { $("#grProg").innerHTML = picked.map((b, i) => `<i class="${i < ci ? "done" : i === ci ? "cur" : ""}"></i>`).join(""); };
     const next = () => { if (R.over) return; if (ci >= picked.length) return R.end(true); prog(); R.boardStart(); one(picked[ci]); };
     function one(c0) { let c = c0, stepN = 0; TG.qaCur = { kind: "gr", get c() { return c; }, diagI: () => DIAG.findIndex(d => d.id === c.diag) }; const blend = () => PT.meta.info[c.refrigerant].glide >= 0.5;
-      R.body.innerHTML = `<div class="gr-man real"><div class="gr-g"><div class="gr-dial" id="grDL"></div><b id="grLo"></b><small>psig</small></div><div class="gr-g"><div class="gr-dial" id="grDH"></div><b id="grHi"></b><small>psig</small></div><div class="gr-body"><span class="gr-sight"></span><div class="gr-mid"><button class="gr-ref" id="grRef"><span>${c.refrigerant}</span><small>${L("tap to swap", "cambiar")}</small></button><span class="gr-meter">${c.metering}</span></div><span class="gr-sight"></span><i class="gr-port lo"></i><i class="gr-port mid"></i><i class="gr-port hi"></i></div><div id="grLeg"></div><p class="gr-zhint">${L("Tap a dial to zoom. Tap a refrigerant to highlight its ring.", "Toca un manómetro para ampliar. Toca un refrigerante para resaltar su anillo.")}</p></div>
+      const guided = firstPlay && ci === 0;
+      R.body.innerHTML = `<p class="tg-goal">${L("The house is still warm. Read the gauges and pick what's wrong.", "La casa sigue caliente. Lee los manómetros y elige qué está mal.")}</p>
+        <div class="gr-man real"><div class="gr-g"><div class="gr-dial" id="grDL"></div><b id="grLo"></b><small>psig</small></div><div class="gr-g"><div class="gr-dial" id="grDH"></div><b id="grHi"></b><small>psig</small></div><div class="gr-body"><span class="gr-sight"></span><div class="gr-mid"><button class="gr-ref" id="grRef"><span>${c.refrigerant}</span><small>${c.metering}</small></button><span class="gr-meter">${c.metering}</span></div><span class="gr-sight"></span><i class="gr-port lo"></i><i class="gr-port mid"></i><i class="gr-port hi"></i></div><div id="grLeg"></div></div>
+        <div class="gr-readout" id="grRead"><span>${L("Superheat", "Sobrecalentamiento")}<b id="grSH">—</b></span><span>${L("Subcooling", "Subenfriamiento")}<b id="grSC">—</b></span></div>
         <div class="gr-tags" id="grTags"></div><div class="gr-step" id="grStep"></div>`;
       const gLo = A.Gauge.mount($("#grDL"), { side: "low", value: 0, legend: false, required: c.refrigerant }), gHi = A.Gauge.mount($("#grDH"), { side: "high", value: 0, legend: false, required: c.refrigerant }), gLeg = A.Gauge.group($("#grLeg"), [gLo, gHi], c.refrigerant);
       R.stops.push(() => { gLo.destroy(); gHi.destroy(); });
       const needle = (sel, p) => { const g = sel === "lo" ? gLo : gHi; g.setRequired(c.refrigerant); g.set(p); }; gLeg.setRequired(c.refrigerant);
       const paint = () => { R.body.querySelector("#grRef span").textContent = c.refrigerant; $("#grLo").textContent = c.suctionPsig.toFixed(1); $("#grHi").textContent = c.liquidPsig.toFixed(1);
         gLeg.setRequired(c.refrigerant); requestAnimationFrame(() => { needle("lo", c.suctionPsig); needle("hi", c.liquidPsig); }); Sound.sfx("gauge");
+        const shEl = $("#grSH"), scEl = $("#grSC"); if (shEl) shEl.textContent = c.superheatF + "°F"; if (scEl) scEl.textContent = c.subcoolingF + "°F";
         const ex = c.extra || {}; $("#grTags").innerHTML = `<span class="gr-tag">${ico("sun", 13)} ${esc(tx(GR.conditionsText))}</span><span class="gr-tag clamp">${L("Suction line", "Línea succión")} <b>${c.suctionLineF}°F</b></span><span class="gr-tag clamp">${L("Liquid line", "Línea líquido")} <b>${c.liquidLineF}°F</b></span>
           ${ex.ratingPlateSC ? `<span class="gr-tag">${L("Rating plate SC", "SC de placa")} <b>${ex.ratingPlateSC}°F</b></span>` : ""}${ex.chartSH ? `<span class="gr-tag">${L("Chart SH", "SH de tabla")} <b>${ex.chartSH}°F</b> ±3</span>` : ""}
           ${ex.dropAcrossDrierF ? `<span class="gr-tag warn">${L("Drop across drier", "Caída en el filtro")} <b>${ex.dropAcrossDrierF}°F</b></span>` : ""}${ex.CTOA_F ? `<span class="gr-tag warn">${L("Condensing over ambient", "Condensación sobre ambiente")} <b>${ex.CTOA_F}°F</b></span>` : ""}
           ${ex.filter ? `<span class="gr-tag warn">${L("Filter", "Filtro")}: ${L("clogged", "tapado")}</span>` : ""}${ex.offCycleStandingPsig ? `<span class="gr-tag warn">${L("Off-cycle standing", "En reposo")} <b>${ex.offCycleStandingPsig}</b> psig @ ${ex.ambientF}°F</span>` : ""}`; };
       paint();
-      $("#grRef").onclick = () => { if (stepN > 0) return; c = twin(c); Sound.sfx("valve"); paint(); };
+      $("#grRef").onclick = () => { /* refrigerant is part of the case; no swap puzzle */ Sound.sfx("tap"); };
       const ptBtn = `<button class="btn sm gr-pt" id="grPT">${ico("gauge", 15)} ${L("PT Chart", "Tabla PT")}</button>`;
       const bindPT = () => { const b = $("#grPT"); if (b) b.onclick = () => { A.ptMount && A.ptMount(c.refrigerant); A.ptOpen && A.ptOpen(); }; };
       /* step 1: saturation temps */
@@ -263,20 +278,21 @@
           $("#gsR").classList.add("bad"); await R.miss({ did: L(`You built ${kind} = ${chips.find(x => x[0] === slot[0])[2]} − ${chips.find(x => x[0] === slot[1])[2]}.`, `Armaste ${kind} = ${chips.find(x => x[0] === slot[0])[2]} − ${chips.find(x => x[0] === slot[1])[2]}.`),
             why: isSH ? GR.formulas.superheat : GR.formulas.subcooling, rule: L(`Here ${kind} = ${isSH ? c.superheatF : c.subcoolingF}°F.`, `Aquí ${kind} = ${isSH ? c.superheatF : c.subcoolingF}°F.`) + " " + tx(GR.blendNote), sources: GR.blendSources.concat(["icp_421015103"]), q: grQ("gr:blend") }); res(); })); };
       /* step 3: diagnose */
-      const diagStep = () => { stepN = 3; $("#grStep").innerHTML = `<div class="row between"><b>${L("Your call", "Tu diagnóstico")}</b><span class="sm muted">SH ${c.superheatF}° · SC ${c.subcoolingF}°</span></div>${TG.choiceGrid(DIAG.map(d => esc(tx(d.name))), "two diag")}`;
-        $("#grStep").querySelectorAll(".tg-choice").forEach(b => b.onclick = async () => { const d = DIAG[+b.dataset.i]; $("#grStep").querySelectorAll(".tg-choice").forEach(x => x.disabled = true);
+      const diagStep = () => { stepN = 3; $("#grStep").innerHTML = `<div class="row between"><b>${L("Your call", "Tu diagnóstico")}</b><span class="sm muted">SH ${c.superheatF}° · SC ${c.subcoolingF}°</span> ${ptBtn}</div>${TG.choiceGrid(DIAG.map(d => esc(tx(d.name))), "two diag")}`; bindPT();
+        $("#grStep").querySelectorAll(".tg-choice").forEach(b => b.onclick = async () => { TG.clearHighlights(R.body); const d = DIAG[+b.dataset.i]; $("#grStep").querySelectorAll(".tg-choice").forEach(x => x.disabled = true);
           if (d.id === c.diag) { b.classList.add("right"); R.hit({ pts: 200, label: L("diagnosis", "diagnóstico") }); TG.flash(R, `<b>${esc(dName(c.diag))}</b><p>${esc(tx(c.explain))}</p>`, "explain", 2600); await wait(2300); }
           else { b.classList.add("wrong"); R.body.querySelector(`.tg-choice[data-i="${DIAG.findIndex(x => x.id === c.diag)}"]`).classList.add("right");
             await R.miss({ did: L(`You called it ${dName(d.id)}. It's ${dName(c.diag)}.`, `Dijiste ${dName(d.id)}. Es ${dName(c.diag)}.`), why: tx(c.explain), rule: patRow(c.diag) + " · " + tx(GR.targets[c.metering === "TXV" ? "TXV" : "piston"]) + (blend() ? " " + tx(GR.blendNote) : ""), oem: true, sources: c.sources, q: grQ(`gr:${c.id}`) }); }
           R.boardEnd(); if (R.combo >= 5 && R.combo % 5 === 0) R.bonus(250, L("Sharp Eye", "Buen ojo")); ci++; setTimeout(next, 500); }); };
-      (async () => { await satStep("lo"); if (R.over) return; await satStep("hi"); if (R.over) return; await calcStep("SH"); if (R.over) return; await calcStep("SC"); if (R.over) return; diagStep(); })();
+      if (guided) { R.pause("guide"); ["grDL","grDH","grRead"].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("tg-hl"); }); setTimeout(() => { TG.clearHighlights(R.body); const step = $("#grStep"); if (step) step.classList.add("tg-hl"); R.resume("guide"); }, 1600); }
+      diagStep();
     }
-    TG.intro(R, `<div class="tg-intro-art">${TG.byId.gauge_reader.art(84)}</div><h3>${esc(tx(GR.name))}</h3><p class="sm">${L("The unit is running and the house is still warm. Read the gauges, find saturation on the PT chart, build superheat and subcooling, then make the call. R-454B: DEW for suction, BUBBLE for liquid.", "El equipo está corriendo y la casa sigue caliente. Lee los manómetros, busca la saturación en la tabla PT, arma SH y SC y diagnostica. R-454B: ROCÍO en succión, BURBUJA en líquido.")}</p><p class="sm muted">${L("Teaching cases, not one unit's data. Rating plate and OEM charts win. Only EPA 608 certified techs add refrigerant.", "Casos de enseñanza, no datos de un equipo. Manda la placa y la tabla del fabricante. Solo técnicos con EPA 608 agregan refrigerante.")}</p>`, null, next);
+    TG.intro(R, `<div class="tg-intro-art">${TG.byId.gauge_reader.art(84)}</div><h3>${esc(tx(GR.name))}</h3><p class="sm">${L("The unit is running and the house is still warm. Read the two gauges, check superheat and subcooling, and pick what's wrong. One call per case.", "El equipo está corriendo y la casa sigue caliente. Lee los dos manómetros, mira SH y SC, y elige qué está mal. Un diagnóstico por caso.")}</p><p class="sm muted">${L("Teaching cases, not one unit's data. Rating plate and OEM charts win. Only EPA 608 certified techs add refrigerant.", "Casos de enseñanza, no datos de un equipo. Manda la placa y la tabla del fabricante. Solo técnicos con EPA 608 agregan refrigerante.")}</p>`, null, next);
   }
 
   const art = inner => s => `<svg class="tg-art-svg" width="${s}" height="${s}" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
-  TG.register({ id: "braze_master", slug: "braze", order: 2, tag: { en: "Filler, N₂, heat, fillet", es: "Aleación, N₂, calor, filete" }, run: braze, reviewBank: brReviewBank,
+  TG.register({ id: "braze_master", slug: "braze", order: 2, tag: { en: "Heat, then feed the rod", es: "Calienta, luego aplica la varilla" }, run: braze, reviewBank: brReviewBank,
     art: art(`<rect x="4" y="34" width="34" height="10" rx="2"/><path d="M34 30h16v18H34z"/><path class="ac" d="M52 22l8-8M48 20c4-6 10-6 12-12"/><path class="ac2" d="M24 28c-3-4 0-8 2-10 0 3 3 4 3 7s-2 4-5 3z"/>`) });
-  TG.register({ id: "gauge_reader", slug: "gauges", order: 4, tag: { en: "PT, SH/SC, diagnose", es: "PT, SH/SC, diagnóstico" }, run: gauge, reviewBank: grReviewBank,
+  TG.register({ id: "gauge_reader", slug: "gauges", order: 4, tag: { en: "Read the gauges, make the call", es: "Lee los manómetros y diagnostica" }, run: gauge, reviewBank: grReviewBank,
     art: art(`<circle cx="20" cy="28" r="14"/><circle cx="44" cy="28" r="14"/><path class="ac" d="M20 28l-6-7M44 28l7-6"/><path d="M10 50h44M20 42v8M44 42v8M32 50v8"/>`) });
 })();
