@@ -56,20 +56,23 @@
   }
 
   /* Letter heat stages from the original letter-stages asset, timed to the slam. */
-  const HEAT = { appear: 2.133, hotEnd: 2.45, coolEnd: 2.95, brassEnd: 4.40, typeEnd: 6.20 };
+  /* Timed to v57: cream-hot at 2.5, full brass at 3.0, final contrast by 5.0. */
+  const HEAT = { appear: 2.133, hotEnd: 2.55, coolEnd: 2.85, brassPeak: 3.00, brassEnd: 3.90, typeEnd: 5.00 };
   function letterHeat(t) {
     const H = HEAT, o = { hot: 0, cooling: 0, brass: 0, type: 0 };
     if (t <= H.appear) return o;
     if (t < H.hotEnd) { o.hot = (t - H.appear) / (H.hotEnd - H.appear); return o; }
     if (t < H.coolEnd) { const u = (t - H.hotEnd) / (H.coolEnd - H.hotEnd); o.hot = 1 - u; o.cooling = u; return o; }
-    if (t < H.brassEnd) { const u = (t - H.coolEnd) / (H.brassEnd - H.coolEnd); o.cooling = 1 - u; o.brass = u; return o; }
+    if (t < H.brassPeak) { const u = (t - H.coolEnd) / (H.brassPeak - H.coolEnd); o.cooling = 1 - u; o.brass = u; return o; }
+    if (t < H.brassEnd) { o.brass = 1; return o; }
     if (t < H.typeEnd) { const u = (t - H.brassEnd) / (H.typeEnd - H.brassEnd); o.brass = 1 - u; o.type = u; return o; }
     o.type = 1; return o;
   }
   function logoFlash(t) {
-    if (t < 2.15 || t > 2.55) return 0;
-    if (t <= 2.22) return 0.55;
-    return 0.55 * Math.exp(-(t - 2.22) / 0.12);
+    /* Short punch at the slam — gone by ~2.28 so 2.25 is not milky. */
+    if (t < 2.16 || t > 2.32) return 0;
+    if (t <= 2.20) return 0.55 * (t - 2.16) / 0.04;
+    return 0.55 * Math.exp(-(t - 2.20) / 0.035);
   }
 
   function markStandalone() {

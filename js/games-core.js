@@ -170,9 +170,32 @@
       const m = MULT(R.combo), up = m > R.mult; R.mult = m; const pts = Math.round((opts.pts || 100) * m); R.score += pts; tickScore();
       multEl.textContent = "×" + m; multEl.dataset.m = m; if (up) { multEl.classList.remove("up"); void multEl.offsetWidth; multEl.classList.add("up"); Sound.sfx("combo", { level: m }); TG.buzz("unlock"); R.avatar("pump"); }
       if (opts.quiet) Sound.sfx("snap", { pitch: 1 + Math.min(0.6, R.combo * 0.05) }); else Sound.sfx("correct", { streak: R.combo });
-      const r = R.el.getBoundingClientRect(); TG.pop(R.el, opts.x != null ? opts.x : r.width / 2 - 30, opts.y != null ? opts.y : 120, `+${pts}${opts.label ? ` <small>${esc(opts.label)}</small>` : ""}`, m > 1 ? "m" + m : "");
+      const r = R.el.getBoundingClientRect();
+      let px = opts.x, py = opts.y;
+      if (px == null || py == null) {
+        const sc = scoreEl || document.getElementById("tgScore");
+        if (sc) {
+          const sb = sc.getBoundingClientRect();
+          if (px == null) px = sb.right - r.left + 10;
+          if (py == null) py = Math.max(10, sb.top - r.top + sb.height * 0.2);
+        } else {
+          if (px == null) px = 16;
+          if (py == null) py = 28;
+        }
+      }
+      TG.pop(R.el, px, py, `+${pts}${opts.label ? ` <small>${esc(opts.label)}</small>` : ""}`, m > 1 ? "m" + m : "");
       TG.buzz("correct"); return pts; };
-    R.bonus = (pts, label, x, y) => { R.score += pts; tickScore(); const r = R.el.getBoundingClientRect(); TG.pop(R.el, x != null ? x : r.width / 2 - 50, y != null ? y : 150, `+${pts} <small>${esc(label)}</small>`, "bonus"); };
+    R.bonus = (pts, label, x, y) => { R.score += pts; tickScore(); const r = R.el.getBoundingClientRect();
+      let px = x, py = y;
+      if (px == null || py == null) {
+        const sc = scoreEl || document.getElementById("tgScore");
+        if (sc) {
+          const sb = sc.getBoundingClientRect();
+          if (px == null) px = sb.right - r.left + 10;
+          if (py == null) py = Math.max(10, sb.top - r.top + sb.height * 0.2);
+        } else { if (px == null) px = 16; if (py == null) py = 28; }
+      }
+      TG.pop(R.el, px, py, `+${pts} <small>${esc(label)}</small>`, "bonus"); };
     /* mistake → buzzer, shake, haptic, timer pauses, learn card slides up; resolves when dismissed */
     R.miss = card => new Promise(res => { R.combo = 0; R.mult = 1; multEl.textContent = "×1"; multEl.dataset.m = 1; R.mistakes++; R.boardMiss++;
       Sound.sfx("wrong"); TG.buzz("wrong"); TG.shake(card.shakeEl || R.body, card.big); R.avatar("oops");
