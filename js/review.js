@@ -25,7 +25,7 @@
     const due = A.reviewDue(), all = Object.keys(S.review).filter(id => bank()[id]), next = all.filter(id => !due.includes(id)).map(id => S.review[id].due).sort((a, b) => a - b)[0];
     const boxes = [0, 1, 2, 3].map(b => all.filter(id => S.review[id].box === b).length);
     const days = next ? Math.max(1, Math.round((next - Date.now()) / DAY)) : 0;
-    return `<main class="page">${A.head(L("Review", "Repaso"), "#/home")}
+    return `<main class="page">${A.head(L("Review", "Repaso"), "#/more")}
       <section class="card center"><div class="review-big">${due.length}</div><h2>${due.length ? L("Ready to review", "Listas para repasar") : L("Nothing due", "Nada pendiente")}</h2>
         <p class="muted sm">${L("Questions you missed come back here. Get one right and it waits longer before coming back: tomorrow, then 3 days, then a week, then it's done.", "Las preguntas que fallaste regresan aquí. Si la aciertas, tarda más en volver: mañana, luego 3 días, luego una semana, y listo.")}</p>
         ${due.length ? `<button class="btn primary big full" id="rvGo">${ico("play", 18)} ${L("Review", "Repasar")} ${Math.min(15, due.length)}</button>` : next ? `<p class="sm">${L("Next one in", "La próxima en")} ${days} ${days === 1 ? L("day", "día") : L("days", "días")}.</p>` : `<div class="empty fun sm-empty"><p><b>${L("Review deck is empty.", "El mazo de repaso está vacío.")}</b> ${L("Either you're a natural or you haven't started. Miss a question in any quiz and it lands here.", "O eres un crack o todavía no empiezas. Falla una pregunta en cualquier quiz y llega aquí.")}</p></div>`}</section>

@@ -47,7 +47,7 @@
   V.home = (...a) => { let h = home0(...a);
     const queued = !A.plan() && S.queue === "dayone" ? `<a class="card hero-card queued" href="#/dayone"><div class="eyebrow">${L("Queued for you", "En tu fila")}</div><h2>${L("Day One Survival", "Supervivencia del Día Uno")}</h2><p class="muted sm">${L("Five quick cards on what your first day on a truck actually looks like. No quiz.", "Cinco tarjetas rápidas sobre cómo es en realidad tu primer día en la camioneta. Sin examen.")}</p><span class="btn primary big full">${ico("play", 18)} ${L("Start Day One", "Empezar Día Uno")}</span></a>` : "";
     if (queued) h = h.replace('<a class="card hero-card cta"', queued + '<a class="card hero-card cta second"');
-    const card = A.a2hsCard(); if (card) h = h.replace(/(<h3 class="sec-h">)/, card + "$1");
+    const card = A.a2hsCard(); if (card) h = h.includes("<!--a2hs-->") ? h.replace("<!--a2hs-->", card) : h.replace(/(<h3 class="sec-h">)/, card + "$1");
     return h; };
   A.bind.home = (...a) => { if (bhome0) bhome0(...a); bindA2hs(); };
   const day0 = A.bind.dayone; A.bind.dayone = (...a) => { if (S.queue === "dayone") { S.queue = null; A.save(); } if (day0) day0(...a); };

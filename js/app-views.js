@@ -57,27 +57,19 @@
         ${heroBench(["thermostat","gauge-analog","hoses"])}
         ${lastOther ? `<a class="link-row" href="${lastOther.route}">${ico("history", 18)}<span class="grow">${es ? "Retomar" : "Pick up where you left off"}: <b>${esc(lastOther.title)}</b></span></a>` : ""}
         ${A.reviewCount && A.reviewCount() ? `<a class="link-row" href="#/review">${ico("target", 18)}<span class="grow">${es ? "Repaso pendiente" : "Review queue"}</span><span class="pill-n">${A.reviewCount()}</span></a>` : ""}
-        <a class="link-row" href="#/board">${ico("dice", 18)}<span class="grow">${es ? "Tablero de tu ruta" : "Your path game board"}</span><span class="muted">${pr.done}/${pr.total}</span></a></section>`;
+        </section>`;
     } else cont = `<a class="card hero-card cta illustrated" href="#/match"><div class="hero-cta-row"><div class="hero-cta-copy"><div class="eyebrow">${t("startHere")}</div><h2>${t("matchPath")}</h2><p class="muted">${t("matchSub", { n: MATCH_QUESTIONS.length })}</p></div><div class="hero-cta-art" aria-hidden="true"><img src="img/illust/thermostat.webp" alt=""></div></div><span class="btn primary big full">${ico("route", 18)} ${t("matchPath")}</span></a>`;
     const es0 = S.lang === "es";
-    const tiles = [
-      ["#/dayone", "lightbulb", es0 ? "Día Uno" : "Day One", "dayone"], ["#/library", "book", t("studyGuides"), "library"], ["#/epa", "globe", t("epa"), "epa"], ["#/field", "gauge", es0 ? "Herram. de campo" : "Field Tools", "field"],
-      ["#/sim", "wrench", es0 ? "Diagnóstico" : "Troubleshoot", "sim"], ["#/arcade", "game", t("arcade"), "arcade"], ["#/skills", "hand", t("handsOn"), "skills"], ["#/tools", "cog", es0 ? "Herramientas" : "Tools Guide", "tools"],
-      ["#/coach", "chat", t("coach"), "coach"], ["#/achievements", "trophy", es0 ? "Logros" : "Achievements", "ach"], ["#/certs", "cert", t("certificates"), "certs"], ["#/gear", "cart", t("gear"), "gear"]
-    ].concat(S.settings.company ? [["#/company", "user", es0 ? "Empresa" : "Company", "company"]] : []);
+    const pathRow = plan ? `<a class="path-row" href="#/path">${ico("route", 18)}<span class="grow"><b>${es0 ? "Tu ruta" : "Your path"}</b><span class="sm muted block">${esc(tx(PATH_LABELS[plan.pathId]))}</span></span><span class="muted">${A.progress(plan).done}/${A.progress(plan).total} · ${A.progress(plan).pct}%</span>${ico("arrow", 16, "muted")}</a>` : "";
     return `<main class="page home">
       <div class="brand-spot"><img src="img/logo.png" alt=""><span>HVAC Ready</span><span class="topbar-slot"></span></div>
-      <section class="greet"><a class="greet-av" href="#/avatar" aria-label="${es0 ? "Editar personaje" : "Edit character"}">${avatarSVG(S.avatar, 84)}</a><div class="grow"><div class="muted sm">${t("hi")},</div><h1>${esc(S.name)}</h1>
-        <div class="rankline">${rk.r.icon} <b>${esc(A.rankName(rk.r, true))}</b><span class="muted"> · ${S.xp} XP</span></div><div class="sm muted rank-tag">${esc(tx(rk.r.line))}</div><div class="xpbar"><span style="width:${rk.pct}%"></span></div>
-        <a class="btn ghost sm edit-char" href="#/avatar">${ico("user", 16)} ${es0 ? "Editar personaje" : "Edit character"}</a></div>
+      <section class="greet greet-compact"><a class="greet-av" href="#/avatar" aria-label="${es0 ? "Editar personaje" : "Edit character"}">${avatarSVG(S.avatar, 72)}</a><div class="grow"><div class="muted sm">${t("hi")},</div><h1>${esc(S.name)}</h1>
+        <div class="rankline">${rk.r.icon} <b>${esc(A.rankName(rk.r, true))}</b><span class="muted"> · ${S.xp} XP</span></div><div class="xpbar"><span style="width:${rk.pct}%"></span></div></div>
         <div class="streak" data-tier="${S.streak.count >= 30 ? 4 : S.streak.count >= 14 ? 3 : S.streak.count >= 7 ? 2 : S.streak.count >= 3 ? 1 : 0}" style="--fl:${(1 + Math.min(S.streak.count, 30) / 30 * 0.7).toFixed(2)}" title="${t("streak")}">${ico("fire", 20)}<b>${S.streak.count}</b></div></section>
       ${cont}
+      ${pathRow}
+      <!--a2hs-->
       ${A.saying("tip")}
-      <h3 class="sec-h">${S.lang === "es" ? "Explorar" : "Explore"}</h3>
-      <nav class="tile-grid">${tiles.map(([h, i, l, k]) => `<a class="tile t-${k}" href="${h}"><span class="tile-ico">${ico(i, 26)}</span><span>${esc(l)}</span></a>`).join("")}</nav>
-      <h3 class="sec-h">${S.lang === "es" ? "Rutas de oficio" : "Trade paths"}</h3>
-      <div class="trade-row">${TRADE_PATHS.map(p => `<div class="trade ${p.status}">${ico(p.icon, 22)}<span>${esc(tx(p.title))}</span>${p.status === "soon" ? `<em>${S.lang === "es" ? "Próximamente" : "Coming soon"}</em>` : `<em class="ok">${S.lang === "es" ? "Activa" : "Active"}</em>`}</div>`).join("")}</div>
-      ${plan ? `<a class="btn ghost full" href="#/match">${ico("route", 18)} ${t("retakeMatch")}</a>` : ""}
     </main>`;
   };
 
@@ -133,6 +125,7 @@
       ${taskBlock(plan.tasks, es)}${plan.salesTasks ? `<h4>${esc(tx(PATH_LABELS.sales_track))}</h4>${taskBlock(plan.salesTasks, es)}` : ""}
       <h3 class="sec-h">${t("starterKit")}</h3><div class="kit-row">${(STARTER_KITS[plan.pathId] || []).slice(0, 8).map(id => `<a class="kit-chip" href="#/tool/${id}">${toolSVG(id)}<span>${esc(tx(TOOLS.find(x => x.id === id).name))}</span></a>`).join("")}</div><a class="btn ghost full" href="#/gear">${ico("cart", 18)} ${t("gear")}</a>
       <p class="muted sm mt">${es ? "Reglas aplicadas" : "Rules applied"}: ${plan.fired.join(", ")} · <a href="#/credits">${es ? "Fuentes y créditos" : "Sources & credits"}</a></p>
+      <a class="btn ghost full mt" href="#/match">${ico("route", 18)} ${t("retakeMatch")}</a>
     </main>`;
   };
   function taskBlock(tk, es) { return `<div class="task-cols"><div class="card tight"><h4 class="ok">${ico("check", 16)} ${es ? "Desde ya (supervisado)" : "Start with (supervised)"}</h4><ul>${tk.earliest.map(x => `<li>${esc(esTask(x))}</li>`).join("")}</ul></div><div class="card tight"><h4>${ico("flag", 16)} ${es ? "Después de fundamentos + 608" : "After fundamentals + 608"}</h4><ul>${tk.after.map(x => `<li>${esc(esTask(x))}</li>`).join("")}</ul></div><div class="card tight"><h4 class="warn">${ico("lock", 16)} ${es ? "Todavía no" : "Not yet"}</h4><ul>${tk.defer.map(x => `<li>${esc(esTask(x))}</li>`).join("")}</ul></div></div>`; }
@@ -183,9 +176,22 @@
   /* ---------- game board: now the winding trail map in js/trail.js (V.board / A.bind.board) ---------- */
 
   /* ---------- library / guide ---------- */
-  V.library = () => `<main class="page">${head(t("studyGuides"))}
-    ${GUIDE_GROUPS.map(g => `<h3 class="sec-h">${esc(tx(g.title))}</h3><div class="card-list">${g.track ? `<a class="list-card" href="${g.track}"><span class="lc-ico">${ico("map")}</span><span class="grow"><b>${S.lang === "es" ? "Ver los 5 exámenes y sus áreas" : "See all 5 exams and their domains"}</b></span>${ico("arrow", 18)}</a>` : ""}${g.guides.map(id => guideCard(id)).join("")}</div>`).join("")}
-    <h3 class="sec-h">${S.lang === "es" ? "Más" : "More"}</h3><div class="card-list"><a class="list-card" href="#/skills"><span class="lc-ico">${ico("hand")}</span><span class="grow">${t("handsOn")}</span>${ico("arrow", 18)}</a><a class="list-card" href="#/glossary"><span class="lc-ico">${ico("list")}</span><span class="grow">${S.lang === "es" ? "Glosario" : "Glossary"}</span>${ico("arrow", 18)}</a></div></main>`;
+  const dirCard = (href, icon, title, sub) => `<a class="list-card" href="${href}"><span class="lc-ico">${ico(icon)}</span><span class="grow"><b>${title}</b>${sub ? `<span class="sm muted block">${sub}</span>` : ""}</span>${ico("arrow", 18)}</a>`;
+  A.dirCard = dirCard;
+  V.library = () => { const es = S.lang === "es";
+    const work = [
+      ["#/epa", "globe", t("epa"), es ? "Core, I, II y III" : "Core, I, II & III"],
+      ["#/dayone", "lightbulb", es ? "Día Uno" : "Day One", es ? "Primer día en camioneta" : "First day on a truck"],
+      ["#/skills", "hand", es ? "Práctica" : "Hands-On", es ? "Paso a paso" : "Step by step"],
+      ["#/tools", "cog", es ? "Herramientas" : "Tools Guide", es ? "Qué es cada una" : "What each tool is for"],
+      ["#/field", "gauge", es ? "Campo" : "Field Tools", es ? "Calculadoras offline" : "Offline calculators"]
+    ];
+    return `<main class="page">${head(t("learn"))}
+    <h3 class="sec-h">${es ? "Taller" : "Workshop"}</h3>
+    <div class="workshop-grid">${work.map(([h, i, title, sub]) => `<a href="${h}"><span class="wk-ico">${ico(i, 20)}</span><b>${title}</b><small>${sub}</small></a>`).join("")}</div>
+    ${GUIDE_GROUPS.map(g => `<h3 class="sec-h">${esc(tx(g.title))}</h3><div class="card-list">${g.track ? `<a class="list-card" href="${g.track}"><span class="lc-ico">${ico("map")}</span><span class="grow"><b>${es ? "Ver los 5 exámenes y sus áreas" : "See all 5 exams and their domains"}</b></span>${ico("arrow", 18)}</a>` : ""}${g.guides.map(id => guideCard(id)).join("")}</div>`).join("")}
+    <h3 class="sec-h">${es ? "Consulta" : "Reference"}</h3>
+    <div class="card-list">${dirCard("#/glossary", "list", es ? "Glosario" : "Glossary")}${dirCard("#/charts", "cycle", es ? "Gráficas P/T y SH/SC" : "P/T & SH/SC charts")}${dirCard("#/models", "box", es ? "Modelos 3D" : "3D models")}</div></main>`; };
   function guideCard(id) { const g = LESSONS[id]; const d = A.isDone("guide:" + id); return `<a class="list-card ${d ? "done" : ""}" href="#/guide/${id}"><span class="lc-ico">${icoFor(id)}</span><span class="grow"><b>${esc(tx(g.title))}</b><span class="sm muted block">${g.minutes} ${t("minutes")}${g.enOnly && S.lang === "es" ? " · EN" : ""}</span></span>${d ? ico("check", 18, "ok") : ico("arrow", 18)}</a>`; }
   A.guideCard = guideCard;
 
@@ -330,7 +336,7 @@
   /* ---------- gear ---------- */
   V.gear = () => { const es = S.lang === "es", cat = A.gearCat || "kit", plan = A.plan(); const pid = plan ? plan.pathId : "residential_service_tech";
     const kit = STARTER_KITS[pid] || []; const have = kit.filter(id => S.kit[id]).length;
-    return `<main class="page">${head(t("gear"))}
+    return `<main class="page">${head(t("gear"), "#/more")}
       <div class="seg scroll"><button data-gc="kit" class="${cat === "kit" ? "sel" : ""}">${t("starterKit")}</button>${GEAR_CATEGORIES.map(c => `<button data-gc="${c.id}" class="${cat === c.id ? "sel" : ""}">${esc(tx(c.title))}</button>`).join("")}<button data-gc="deals" class="${cat === "deals" ? "sel" : ""}">${es ? "Ofertas" : "Deals"}</button></div>
       ${cat === "kit" ? `<section class="card tight row between"><div><b>${esc(tx(PATH_LABELS[pid]))}</b><div class="sm muted">${have}/${kit.length} ${es ? "listos" : "ready"}</div></div>${ringSVG(pct(have, kit.length), 52)}</section>
         <div class="kit-list">${kit.map(id => { const x = TOOLS.find(y => y.id === id); return `<label class="kit-item ${S.kit[id] ? "have" : ""}"><input type="checkbox" data-kit="${id}" ${S.kit[id] ? "checked" : ""}><span class="kit-svg">${toolSVG(id)}</span><span class="grow">${esc(tx(x.name))}</span><a href="#/tool/${id}" class="iconbtn sm">${ico("info", 18)}</a></label>`; }).join("")}</div>` : ""}
@@ -339,13 +345,29 @@
       <p class="muted sm">${t("gearNote")}</p></main>`; };
   A.bind.gear = () => { document.querySelectorAll("[data-gc]").forEach(b => b.onclick = () => { A.gearCat = b.dataset.gc; A.render(); }); document.querySelectorAll("[data-kit]").forEach(c => c.onchange = () => { S.kit[c.dataset.kit] = c.checked; A.save(); A.render(); }); };
 
+  /* ---------- More hub ---------- */
+  V.more = () => {
+    const es = S.lang === "es", rk = A.rank();
+    const nRev = A.reviewCount && A.reviewCount();
+    const row = (href, icon, title, sub, extra) => `<a class="list-card" href="${href}"><span class="lc-ico">${ico(icon)}</span><span class="grow"><b>${title}</b>${sub ? `<span class="sm muted block">${sub}</span>` : ""}</span>${extra || ""}${ico("arrow", 18)}</a>`;
+    return `<main class="page more-hub">${head(t("more"))}
+      <a class="list-card more-profile" href="#/avatar"><span class="set-av">${avatarSVG(S.avatar, 72)}</span><span class="grow"><b>${esc(S.name)}</b><span class="sm muted block">${rk.r.icon} ${esc(A.rankName(rk.r, true))} · ${S.xp} XP</span></span>${ico("arrow", 18)}</a>
+      <h3 class="sec-h">${es ? "Progreso" : "Progress"}</h3>
+      <div class="card-list">${row("#/achievements", "trophy", es ? "Logros" : "Achievements", es ? "Rango, insignias e historial" : "Rank, badges and history")}${row("#/certs", "cert", t("certificates"), es ? "Certificados de práctica de HVAC Ready" : "HVAC Ready practice certificates")}${row("#/review", "target", es ? "Repaso" : "Review queue", es ? "Preguntas que te volviste a encontrar" : "Questions to come back to", nRev ? `<span class="pill-n">${nRev}</span>` : "")}</div>
+      <h3 class="sec-h">${es ? "Equipo" : "Shop"}</h3>
+      <div class="card-list">${row("#/gear", "cart", t("gear"), es ? "Kit inicial y ofertas de ejemplo" : "Starter kit and sample deals")}${S.settings.company ? row("#/company", "user", es ? "Empresa" : "Company", es ? "Panel demo en este dispositivo" : "Demo dashboard on this device") : ""}</div>
+      <h3 class="sec-h">${es ? "App" : "App"}</h3>
+      <div class="card-list">${row("#/settings", "cog", t("settings"), es ? "Idioma, sonido, respaldo y más" : "Language, sound, backup and more")}${row("#/credits", "info", es ? "Fuentes y créditos" : "Sources & credits")}</div>
+    </main>`;
+  };
+
   /* ---------- achievements ---------- */
   V.achievements = () => { const es = S.lang === "es", rk = A.rank(); A.checkBadges();
     const days = [...Array(14)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 13 + i); return d; });
     const xpDay = days.map(d => S.history.filter(h => new Date(h.t).toDateString() === d.toDateString()).length);
     const scores = S.history.filter(h => h.type === "quiz" && h.total).slice(0, 12).reverse().map(h => Math.round(100 * h.score / h.total));
     const nb = Object.keys(S.badges).length;
-    return `<main class="page">${head(es ? "Logros" : "Achievements")}
+    return `<main class="page">${head(es ? "Logros" : "Achievements", "#/more")}
       <section class="card rank-card"><div class="row gap">${avatarSVG(S.avatar, 100)}<div class="grow"><div class="eyebrow">${t("level")} ${rk.i + 1}</div><h2>${rk.r.icon} ${esc(A.rankName(rk.r, true))}</h2><p class="sm muted rank-tag">${esc(tx(rk.r.line))}</p><div class="xpbar"><span style="width:${rk.pct}%"></span></div><div class="sm muted">${S.xp} XP${rk.next ? ` · ${rk.next.xp - S.xp} ${es ? "para" : "to"} ${esc(tx(rk.next))}` : ""}</div></div></div>
         <div class="stats">${[[ico("fire", 18), S.streak.count, t("dayStreak")], [ico("target", 18), S.quizzes, es ? "quizzes" : "quizzes"], [ico("game", 18), S.games, es ? "juegos" : "games"], [ico("medal", 18), nb + "/" + BADGES.filter(b => !b.hidden || S.badges[b.id]).length, es ? "insignias" : "badges"], [ico("bolt", 18), S.bestRow || 0, es ? "mejor racha" : "best in a row"]].map(([i, v, l]) => `<div>${i}<b>${v}</b><span>${l}</span></div>`).join("")}</div></section>
       <h3 class="sec-h">${es ? "Escalera de rangos" : "Rank ladder"}</h3><div class="ranks">${RANKS.map((r, i) => `<span class="rk ${i <= rk.i ? "on" : ""}" title="${r.xp} XP · ${esc(tx(r.line))}">${r.icon}<small>${esc(tx(r))}</small></span>`).join("")}</div>
@@ -356,7 +378,7 @@
     </main>`; };
 
   /* ---------- certificates ---------- */
-  V.certs = () => { const nc = A.checkCerts(); if (nc.length && A.victory) setTimeout(() => A.victory({ kind: "cert", title: tx(nc[0].title) }), 300); const es = S.lang === "es"; return `<main class="page">${head(t("certificates"))}<div class="note">${ico("info", 18)} ${t("certPractice")}</div>
+  V.certs = () => { const nc = A.checkCerts(); if (nc.length && A.victory) setTimeout(() => A.victory({ kind: "cert", title: tx(nc[0].title) }), 300); const es = S.lang === "es"; return `<main class="page">${head(t("certificates"), "#/more")}<div class="note">${ico("info", 18)} ${t("certPractice")}</div>
     <div class="card-list">${A.CERTS.map(c => { const on = S.certs[c.id]; return `<a class="list-card ${on ? "done" : "locked"}" href="${on ? "#/cert/" + c.id : "#/certs"}"><span class="lc-ico">${on ? ico("cert") : ico("lock")}</span><span class="grow"><b>${esc(tx(c.title))}</b><span class="sm muted block">${on ? t("earned") + " " + new Date(on).toLocaleDateString() : t("locked")}</span></span>${on ? ico("arrow", 18) : ""}</a>`; }).join("")}</div></main>`; };
   V.cert = ([id]) => { const c = A.CERTS.find(x => x.id === id); const on = S.certs[id]; if (!c || !on) return V.certs(); const plan = A.plan(), es = S.lang === "es";
     return `<main class="page">${head(t("certTitle"), "#/certs", `<button class="iconbtn" onclick="window.print()" aria-label="${t("print")}">${ico("cert")}</button>`)}
@@ -367,7 +389,7 @@
       <button class="btn primary big full" onclick="window.print()">${t("print")}</button></main>`; };
 
   /* ---------- settings ---------- */
-  V.settings = () => { const es = S.lang === "es", c = Coach.cfg(); return `<main class="page">${head(t("settings"))}
+  V.settings = () => { const es = S.lang === "es", c = Coach.cfg(); return `<main class="page">${head(t("settings"), "#/more")}
     <section class="card brand-about"><img src="img/logo.png" alt="" width="64" height="64"><div class="grow"><span class="brand-name">HVAC Ready</span><p class="sm muted brand-tag">${esc(t("tagline"))}</p><p class="sm">${es ? "Hecha por un técnico de HVAC que empezó de cero y sin buenos recursos — para quien entra en frío, y para quien ya está en el campo y quiere subir de abajo hasta arriba." : "Built by an HVAC tech who started with nothing and no good resources — made for anyone coming in cold, and anyone already in the field who wants to climb from the bottom to the top."}</p></div></section>
     <section class="card"><h3>${t("language")}</h3><div class="seg"><button data-set-lang="en" class="${S.lang === "en" ? "sel" : ""}">English</button><button data-set-lang="es" class="${S.lang === "es" ? "sel" : ""}">Español</button></div></section>
     <section class="card"><h3>${t("name")} & ${t("avatar")}</h3><input class="input" id="sn" value="${esc(S.name)}" maxlength="24"><a class="list-card mt" href="#/avatar"><span class="set-av">${avatarSVG(S.avatar, 72)}</span><span class="grow"><b>${es ? "Editar personaje" : "Edit character"}</b><span class="sm muted block">${es ? "Piel, cabello, casco, ropa, botas y herramienta" : "Skin, hair, hard hat, outfit, boots and tool"}</span></span>${ico("arrow", 18)}</a></section>

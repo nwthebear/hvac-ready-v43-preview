@@ -61,6 +61,6 @@
     $("#aveRnd").onclick = () => { S.avatar = randomAvatar(); Sound.sfx("click"); refresh(true); };
   };
   window.V = window.V || {};
-  A.views.avatar = () => `<main class="page">${A.head(L("Your character", "Tu personaje"), "#/settings")}${A.avatarEditor()}<a class="btn primary big full mt" href="#/settings">${L("Done", "Listo")}</a></main>`;
+  A.views.avatar = () => `<main class="page">${A.head(L("Your character", "Tu personaje"), "#/more")}${A.avatarEditor()}<a class="btn primary big full mt" href="#/more">${L("Done", "Listo")}</a></main>`;
   A.bind.avatar = () => A.bindAvatarEditor();
 })();
