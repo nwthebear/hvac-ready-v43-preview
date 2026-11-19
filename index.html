@@ -34,21 +34,70 @@
     visualViewport.addEventListener("scroll", setShell);
   }
 })();
-/* v72: visible-viewport height for CSS. Does not rewrite setShell().
-   On iOS Safari, innerHeight can be the large viewport while toolbars show. */
+/* v73: --vis-h is the visible bottom (just above Safari's toolbar, or the
+   PWA window). Does not rewrite setShell(). On iOS 26 Compact, innerHeight
+   already ends above the floating toolbar, while visualViewport.height and
+   100dvh can be pathologically short (dead band under the tab bar). */
 (function(){
+  function probe(unit){
+    try{
+      var el=document.createElement("div");
+      el.style.cssText="position:fixed;visibility:hidden;pointer-events:none;left:0;top:0;width:0;height:100"+unit+";";
+      var parent=document.documentElement;
+      parent.appendChild(el);
+      var h=el.offsetHeight||0;
+      parent.removeChild(el);
+      return h;
+    }catch(e){ return 0; }
+  }
+  function standalone(){
+    try{
+      return window.navigator.standalone===true ||
+        (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    }catch(e){ return false; }
+  }
   function setVisH(){
     try{
       var r=document.documentElement;
+      var inner=window.innerHeight||0;
+      var client=r.clientHeight||0;
+      var outer=window.outerHeight||0;
+      var screenH=(window.screen && (screen.height||screen.availHeight))||0;
+      var vv=window.visualViewport;
+      var vvH=vv && vv.height ? vv.height : 0;
+      var vvTop=vv ? (vv.offsetTop||0) : 0;
+      var vvBottom=vvH ? (vvTop+vvH) : 0;
+      var lvh=probe("lvh"), svh=probe("svh"), dvh=probe("dvh");
+      var large=Math.max(lvh, screenH, outer, inner, client, 0);
+      var visInner=Math.max(inner, client, 0);
       var h=0;
-      if(window.visualViewport && visualViewport.height) h=visualViewport.height;
-      else h=window.innerHeight||0;
-      if(h) r.style.setProperty("--vis-h", h+"px");
+      if(standalone()){
+        h=Math.max(visInner, vvBottom, svh, dvh, 0);
+      }else{
+        var kb=(vvBottom && visInner) ? Math.max(0, visInner-vvBottom) : 0;
+        if(kb>120 && vvTop>8){
+          h=vvBottom;
+        }else{
+          var innerInset=large && visInner ? (large-visInner) : 0;
+          if(innerInset>=80 && innerInset<=240){
+            /* innerHeight is already the area above the toolbar (iOS 26 Compact).
+               Never cap the shell to a shorter visualViewport / 100dvh. */
+            h=Math.max(visInner, svh||0);
+            if(vvBottom>h && (large-vvBottom)<240) h=vvBottom;
+          }else if(vvBottom && visInner && (visInner-vvBottom)>20 && (visInner-vvBottom)<180){
+            /* Older iOS: innerHeight is the large viewport; vv ends above the toolbar. */
+            h=vvBottom;
+          }else{
+            h=Math.max(visInner, vvBottom, svh||0, 0);
+          }
+        }
+      }
+      if(h) r.style.setProperty("--vis-h", Math.round(h)+"px");
     }catch(e){}
   }
   setVisH();
   window.addEventListener("resize", setVisH);
-  window.addEventListener("orientationchange", setVisH);
+  window.addEventListener("orientationchange", function(){ setTimeout(setVisH, 60); });
   if(window.visualViewport){
     visualViewport.addEventListener("resize", setVisH);
     visualViewport.addEventListener("scroll", setVisH);
