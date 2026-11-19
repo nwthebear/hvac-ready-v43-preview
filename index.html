@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no">
 <script>
 (function(){
   /* Shell fills the layout viewport (innerHeight / 100dvh). visualViewport is
@@ -32,6 +32,26 @@
   if(window.visualViewport){
     visualViewport.addEventListener("resize", setShell);
     visualViewport.addEventListener("scroll", setShell);
+  }
+})();
+/* v72: visible-viewport height for CSS. Does not rewrite setShell().
+   On iOS Safari, innerHeight can be the large viewport while toolbars show. */
+(function(){
+  function setVisH(){
+    try{
+      var r=document.documentElement;
+      var h=0;
+      if(window.visualViewport && visualViewport.height) h=visualViewport.height;
+      else h=window.innerHeight||0;
+      if(h) r.style.setProperty("--vis-h", h+"px");
+    }catch(e){}
+  }
+  setVisH();
+  window.addEventListener("resize", setVisH);
+  window.addEventListener("orientationchange", setVisH);
+  if(window.visualViewport){
+    visualViewport.addEventListener("resize", setVisH);
+    visualViewport.addEventListener("scroll", setVisH);
   }
 })();
 </script>
